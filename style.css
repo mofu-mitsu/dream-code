@@ -1,0 +1,242 @@
+/* style.css */
+:root {
+  --bg-color: #1a1a2e;
+  --text-color: #e2e2e2;
+  --accent-color: #9d81ff; /* 幻想的な紫 */
+  --wonderland-pink: #ff85a1;
+}
+
+body {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: var(--text-color);
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  overflow: hidden; /* 夢の世界なのでスクロール禁止 */
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 1s ease; /* 夢が変わる時のアニメーション */
+}
+
+/* 夢のテーマ：不思議の国 */
+body.wonderland {
+  background: linear-gradient(45deg, #2d1b4e 0%, #1a0a2e 100%);
+  border: 10px double var(--wonderland-pink);
+}
+
+/* 浮遊するアイコンの演出 */
+.floating-icon {
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0.3;
+  animation: float 10s infinite linear;
+  z-index: -1;
+}
+
+@keyframes float {
+  0% { transform: translateY(100vh) rotate(0deg); }
+  100% { transform: translateY(-10vh) rotate(360deg); }
+}
+
+/* 対話ウィンドウ (INTJっぽくスッキリかつ幻想的に) */
+.chat-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 80%;
+  max-width: 600px;
+  text-align: center;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+#ai-response {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  min-height: 3em;
+  line-height: 1.6;
+}
+
+input {
+  width: 70%;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  outline: none;
+}
+
+button {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent-color);
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: var(--wonderland-pink);
+  transform: scale(1.05);
+}
+
+/* ダーリンちゃん専用背景 */
+.theme-darling {
+  background: linear-gradient(135deg, #2c001e 0%, #000000 100%);
+  border: 5px solid #ff007f;
+}
+
+/* リアクションエリア（ISFJ母vsINTJみつき） */
+#reaction-area {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  border-top: 1px dashed #666;
+  padding-top: 10px;
+}
+
+.reaction-isfj { color: #ff4d4d; font-style: italic; } /* イラっと母 */
+.reaction-intj { color: #4db8ff; font-weight: bold; } /* おもしれー女 */
+
+/* 診断アーカイブへのリンクボタン */
+.archive-portal {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 15px 25px;
+  background: linear-gradient(45deg, #4b0082, #0000ff);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: bold;
+  box-shadow: 0 0 15px rgba(75, 0, 130, 0.7);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 0 15px rgba(75, 0, 130, 0.7); }
+  50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(75, 0, 130, 0.9); }
+  100% { transform: scale(1); box-shadow: 0 0 15px rgba(75, 0, 130, 0.7); }
+}
+
+:root {
+    --primary: #9d81ff;
+    --darling: #ff007f;
+    --caterpillar: #4caf50;
+    --glass: rgba(255, 255, 255, 0.15);
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1a1a2e;
+    color: white;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    transition: background 1s ease;
+    overflow: hidden;
+}
+
+/* モーダルスタイル */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #2d1b4e, #1a0a2e);
+    padding: 40px;
+    border-radius: 30px;
+    text-align: center;
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 30px var(--primary);
+}
+
+input[type="text"] {
+    background: var(--glass);
+    border: 1px solid var(--primary);
+    color: white;
+    padding: 12px;
+    border-radius: 10px;
+    width: 250px;
+    margin-bottom: 20px;
+    outline: none;
+}
+
+button {
+    background: var(--primary);
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+button:hover { transform: scale(1.1); filter: brightness(1.2); }
+
+/* キャラ表示 */
+#char-avatar { font-size: 80px; margin-bottom: 10px; }
+#char-name { font-size: 20px; font-weight: bold; margin-bottom: 20px; color: var(--primary); }
+
+/* チャットエリア */
+.chat-container {
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    padding: 30px;
+    border-radius: 20px;
+    width: 90vw;
+    max-width: 600px;
+    text-align: center;
+}
+
+#ai-response { font-size: 1.2rem; margin-bottom: 20px; min-height: 80px; line-height: 1.6; }
+
+/* ダーリンちゃんモード */
+.theme-darling { background: #2c001e; border: 3px solid var(--darling); }
+.theme-darling #char-name { color: var(--darling); }
+
+body {
+    margin: 0; background: #0f0c29; color: white;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+}
+
+/* マップのレイアウト */
+#world-map {
+    height: 100vh; width: 100vw;
+    display: flex; flex-direction: column; align-items: center;
+    background: radial-gradient(circle, #24243e, #0f0c29);
+}
+
+.houses-container {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 50px; margin-top: 100px;
+}
+
+.house {
+    width: 120px; height: 120px; background: rgba(255,255,255,0.1);
+    border: 2px solid #9d81ff; border-radius: 20px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 40px; cursor: pointer; transition: 0.3s;
+}
+
+.house:hover { transform: scale(1.1); background: rgba(157, 129, 255, 0.3); }
+.house span { font-size: 14px; margin-top: 10px; color: #9d81ff; }
+
+/* チャット窓 */
+.chat-container {
+    background: #1a1a2e; padding: 40px; border-radius: 30px;
+    border: 3px solid #ff007f; position: relative; width: 400px;
+}
+
+.close-btn { position: absolute; top: 10px; right: 20px; font-size: 30px; background: none; border: none; color: white; cursor: pointer; }
