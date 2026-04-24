@@ -1,242 +1,173 @@
-/* style.css */
-:root {
-  --bg-color: #1a1a2e;
-  --text-color: #e2e2e2;
-  --accent-color: #9d81ff; /* 幻想的な紫 */
-  --wonderland-pink: #ff85a1;
-}
+@charset "UTF-8";
 
 body {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  color: var(--text-color);
-  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
-  overflow: hidden; /* 夢の世界なのでスクロール禁止 */
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transition: all 1s ease; /* 夢が変わる時のアニメーション */
+    margin: 0; height: 100vh; color: white; font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    background: radial-gradient(circle at center, #2b1055 0%, #0f0c29 60%, #000000 100%);
+    overflow: hidden; position: relative;
 }
 
-/* 夢のテーマ：不思議の国 */
-body.wonderland {
-  background: linear-gradient(45deg, #2d1b4e 0%, #1a0a2e 100%);
-  border: 10px double var(--wonderland-pink);
+body::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/stardust.png');
+    opacity: 0.4; z-index: -1; animation: drift 60s linear infinite;
 }
+@keyframes drift { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
 
-/* 浮遊するアイコンの演出 */
-.floating-icon {
-  position: absolute;
-  font-size: 2rem;
-  opacity: 0.3;
-  animation: float 10s infinite linear;
-  z-index: -1;
-}
-
-@keyframes float {
-  0% { transform: translateY(100vh) rotate(0deg); }
-  100% { transform: translateY(-10vh) rotate(360deg); }
-}
-
-/* 対話ウィンドウ (INTJっぽくスッキリかつ幻想的に) */
-.chat-container {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 2rem;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  width: 80%;
-  max-width: 600px;
-  text-align: center;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-}
-
-#ai-response {
-  font-size: 1.2rem;
-  margin-bottom: 1.5rem;
-  min-height: 3em;
-  line-height: 1.6;
-}
-
-input {
-  width: 70%;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  outline: none;
-}
-
-button {
-  padding: 10px 20px;
-  border-radius: 10px;
-  border: none;
-  background: var(--accent-color);
-  color: white;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-button:hover {
-  background: var(--wonderland-pink);
-  transform: scale(1.05);
-}
-
-/* ダーリンちゃん専用背景 */
-.theme-darling {
-  background: linear-gradient(135deg, #2c001e 0%, #000000 100%);
-  border: 5px solid #ff007f;
-}
-
-/* リアクションエリア（ISFJ母vsINTJみつき） */
-#reaction-area {
-  margin-top: 20px;
-  font-size: 0.9rem;
-  border-top: 1px dashed #666;
-  padding-top: 10px;
-}
-
-.reaction-isfj { color: #ff4d4d; font-style: italic; } /* イラっと母 */
-.reaction-intj { color: #4db8ff; font-weight: bold; } /* おもしれー女 */
-
-/* 診断アーカイブへのリンクボタン */
-.archive-portal {
-  display: inline-block;
-  margin-top: 20px;
-  padding: 15px 25px;
-  background: linear-gradient(45deg, #4b0082, #0000ff);
-  color: #fff;
-  text-decoration: none;
-  border-radius: 50px;
-  font-weight: bold;
-  box-shadow: 0 0 15px rgba(75, 0, 130, 0.7);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); box-shadow: 0 0 15px rgba(75, 0, 130, 0.7); }
-  50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(75, 0, 130, 0.9); }
-  100% { transform: scale(1); box-shadow: 0 0 15px rgba(75, 0, 130, 0.7); }
-}
-
-:root {
-    --primary: #9d81ff;
-    --darling: #ff007f;
-    --caterpillar: #4caf50;
-    --glass: rgba(255, 255, 255, 0.15);
-}
-
-body {
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #1a1a2e;
-    color: white;
-    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
-    transition: background 1s ease;
-    overflow: hidden;
-}
-
-/* モーダルスタイル */
+/* モーダル＆ウィンドウ */
 .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px);
+    display: flex; align-items: center; justify-content: center; z-index: 1000;
 }
-
-.modal-content {
-    background: linear-gradient(135deg, #2d1b4e, #1a0a2e);
-    padding: 40px;
-    border-radius: 30px;
-    text-align: center;
-    border: 2px solid var(--primary);
-    box-shadow: 0 0 30px var(--primary);
+.modal-content, .chat-container {
+    background: rgba(20, 10, 40, 0.85); padding: 40px; border-radius: 20px; text-align: center;
+    box-shadow: 0 0 40px rgba(157, 129, 255, 0.4); border: 2px solid #9d81ff; width: 90vw; max-width: 500px;
 }
-
 input[type="text"] {
-    background: var(--glass);
-    border: 1px solid var(--primary);
-    color: white;
-    padding: 12px;
-    border-radius: 10px;
-    width: 250px;
-    margin-bottom: 20px;
-    outline: none;
+    background: rgba(255, 255, 255, 0.1); border: 1px solid #9d81ff; color: white;
+    padding: 12px; border-radius: 10px; width: 80%; margin-bottom: 15px; outline: none; font-size: 16px;
 }
-
 button {
-    background: var(--primary);
-    border: none;
-    color: white;
-    padding: 12px 24px;
-    border-radius: 50px;
+    background: linear-gradient(45deg, #9d81ff, #ff007f); border: none; color: white;
+    padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; margin: 5px; transition: 0.3s;
+}
+button:hover { transform: scale(1.05); box-shadow: 0 0 15px #ff007f; }
+
+/* 🐇 穴に落ちるアニメーション */
+#rabbit-hole-screen {
+    position: fixed; inset: 0; background: black; z-index: 2000;
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    opacity: 0; pointer-events: none; transition: opacity 1s;
+}
+.falling #rabbit-hole-screen { opacity: 1; pointer-events: all; }
+.falling-spiral { animation: spinAndZoom 3s ease-in forwards; font-size: 80px; text-align: center; }
+@keyframes spinAndZoom {
+    0% { transform: scale(1) rotate(0deg); opacity: 1; }
+    100% { transform: scale(0) rotate(1080deg); opacity: 0; }
+}
+
+/* 🍄 散らばる不思議の国マップ */
+#world-map { position: relative; width: 100vw; height: 100vh; }
+.wonder-object {
+    position: absolute; font-size: 80px; cursor: pointer; transition: 0.4s;
+    filter: drop-shadow(0 0 20px rgba(157, 129, 255, 0.6));
+}
+.wonder-object:hover { transform: scale(1.2) translateY(-15px); filter: drop-shadow(0 0 40px #ff007f); }
+.wonder-object span {
+    position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
+    font-size: 16px; color: #ffd700; opacity: 0; transition: 0.3s; white-space: nowrap;
+}
+.wonder-object:hover span { opacity: 1; }
+
+.obj-library { top: 20%; left: 15%; }
+.obj-tea { top: 60%; left: 25%; font-size: 100px; filter: drop-shadow(0 0 30px #ff9a9e); }
+.obj-darling { top: 40%; left: 50%; transform: translate(-50%, -50%); font-size: 120px; z-index: 10; }
+.obj-mushroom { top: 25%; right: 20%; }
+
+/* 🪄 夢コードバー */
+#dream-code-bar {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 30px; border: 1px solid #9d81ff; display: flex; gap: 10px;
+}
+
+/* 💋 ダーリンチャット＆トランプ */
+#char-avatar { font-size: 60px; filter: drop-shadow(0 0 10px #ff007f); margin-bottom: 10px; }
+#ai-response { font-size: 1.1rem; margin-bottom: 25px; min-height: 60px; color: #ffebf0; }
+
+/* 🃏 トランプゲームエリア */
+#trump-area {
+    margin-top: 20px; padding: 20px; background: rgba(0,0,0,0.5); border-radius: 15px; border: 1px dashed #ff007f;
+}
+.card-display { display: flex; justify-content: space-around; margin-bottom: 15px; }
+.card {
+    width: 60px; height: 90px; background: white; color: black; border-radius: 5px;
+    display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;
+    box-shadow: 0 0 10px rgba(255,255,255,0.5);
+    /* ※ここにみつきのアセットのURLを入れることもできるよ！ */
+    /* background-image: url('みつきのアセットのパス'); background-size: cover; */
+}
+.card.hidden { background: repeating-linear-gradient(45deg, #2b1055, #2b1055 10px, #0f0c29 10px, #0f0c29 20px); color: transparent; }
+
+/* 背景テーマ */
+.theme-stars { background: radial-gradient(circle, #1a1a2e 0%, #000 100%); }
+.theme-stars::before { content: '✨'; position: fixed; top: 10%; left: 20%; animation: blink 2s infinite; }
+
+.theme-wonderland { background: linear-gradient(45deg, #2d1b4e 0%, #4b0082 100%); }
+.theme-caterpillar { background-color: #002b36; border: 5px solid #859900; }
+.theme-karaoke { background: repeating-linear-gradient(45deg, #ff00ff, #ff00ff 10px, #00ffff 10px, #00ffff 20px); }
+
+@keyframes blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+
+/* ダーリンちゃんエリア */
+#darling-zone {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 150px;
     cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s;
-}
-
-button:hover { transform: scale(1.1); filter: brightness(1.2); }
-
-/* キャラ表示 */
-#char-avatar { font-size: 80px; margin-bottom: 10px; }
-#char-name { font-size: 20px; font-weight: bold; margin-bottom: 20px; color: var(--primary); }
-
-/* チャットエリア */
-.chat-container {
-    background: var(--glass);
-    backdrop-filter: blur(10px);
-    padding: 30px;
-    border-radius: 20px;
-    width: 90vw;
-    max-width: 600px;
     text-align: center;
+    z-index: 100;
+}
+#darling-img { width: 100%; transition: transform 0.2s; }
+#darling-img:active { transform: scale(0.9); }
+#darling-balloon {
+    background: white;
+    color: black;
+    border-radius: 10px;
+    padding: 10px;
+    position: absolute;
+    bottom: 110%;
+    right: 0;
+    font-size: 0.8em;
+    width: 200px;
+    display: none;
 }
 
-#ai-response { font-size: 1.2rem; margin-bottom: 20px; min-height: 80px; line-height: 1.6; }
-
-/* ダーリンちゃんモード */
-.theme-darling { background: #2c001e; border: 3px solid var(--darling); }
-.theme-darling #char-name { color: var(--darling); }
-
-body {
-    margin: 0; background: #0f0c29; color: white;
-    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+/* カードのデザイン */
+.card-img {
+    width: 100px;
+    height: auto;
+    margin: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    transition: transform 0.2s;
+}
+.clickable:hover {
+    transform: translateY(-10px) scale(1.05);
+    cursor: pointer;
 }
 
-/* マップのレイアウト */
-#world-map {
-    height: 100vh; width: 100vw;
-    display: flex; flex-direction: column; align-items: center;
-    background: radial-gradient(circle, #24243e, #0f0c29);
+/* ダーリンちゃんとの対話ログ */
+#darling-log {
+    font-size: 0.85em;
+    color: #f5e0dc;
+    background: rgba(0,0,0,0.3);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    min-height: 40px;
 }
 
-.houses-container {
-    display: grid; grid-template-columns: repeat(2, 1fr);
-    gap: 50px; margin-top: 100px;
+/* 🃏 トランプ・カード用のCSS */
+#card-display {
+    display: flex; justify-content: center; gap: 15px; margin: 15px 0; min-height: 120px;
+}
+.card-img {
+    width: 80px; height: 120px; border-radius: 5px; box-shadow: 0 0 10px rgba(255,255,255,0.3);
+    transition: transform 0.2s;
+}
+.card-img.clickable:hover {
+    transform: translateY(-15px) scale(1.05); cursor: pointer; box-shadow: 0 0 20px #ff007f;
 }
 
-.house {
-    width: 120px; height: 120px; background: rgba(255,255,255,0.1);
-    border: 2px solid #9d81ff; border-radius: 20px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    font-size: 40px; cursor: pointer; transition: 0.3s;
+/* 🍞 トースト通知（見つめるギミック用） */
+#toast {
+    visibility: hidden; min-width: 250px; background-color: rgba(255, 0, 127, 0.9); color: #fff;
+    text-align: center; border-radius: 50px; padding: 15px; position: fixed; z-index: 3000;
+    left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: bold;
+    box-shadow: 0 0 20px rgba(255, 0, 127, 0.5); border: 2px solid #fff;
 }
-
-.house:hover { transform: scale(1.1); background: rgba(157, 129, 255, 0.3); }
-.house span { font-size: 14px; margin-top: 10px; color: #9d81ff; }
-
-/* チャット窓 */
-.chat-container {
-    background: #1a1a2e; padding: 40px; border-radius: 30px;
-    border: 3px solid #ff007f; position: relative; width: 400px;
+#toast.show {
+    visibility: visible; animation: fadein 0.3s, fadeout 0.5s 1.5s;
 }
-
-.close-btn { position: absolute; top: 10px; right: 20px; font-size: 30px; background: none; border: none; color: white; cursor: pointer; }
+@keyframes fadein { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
+@keyframes fadeout { from { bottom: 30px; opacity: 1; } to { bottom: 0; opacity: 0; } }
