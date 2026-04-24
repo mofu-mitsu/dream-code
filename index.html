@@ -2,62 +2,60 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>夢コード v5.0 - Wonderland Map</title>
+    <title>夢コード - The Rabbit Hole Edition</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body id="dream-world" class="theme-wonderland">
+<body>
 
-    <!-- 名前入力モーダル -->
-    <div id="name-modal" class="modal-overlay">
-        <div class="modal-content">
-            <h2 class="title-cute">☪* 夢のパスポート ☪*</h2>
-            <input type="text" id="name-input" placeholder="お名前を教えて？">
-            <button onclick="startDream()">不思議の国へ</button>
+<div id="name-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h2 style="color: #ff85a1;">☪* 夢のパスポート ☪*</h2>
+        <input type="text" id="name-input" placeholder="お名前（例：みつき）">
+        <input type="text" id="type-input" placeholder="自認タイプ（例：INTJ, LII）">
+        <button onclick="startFall()">ウサギの穴へ落ちる🐇</button>
+    </div>
+</div>
+
+<div id="rabbit-hole-screen">
+    <div class="falling-spiral">🐇💨<br><span style="font-size:20px; color:white;">「遅刻だ、遅刻だ！論理的に急がないと！」</span></div>
+</div>
+
+<div id="world-map" style="display: none;">
+    <div class="wonder-object obj-library" onclick="alert('ジェミの書庫だ。')">📚<span>ジェミの書庫</span></div>
+    <div class="wonder-object obj-tea" onclick="alert('狂ったお茶会だ。')">☕<span>狂ったお茶会</span></div>
+    <div class="wonder-object obj-darling" onclick="openDarlingHouse()">💋<span>秘密の扉</span></div>
+    <div class="wonder-object obj-mushroom" onclick="alert('芋虫が煙を吐いている…')">🍄<span>巨大なキノコ</span></div>
+</div>
+
+<!-- 💋 ダーリンチャット窓 -->
+<div id="darling-window" class="modal-overlay" style="display:none;">
+    <div class="chat-container">
+        <button class="close-btn" onclick="closeDarlingHouse()" style="position:absolute; top:10px; right:15px; background:none; border:none; color:white; font-size:24px;">×</button>
+        <div id="char-avatar">💋</div>
+        <div id="char-name">ダーリンの子 (ILI)</div>
+        <div id="ai-response"></div>
+        
+        <!-- トランプ表示エリア -->
+        <div id="card-display"></div>
+        
+        <input type="text" id="user-reaction" placeholder="ダーリンに言葉や魔法を投げる...">
+        <button onclick="DarlingEngine.sendChat()">送信</button>
+
+        <div class="gimmick-buttons">
+            <button onclick="DarlingEngine.stare()">👁️ 見つめる</button>
+            <button onclick="DarlingEngine.askQuestion()">💋 問い詰められる</button>
+            <button onclick="DarlingEngine.playHighLow()">🃏 ハイ＆ロー</button>
+            <button onclick="DarlingEngine.startBabanuki()">🃏 ババ抜き</button>
         </div>
     </div>
+</div>
 
-    <!-- 🏰 不思議の国マップエリア -->
-    <div id="world-map" style="display: none;">
-        <div class="map-header">
-            <div class="magic-bar">
-                <input type="text" id="magic-input" placeholder="魔法のコード（芋虫、カラオケ...）">
-                <button onclick="castMagic()">魔法をかける</button>
-            </div>
-        </div>
+<!-- 見つめる用のトースト通知 -->
+<div id="toast"></div>
 
-        <div class="houses-container">
-            <div class="house" onclick="alert('ここはジェミの本棚。まだ鍵がかかってるみたい。')">📚<br><span>ジェミの家</span></div>
-            <div class="house" onclick="alert('Grokが中で爆音カラオケをしてる！入れないよ！')">🎩<br><span>帽子屋の家</span></div>
-            <!-- ダーリンの家 -->
-            <div class="house target" onclick="openDarlingHouse()">💋<br><span>秘密の家</span></div>
-            <div class="house" onclick="alert('芋虫がきのこの上で居眠りしてる……')">🍄<br><span>きのこの家</span></div>
-        </div>
-    </div>
-
-    <!-- 💋 ダーリンのチャット窓（最初は隠れてる） -->
-    <div id="darling-window" class="modal-overlay" style="display:none;">
-        <div class="chat-container">
-            <button class="close-btn" onclick="closeDarlingHouse()">×</button>
-            <div id="char-avatar">💋</div>
-            <div id="char-name">ダーリンの子 (ILI)</div>
-            <div id="ai-response">「ねえダーリン♡ 来てくれたのね。」</div>
-            
-            <div class="interaction-area">
-                <input type="text" id="user-reaction" placeholder="ダーリンに返事をする...">
-                <button onclick="talkToDarling()">答える</button>
-            </div>
-            <div class="gimmick-buttons">
-                <button onclick="triggerGimmick('stare')">👁️ じっと見つめる</button>
-                <button onclick="triggerGimmick('logic')">📖 論理で言い負かす</button>
-            </div>
-            <div id="portal-area" style="display:none;">
-                <a href="https://mofu-mitsu.github.io/Deep-Cognition-Archive/" target="_blank" class="archive-portal">解剖室へ</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- 💡 data.jsを先に読み込む！ -->
-    <script src="data.js"></script>
-    <script src="script.js"></script>
+<!-- 読み込み順が超大事！ -->
+<script src="data.js"></script>
+<script src="darling.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
