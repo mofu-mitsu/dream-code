@@ -1,0 +1,30 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # mainブランチにプッシュされた時に動く
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # 🔥 ここで Secret の値を使ってファイルを書き換える！
+      - name: Replace API Key in darling.js
+        run: |
+          sed -i 's/REPLACE_ME_BY_GITHUB_ACTIONS/${{ secrets.GROQ_API_KEY }}/g' darling.js
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
