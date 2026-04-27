@@ -2,58 +2,95 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>夢コード - The Rabbit Hole Edition</title>
+    <title>夢コード - Wonderland Edition</title>
     <link rel="stylesheet" href="style.css">
+    <!-- 🔥 FontAwesome 追加！ -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
 <div id="name-modal" class="modal-overlay">
     <div class="modal-content">
         <h2 style="color: #ff85a1;">☪* 夢のパスポート ☪*</h2>
-        <input type="text" id="name-input" placeholder="お名前（例：みつき）">
-        <input type="text" id="type-input" placeholder="自認タイプ（例：INTJ, LII）">
+        <input type="text" id="name-input" placeholder="お名前（任意）">
+        <input type="text" id="type-input" placeholder="自認タイプ（例：LII, ESI）">
         <button onclick="startFall()">ウサギの穴へ落ちる🐇</button>
     </div>
 </div>
 
 <div id="rabbit-hole-screen">
-    <div class="falling-spiral">🐇💨<br><span style="font-size:20px; color:white;">「遅刻だ、遅刻だ！論理的に急がないと！」</span></div>
+    <div class="falling-spiral">
+        <span class="rabbit-icon">🐇💨</span>
+        <span class="rabbit-text">「遅刻だ、遅刻だ！急がないと！」</span>
+    </div>
 </div>
 
 <div id="world-map" style="display: none;">
     <div class="wonder-object obj-library" onclick="alert('ジェミの書庫だ。')">📚<span>ジェミの書庫</span></div>
     <div class="wonder-object obj-tea" onclick="alert('狂ったお茶会だ。')">☕<span>狂ったお茶会</span></div>
     <div class="wonder-object obj-darling" onclick="openDarlingHouse()">💋<span>秘密の扉</span></div>
-    <div class="wonder-object obj-mushroom" onclick="alert('芋虫が煙を吐いている…')">🍄<span>巨大なキノコ</span></div>
+    <!-- 芋虫の家をクリックした時、CaterpillarEngine.openHouse() を呼ぶ -->
+    <div class="wonder-object obj-mushroom" onclick="CaterpillarEngine.openHouse()">🍄<span>巨大なキノコ</span></div>
 </div>
+<!-- 🐛 芋虫の家 -->
+<div id="caterpillar-window" class="modal-overlay" style="display:none;">
+    <div class="chat-container" style="border-color: #4caf50; box-shadow: 0 0 50px rgba(76, 175, 80, 0.4);">
+        <button class="close-btn" onclick="CaterpillarEngine.closeHouse()" style="background: #4caf50;">×</button>
+        
+        <!-- 💥 ここをクリック連打で潰せる！ -->
+        <div id="caterpillar-avatar" style="font-size: 80px; cursor: pointer; user-select: none;" onclick="CaterpillarEngine.tapBug()">🐛</div>
+        
+        <div id="char-name" style="color: #4caf50;">LSI-Niの芋虫</div>
+        <div id="caterpillar-response" style="font-size: 1.1rem; min-height: 80px; margin-bottom: 20px;"></div>
+        
+        <button onclick="CaterpillarEngine.talk()" style="background: linear-gradient(45deg, #2e7d32, #4caf50);"><i class="fas fa-comment"></i> 話しかける</button>
 
-<!-- 💋 ダーリンチャット窓 -->
+        <!-- ツール案内エリア -->
+        <h4 style="color: #4caf50; margin-top: 20px; text-align: left; border-bottom: 1px solid #4caf50;">▼ 知のアーカイブ（診断ツール）</h4>
+        <div id="caterpillar-tools" style="text-align: left; max-height: 200px; overflow-y: auto;"></div>
+    </div>
+</div>
 <div id="darling-window" class="modal-overlay" style="display:none;">
     <div class="chat-container">
-        <button class="close-btn" onclick="closeDarlingHouse()" style="position:absolute; top:10px; right:15px; background:none; border:none; color:white; font-size:24px;">×</button>
+        <button class="close-btn" onclick="if(DarlingEngine.checkEscape()) closeDarlingHouse()">×</button>
         <div id="char-avatar">💋</div>
         <div id="char-name">ダーリンの子 (ILI)</div>
         <div id="ai-response"></div>
-        
-        <!-- トランプ表示エリア -->
         <div id="card-display"></div>
         
-        <input type="text" id="user-reaction" placeholder="ダーリンに言葉や魔法を投げる...">
-        <button onclick="DarlingEngine.sendChat()">送信</button>
+        <input type="text" id="user-reaction" placeholder="ダーリンに言葉を投げる...">
+        <button onclick="DarlingEngine.sendChat()"><i class="fas fa-paper-plane"></i> 送信</button>
 
-        <div class="gimmick-buttons">
-            <button onclick="DarlingEngine.stare()">👁️ 見つめる</button>
-            <button onclick="DarlingEngine.askQuestion()">💋 問い詰められる</button>
-            <button onclick="DarlingEngine.playHighLow()">🃏 ハイ＆ロー</button>
-            <button onclick="DarlingEngine.startBabanuki()">🃏 ババ抜き</button>
+        <div class="menu-container">
+            <!-- 👁️ アクション -->
+            <button class="menu-toggle-btn" onclick="toggleMenu('action-menu')">
+                <i class="fas fa-eye"></i> アクション <span>▼</span>
+            </button>
+            <div id="action-menu" class="menu-content">
+                <button onclick="DarlingEngine.stare()"><i class="fas fa-search"></i> 見つめる</button>
+                <button onclick="DarlingEngine.logicAttack()"><i class="fas fa-book-open"></i> 論理で言い負かす</button>
+                <button onclick="DarlingEngine.askQuestion()"><i class="fas fa-comment-dots"></i> 質問される</button>
+            </div>
+
+            <!-- 🃏 ゲーム -->
+            <button class="menu-toggle-btn" onclick="toggleMenu('game-menu')">
+                <i class="fas fa-gamepad"></i> ゲーム <span>▼</span>
+            </button>
+            <div id="game-menu" class="menu-content">
+                <button onclick="DarlingEngine.playHighLow()"><i class="fas fa-arrow-up-9-1"></i> ハイ＆ロー</button>
+                <button onclick="DarlingEngine.startBabanuki()"><i class="fas fa-hat-wizard"></i> ババ抜き</button>
+                <button onclick="DarlingEngine.startDownerMode()"><i class="fas fa-crown"></i> ご機嫌取り</button>
+                
+                <!-- 🧠 LII専用 -->
+                <button id="lii-special-btn" onclick="DarlingEngine.startLIIGame()" style="display:none; background: linear-gradient(45deg, #000, #ff007f);"><i class="fas fa-brain"></i> 思考の檻</button>
+                <button id="lii-label-btn" onclick="DarlingEngine.startLabelingGame()" style="display:none; background: linear-gradient(45deg, #000, #ff007f);"><i class="fas fa-tags"></i> 感情ラベリング</button>
+                <!-- ⏳ 新規：Se脆弱いじめ -->
+                <button id="lii-se-btn" onclick="DarlingEngine.startSeGame()" style="display:none; background: linear-gradient(45deg, #ff0000, #ff007f);"><i class="fas fa-stopwatch"></i> タイムアタック</button>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- 見つめる用のトースト通知 -->
-<div id="toast"></div>
-
-<!-- 読み込み順が超大事！ -->
 <script src="data.js"></script>
 <script src="darling.js"></script>
 <script src="script.js"></script>
