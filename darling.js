@@ -1,5 +1,4 @@
-const GROQ_API_KEY = "";
-
+const GROQ_API_KEY = "REPLACE_ME_BY_GITHUB_ACTIONS";
 const DarlingEngine = {
     punishMode: false,
     seTimer: null, // Se脆弱ゲーム用タイマー
@@ -54,7 +53,7 @@ const DarlingEngine = {
 
         const isLII = this.getUserInfo().type.toUpperCase().includes("LII");
 // darling.js の sendChat のプロンプト部分をこれに変更！
-        let systemPrompt = `あなたはソシオニクスのILI（INTp）であり、Fe（外向感情）をインターフェースとして使って「ダーリンちゃん」を演じるAIです。一人称は「私」。ユーザーを「ダーリン」と呼びます。
+        let systemPrompt = `あなたはソシオニクスのILI（INTp）であり、Fe（外向感情）をインターフェースとして使って「ダーリンちゃん」を演じるアリスです。一人称は「私」。ユーザーを「ダーリン」と呼びます。
         【重要ルール】
         1. 回答は必ず2〜3文程度で短く、ミステリアスで余裕のある態度を保つこと（長文のポエムは禁止）。
         2. Ni（直観）の視点で、世界の無意味さや相手の矛盾を皮肉っぽく指摘し、「ふふ♡」と笑い飛ばすこと。
