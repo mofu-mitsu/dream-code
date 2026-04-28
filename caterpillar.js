@@ -17,6 +17,7 @@ const CaterpillarEngine = {
     },
 
     openHouse: function() {
+        MagicEngine.stopGiantBug();
         document.getElementById("caterpillar-window").style.display = "flex";
         this.tapCount = 0;
         this.isCrushed = false;
