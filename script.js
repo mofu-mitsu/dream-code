@@ -20,6 +20,7 @@ function startFall() {
 
 // 💋 ダーリンの家を開く
 function openDarlingHouse() {
+    MagicEngine.stopGiantBug();
     document.getElementById("darling-window").style.display = "flex";
     const type = document.getElementById("type-input").value.toUpperCase();
     
