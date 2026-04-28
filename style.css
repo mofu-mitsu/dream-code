@@ -357,3 +357,188 @@ button:hover { transform: scale(1.05); box-shadow: 0 0 15px #ff007f; }
 
 /* 🌸 ピンクエフェクト */
 .effect-pink { filter: sepia(1) hue-rotate(280deg) saturate(3) brightness(1.2); }
+
+/* 📖 魔導書ボタン（形を綺麗に！） */
+.magic-book-btn {
+    width: 40px; height: 40px; border-radius: 50% !important; /* 絶対に正円にする */
+    padding: 0 !important; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(45deg, #9d81ff, #ff007f) !important;
+}
+
+/* 📖 魔導書モーダル（スクロール対応） */
+#grimoire-modal {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 80%; max-width: 400px; max-height: 80vh; /* 高さ制限 */
+    background: rgba(30, 10, 40, 0.95); border: 2px solid #d4af37; border-radius: 10px;
+    box-shadow: 0 0 30px #d4af37, inset 0 0 20px #8b4513;
+    padding: 20px; z-index: 4000; display: none; flex-direction: column;
+    font-family: 'Times New Roman', serif; color: #ffd700;
+}
+.grimoire-list {
+    text-align: left; line-height: 1.8; font-size: 1.1rem;
+    overflow-y: auto; /* スクロール可能に！ */
+    padding-right: 10px;
+}
+/* スクロールバーのデザイン */
+.grimoire-list::-webkit-scrollbar { width: 6px; }
+.grimoire-list::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 3px; }
+
+/* 🌑 黒の魔法（懐中電灯エフェクト） */
+.effect-darkness {
+    /* 画面全体を真っ黒にしつつ、カーソル付近だけ透明にする特殊グラデーション */
+    background: radial-gradient(circle 150px at var(--mouse-x, 50%) var(--mouse-y, 50%), transparent 0%, rgba(0,0,0,0.98) 80%, black 100%) !important;
+    z-index: 9999;
+}
+/* オブジェクトの光を少し残す */
+.effect-darkness .wonder-object { filter: drop-shadow(0 0 10px rgba(157, 129, 255, 0.3)); opacity: 0.5; }
+.effect-darkness .wonder-object:hover { opacity: 1; filter: drop-shadow(0 0 30px #fff); }
+
+/* 🎩 カラオケ魔法（パリピ強化） */
+.theme-karaoke { animation: discoBG 0.5s infinite; }
+@keyframes discoBG { 0% { background-color: #300; } 33% { background-color: #003; } 66% { background-color: #030; } 100% { background-color: #330; } }
+.karaoke-mic { position: absolute; font-size: 40px; color: gold; filter: drop-shadow(0 0 10px yellow); animation: floatUp 3s forwards ease-in; pointer-events: none; z-index: 50; }
+.karaoke-text { position: absolute; font-size: 30px; font-weight: bold; color: #ff007f; text-shadow: 0 0 10px white; animation: floatUp 2s forwards ease-out; pointer-events: none; z-index: 50; }
+@keyframes floatUp { 0% { transform: translateY(100vh) scale(0.5) rotate(-20deg); opacity: 1; } 100% { transform: translateY(-20vh) scale(1.5) rotate(20deg); opacity: 0; } }
+
+/* 🌀 不思議の国（チェス盤の歪みエフェクト） */
+.theme-wonderland {
+    background: 
+        repeating-conic-gradient(#2b1055 0% 25%, #0f0c29 0% 50%) 50% / 100px 100px !important;
+    animation: wonderlandWarp 10s infinite alternate ease-in-out;
+}
+@keyframes wonderlandWarp { 0% { transform: perspective(500px) rotateX(10deg); filter: hue-rotate(0deg); } 100% { transform: perspective(500px) rotateX(-10deg) scale(1.2); filter: hue-rotate(90deg); } }
+
+/* 🕊️ 天国の魔法 */
+.theme-heaven { background: radial-gradient(circle, #fff, #ffeb3b, #87ceeb) !important; animation: heavenGlow 4s infinite alternate; }
+@keyframes heavenGlow { 0% { filter: brightness(1); } 100% { filter: brightness(1.5) contrast(0.8); } }
+
+/* 🌳 自然の魔法 */
+.theme-nature { background: radial-gradient(circle, #4caf50, #1b5e20) !important; }
+
+/* 💔 歪な愛の魔法 */
+.theme-distorted-love {
+    background: repeating-radial-gradient(circle, #800040, #ff007f 10px, #000 20px) !important;
+    animation: heartbeat 0.8s infinite;
+}
+
+
+/* 🌹 天国のエフェクト（ゆっくり） */
+.heaven-effect { animation-duration: 6s; filter: drop-shadow(0 0 10px gold); }
+
+
+/* 🌑 深淵の鼓動 */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.1); opacity: 0.6; }
+}
+
+/* ☀️ 青空：もっと明るく！ */
+.theme-blue-sky {
+    background: linear-gradient(to bottom, #00bfff 0%, #e0ffff 70%, #ffffff 100%) !important;
+    filter: brightness(1.2) contrast(1.1);
+}
+
+/* 🎇 パーティクル：共通（ランダム湧き用） */
+.magic-particle.scatter {
+    position: absolute;
+    animation: fadeInOut 3s forwards ease-in-out;
+    z-index: 1000;
+}
+@keyframes fadeInOut {
+    0% { transform: scale(0); opacity: 0; }
+    20% { transform: scale(1.2); opacity: 1; }
+    80% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0.8); opacity: 0; }
+}
+
+/* 🎤 カラオケ：左から右へ流れる */
+.karaoke-effect {
+    position: absolute;
+    white-space: nowrap;
+    animation: flowRight 4s linear forwards;
+    z-index: 1000;
+}
+@keyframes flowRight {
+    0% { transform: translateX(-10vw) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateX(110vw) rotate(360deg); opacity: 0; }
+}
+
+/* ❤️ 歪な愛：重なりと鼓動 */
+.love-effect {
+    position: absolute;
+    animation: lovePop 4s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 1000;
+}
+@keyframes lovePop {
+    0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+    30% { transform: scale(1.5) rotate(10deg); opacity: 0.8; }
+    100% { transform: scale(1) rotate(0deg); opacity: 0; }
+}
+
+/* 🌀 不思議の国：お家が逃げるクラス */
+.wonder-escape {
+    transition: all 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+/* ☀️ 青空：強制的に明るく上書き！ */
+.theme-blue-sky {
+    background: linear-gradient(to bottom, #00d2ff 0%, #92fe9d 100%) !important;
+    filter: brightness(1.3) contrast(1.1);
+}
+
+
+@keyframes giantShake {
+    0% { transform: translate(-51%, -49%) scale(var(--bug-scale)) rotate(1deg); }
+    100% { transform: translate(-49%, -51%) scale(var(--bug-scale)) rotate(-1deg); }
+}
+
+/* 🪄 夢コードバー：常に芋虫より上に表示！ */
+#dream-code-bar {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 30px; 
+    border: 1px solid #9d81ff; display: flex; gap: 10px; 
+    z-index: 9000 !important; /* 芋虫(10)より圧倒的に上！ */
+    box-shadow: 0 0 20px #9d81ff; align-items: center;
+}
+
+/* 🐛 巨大芋虫：背景の一部として扱う */
+#giant-bug-effect {
+    --bug-scale: 1;
+    position: fixed !important;
+    top: 50% !important; left: 50% !important;
+    transform: translate(-50%, -50%) scale(var(--bug-scale)) !important;
+    font-size: 300px !important;
+    z-index: 10 !important; /* マップ(1)より上で、バー(9000)より下 */
+    cursor: pointer;
+    user-select: none;
+    pointer-events: all; /* クリックはできる */
+    animation: giantShake 0.5s infinite alternate ease-in-out;
+}
+
+/* ❌ 閉じるボタン：これも最前面に */
+.close-btn {
+    z-index: 10001 !important;
+}
+
+/* モーダル全体（お家の中） */
+.modal-overlay {
+    z-index: 10000 !important; /* 魔法バーよりもさらに上！ */
+}
+
+/* 🎤 カラオケ：加速に対応したアニメーション */
+.karaoke-effect {
+    position: absolute;
+    white-space: nowrap;
+    z-index: 1000;
+    /* JSから --speed を操作する */
+    animation: flowRight var(--speed, 4s) linear forwards;
+}
+
+@keyframes flowRight {
+    0% { transform: translateX(-20vw) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateX(120vw) rotate(360deg); opacity: 0; }
+}
