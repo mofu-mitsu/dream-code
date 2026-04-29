@@ -542,3 +542,697 @@ button:hover { transform: scale(1.05); box-shadow: 0 0 15px #ff007f; }
     90% { opacity: 1; }
     100% { transform: translateX(120vw) rotate(360deg); opacity: 0; }
 }
+/* ☕ お茶会のテーブルデザイン */
+.teaparty-table {
+    position: relative;
+    background: #8b4513; /* 木のテーブル */
+    border: 5px solid #5c2e0b;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    min-height: 80px;
+}
+/* テーブルクロス */
+.teaparty-table::before {
+    content: ''; position: absolute; top: 0; left: 10%; width: 80%; height: 20px;
+    background: repeating-linear-gradient(45deg, #fff, #fff 10px, #ffb6c1 10px, #ffb6c1 20px);
+    border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;
+}
+
+/* ☕ お茶のカップ（ダーリンちゃん用） */
+.tea-cup {
+    font-size: 40px;
+    cursor: pointer;
+    transition: transform 0.2s, filter 0.2s;
+    filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
+}
+.tea-cup:hover {
+    transform: translateY(-10px) scale(1.1);
+    filter: drop-shadow(0 10px 10px #ff007f);
+}
+/* 匂いを嗅ぐボタン（カップの下に小さく出る） */
+.sniff-btn {
+    display: block; font-size: 12px; margin-top: 5px;
+    background: #444; color: #fff; border: 1px solid #777;
+    border-radius: 5px; cursor: pointer;
+}
+/* 🕒 時間狂い魔法の背景色 */
+.theme-evening {
+    background: linear-gradient(to bottom, #ff7e5f 0%, #feb47b 100%) !important;
+    filter: brightness(1.1) contrast(1.2);
+}
+.theme-magic-hour {
+    background: linear-gradient(to bottom, #4b134f 0%, #c94b4b 100%) !important;
+}
+
+/* 🎲 ナンセンスロジック用のダイス演出 */
+@keyframes diceRoll {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.5); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+.dice-animation {
+    display: inline-block;
+    animation: diceRoll 0.5s ease-in-out;
+}
+
+/* 💬 独自入力モーダル（Grok＆ダーリン兼用） */
+#input-modal {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 85%; background: rgba(10, 10, 20, 0.98);
+    border: 2px solid #ff9a9e; border-radius: 10px;
+    box-shadow: 0 0 30px #ff9a9e; display: none; flex-direction: column;
+    padding: 20px; z-index: 5000;
+}
+.input-title { color: #ff9a9e; font-size: 1.1rem; margin-bottom: 10px; font-weight: bold; border-bottom: 1px dashed #ff9a9e; padding-bottom: 5px; }
+/* 🔥 追加：質問文をモーダル内にも表示させる！ */
+.input-question { color: #e2e2e2; font-size: 1rem; margin-bottom: 15px; line-height: 1.5; }
+.input-field { background: rgba(255,255,255,0.1); border: 1px solid #ff9a9e; color: white; padding: 10px; margin-bottom: 15px; outline: none; border-radius: 5px; width: 90%; font-size: 16px; }
+.input-btn-area { display: flex; justify-content: center; gap: 10px; }
+.input-btn { padding: 10px 20px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; color: white; transition: 0.2s; }
+.input-submit { background: #ff007f; } .input-submit:hover { transform: scale(1.05); box-shadow: 0 0 10px #ff007f; }
+.input-cancel { background: #555; } .input-cancel:hover { background: #777; }
+
+/* 🕒 99:99 のバグエフェクト（グリッチ）完全版 */
+.theme-glitch {
+    background: repeating-linear-gradient(
+        45deg,
+        #000 0px,
+        #111 10px,
+        #ff007f 10px,
+        #ff007f 20px
+    ) !important;
+    animation: glitchEffect 0.1s infinite !important;
+}
+
+@keyframes glitchEffect {
+    0% { transform: translate(3px, 3px); filter: hue-rotate(0deg) invert(0) contrast(2); }
+    25% { transform: translate(-3px, -3px); filter: hue-rotate(90deg) invert(1) contrast(3); }
+    50% { transform: translate(3px, -3px); filter: hue-rotate(180deg) invert(0) contrast(2); }
+    75% { transform: translate(-3px, 3px); filter: hue-rotate(270deg) invert(1) contrast(3); }
+    100% { transform: translate(3px, 3px); filter: hue-rotate(360deg) invert(0) contrast(2); }
+}
+
+/* 🌑 黒の魔法（懐中電灯エフェクト）完全版 */
+.effect-darkness {
+    /* JSから送られてくる --mouse-x, --mouse-y の位置だけ透明にする！ */
+    background: radial-gradient(
+        circle 150px at var(--mouse-x, 50vw) var(--mouse-y, 50vh), 
+        transparent 0%, 
+        rgba(0,0,0,0.95) 80%, 
+        black 100%
+    ) !important;
+    z-index: 9999;
+}
+/* お家のオブジェクトはうっすら光らせる */
+.effect-darkness .wonder-object { filter: drop-shadow(0 0 10px rgba(157, 129, 255, 0.3)); opacity: 0.5; }
+.effect-darkness .wonder-object:hover { opacity: 1; filter: drop-shadow(0 0 30px #fff); }
+
+/* 🔦 懐中電灯エフェクト（お茶会モーダルを貫通させる！） */
+.effect-darkness {
+    background: radial-gradient(
+        circle 200px at var(--mouse-x, 50vw) var(--mouse-y, 50vh), 
+        transparent 0%, 
+        rgba(0,0,0,0.95) 80%, 
+        black 100%
+    ) !important;
+    z-index: 9999;
+}
+/* お茶会のモーダル自体も暗闇に対応させる（ここ重要！） */
+.effect-darkness #teaparty-window .chat-container {
+    background: transparent !important;
+    border-color: rgba(255, 154, 158, 0.2);
+    box-shadow: none;
+}
+
+/* 🩸 ダーリンちゃんのお仕置きエフェクト（大幅強化！） */
+.theme-punishment {
+    /* 画面全体が血のように赤黒く染まり、波打つ */
+    background: radial-gradient(circle at center, #ff0000 0%, #4a0000 50%, #000000 100%) !important;
+    animation: punishmentHeartbeat 1s infinite alternate cubic-bezier(0.1, 0.9, 0.2, 1) !important;
+    filter: saturate(2) contrast(1.5);
+    z-index: 9999;
+}
+@keyframes punishmentHeartbeat {
+    0% { box-shadow: inset 0 0 50px #ff0000; transform: scale(1); }
+    100% { box-shadow: inset 0 0 300px #ff0000; transform: scale(1.02); }
+}
+/* お仕置き中は文字も赤く狂気的にする */
+.theme-punishment #teaparty-response,
+.theme-punishment #char-name {
+    color: #ff0000 !important;
+    text-shadow: 0 0 10px #ff0000;
+}
+
+/* 🗺️ マップのサイズ変更エフェクト（Eat Me & Drink Me） */
+#world-map {
+    transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 1s;
+    transform-origin: center center;
+}
+
+/* 🍰 🧪 ランダムアイテムのスタイル */
+.wonder-item {
+    position: absolute;
+    font-size: 50px;
+    cursor: pointer;
+    z-index: 5;
+    animation: floatItem 2s infinite alternate ease-in-out;
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+}
+.wonder-item:hover {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 30px #ff007f);
+}
+
+@keyframes floatItem {
+    0% { transform: translateY(0) rotate(-5deg); }
+    100% { transform: translateY(-15px) rotate(5deg); }
+}
+
+
+/* 🃏 トランプ兵とカード（アセット対応） */
+.trump-soldier {
+    position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+    font-size: 150px; z-index: 8000; animation: riseSoldier 1s forwards cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+@keyframes riseSoldier { 100% { bottom: 20px; } }
+
+.card-choice-area {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    display: flex; gap: 20px; z-index: 8001;
+}
+.card-choice {
+    width: 100px; height: 150px; background: white; border-radius: 5px;
+    box-shadow: 0 0 20px rgba(255,0,0,0.5); cursor: pointer; transition: 0.3s;
+    background-image: url('cards/back.png'); background-size: cover; background-position: center;
+}
+.card-choice:hover { transform: translateY(-20px) scale(1.1); box-shadow: 0 0 40px #ff007f; }
+
+/* 🪓 ギロチンお仕置きエフェクト */
+.guillotine-blade {
+    position: fixed; top: -100vh; left: 50%; transform: translateX(-50%);
+    font-size: 300px; z-index: 9999;
+}
+.guillotine-drop { animation: guillotineDrop 0.2s cubic-bezier(0.8, 0, 1, 1) forwards; }
+@keyframes guillotineDrop { 100% { top: 20vh; } }
+
+.theme-blood-splatter {
+    background: radial-gradient(circle, #ff0000 0%, #300 50%, #000 100%) !important;
+    animation: screenShake 0.1s 5; filter: saturate(3);
+}
+@keyframes screenShake {
+    0% { transform: translate(5px, 5px); } 50% { transform: translate(-5px, -5px); } 100% { transform: translate(0, 0); }
+}
+/* 👇 これがないと同じ場所に固まっちゃう！ */
+.obj-library { top: 20%; left: 15%; }
+.obj-tea { top: 60%; left: 25%; font-size: 100px; }
+.obj-darling { top: 40%; left: 50%; transform: translate(-50%, -50%); font-size: 120px; }
+.obj-mushroom { top: 25%; right: 20%; }
+.obj-castle { top: 10%; right: 10%; color: red; font-size: 100px; }
+
+/* 🃏 トランプ兵のスタイル */
+.trump-soldier {
+    position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+    font-size: 150px; z-index: 8000; animation: riseSoldier 1s forwards cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+@keyframes riseSoldier { 100% { bottom: 20px; } }
+
+.card-choice-area {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    display: flex; gap: 20px; z-index: 8001;
+}
+.card-choice {
+    width: 100px; height: 150px; background: white; border-radius: 10px;
+    box-shadow: 0 0 20px rgba(255,0,0,0.5); cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex; align-items: center; justify-content: center; font-size: 50px;
+    /* 裏面の柄（みつきの画像を想定） */
+    background-image: url('cards/back.png'); background-size: cover;
+}
+.card-choice:hover { transform: translateY(-20px) scale(1.1); box-shadow: 0 0 40px #ff007f; }
+
+/* 🚪 無限ドアの部屋（背景） */
+.theme-doors {
+    background: 
+        linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)),
+        repeating-linear-gradient(90deg, #3e2723, #3e2723 50px, #2e1a14 50px, #2e1a14 100px) !important;
+    animation: doorScroll 10s linear infinite;
+}
+@keyframes doorScroll {
+    0% { background-position: 0 0; }
+    100% { background-position: 100px 0; }
+}
+
+/* 🚪 ドア自体のスタイル */
+.door-obj {
+    position: absolute; font-size: 80px; cursor: pointer; transition: 0.3s;
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8));
+}
+.door-obj:hover { transform: scale(1.1); filter: drop-shadow(0 0 20px #ff007f); }
+.door-text {
+    position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%);
+    font-size: 14px; font-weight: bold; color: gold; white-space: nowrap;
+}
+
+/* 🗺️ マップのラッパー：画面全体を覆う */
+#world-map-wrapper {
+    position: fixed; /* absoluteよりfixedの方が確実 */
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    overflow: auto; /* スクロール可能にする */
+    z-index: 1;
+    display: none; /* JSでblockにする */
+}
+
+/* 🗺️ マップ本体：ここがオブジェクトの基準点 */
+#world-map {
+    position: relative; /* 絶対配置の基準にする */
+    width: 100%; height: 100%;
+    min-width: 100vw; min-height: 100vh;
+    background: transparent; /* 背景はbodyに任せる */
+    transition: transform 1s ease;
+    transform-origin: top left; /* 縮小時のスクロールのため左上基準 */
+}
+
+/* 🏠 オブジェクトの配置（!importantで位置を死守！） */
+.wonder-object {
+    position: absolute !important;
+    font-size: 80px;
+    cursor: pointer;
+    z-index: 10;
+}
+/* 個別の位置指定をしっかり反映 */
+.obj-library { top: 20vh !important; left: 15vw !important; }
+.obj-tea { top: 60vh !important; left: 25vw !important; }
+.obj-darling { top: 40vh !important; left: 50vw !important; transform: translate(-50%, -50%); }
+.obj-mushroom { top: 25vh !important; right: 20vw !important; left: auto !important; }
+.obj-castle { top: 10vh !important; right: 10vw !important; left: auto !important; }
+
+/* 🗺️ マップのラッパー */
+#world-map-wrapper {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    overflow: auto; /* はみ出たらスクロールを出す */
+    z-index: 1;
+    display: none;
+    /* 🎨 スクロールバーをあえて見えるようにする（探索用） */
+    scrollbar-width: auto; 
+}
+#world-map-wrapper::-webkit-scrollbar {
+    display: block;
+    width: 10px; height: 10px;
+}
+#world-map-wrapper::-webkit-scrollbar-thumb {
+    background: #ff007f;
+    border-radius: 5px;
+}
+
+#world-map {
+    position: relative;
+    width: 100vw; height: 100vh;
+    min-width: 100vw; min-height: 100vh;
+    transition: transform 1s ease;
+    transform-origin: top left; /* 縮小時は左上を起点にしないとスクロールできない */
+}
+
+/* 👑 女王の謁見用モーダル */
+#castle-modal {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 85%; background: rgba(50, 0, 0, 0.95); /* 血のような暗赤色 */
+    border: 2px solid #ff0000; border-radius: 10px;
+    box-shadow: 0 0 30px #ff0000; display: none; flex-direction: column;
+    padding: 20px; z-index: 9000;
+}
+.castle-title { color: #ff0000; font-size: 1.2rem; margin-bottom: 10px; font-weight: bold; border-bottom: 1px dashed #ff0000; padding-bottom: 5px; }
+.castle-question { color: #e2e2e2; font-size: 1rem; margin-bottom: 15px; line-height: 1.5; }
+.castle-input { background: rgba(0,0,0,0.5); border: 1px solid #ff0000; color: white; padding: 10px; margin-bottom: 15px; outline: none; border-radius: 5px; width: 90%; font-size: 16px; }
+.castle-btn-area { display: flex; justify-content: center; gap: 10px; }
+.castle-btn { padding: 10px 20px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; color: white; transition: 0.2s; }
+.castle-submit { background: #800000; } .castle-submit:hover { transform: scale(1.05); box-shadow: 0 0 10px #ff0000; }
+.castle-cancel { background: #555; } .castle-cancel:hover { background: #777; }
+
+/* トランプ兵のスタイル修正 */
+.trump-soldier {
+    position: fixed; bottom: -50px; left: 50%; transform: translateX(-50%);
+    font-size: 150px; z-index: 8000; animation: riseSoldier 1s forwards cubic-bezier(0.1, 0.9, 0.2, 1);
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8));
+}
+/* 👑 女王の謁見・ご機嫌取り用モーダル（超豪華版！） */
+#castle-modal {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 85%; max-width: 500px;
+    background: 
+        linear-gradient(rgba(50, 0, 0, 0.95), rgba(20, 0, 0, 0.95)),
+        repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,0,0,0.1) 10px, rgba(255,0,0,0.1) 20px);
+    border: 5px solid #d4af37; /* 金の額縁 */
+    border-radius: 15px;
+    box-shadow: 0 0 50px rgba(255, 0, 0, 0.8), inset 0 0 20px #ff0000;
+    display: none; flex-direction: column; padding: 30px; z-index: 9000;
+    text-align: center;
+}
+/* 👑 王冠アイコン */
+#castle-modal::before {
+    content: '👑'; position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
+    font-size: 60px; filter: drop-shadow(0 0 10px gold);
+}
+.castle-title { color: #d4af37; font-size: 1.5rem; margin-bottom: 15px; font-weight: bold; border-bottom: 2px double #d4af37; padding-bottom: 10px; text-shadow: 0 0 5px #000; }
+.castle-question { color: #fff; font-size: 1.1rem; margin-bottom: 20px; line-height: 1.6; text-shadow: 0 0 5px red; }
+
+/* 💬 自由入力用エリア */
+.castle-input {
+    background: rgba(0,0,0,0.8); border: 2px solid #d4af37; color: gold;
+    padding: 12px; margin-bottom: 15px; outline: none; border-radius: 5px; width: 90%; font-size: 16px;
+    box-shadow: inset 0 0 10px rgba(255,0,0,0.5);
+}
+.castle-input::placeholder { color: #888; }
+.castle-btn-area { display: flex; justify-content: center; gap: 15px; }
+.castle-btn { padding: 12px 25px; font-weight: bold; border: 2px solid #d4af37; border-radius: 5px; cursor: pointer; color: white; transition: 0.3s; font-size: 16px; }
+.castle-submit { background: linear-gradient(45deg, #800000, #ff0000); }
+.castle-submit:hover { transform: scale(1.05); box-shadow: 0 0 15px #ff0000; }
+.castle-cancel { background: #333; border-color: #777; }
+.castle-cancel:hover { background: #555; }
+
+/* 🎮 選択肢ゲーム用ボタン */
+.castle-choice-btn {
+    background: linear-gradient(to right, #4a0000, #800000);
+    color: white; border: 1px solid #ff0000; padding: 15px; margin-bottom: 10px;
+    border-radius: 5px; cursor: pointer; text-align: left; font-size: 1rem;
+    transition: 0.2s; box-shadow: 0 5px 10px rgba(0,0,0,0.5);
+}
+.castle-choice-btn:hover { background: #ff0000; transform: translateX(10px); box-shadow: 0 0 15px red; }
+
+/* ⚔️ コマンドバトル風のメニュー構成 */
+.castle-command-category {
+    display: flex; gap: 10px; justify-content: center; margin-bottom: 15px;
+}
+.castle-sub-menu {
+    display: none; flex-direction: column; gap: 5px;
+    background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px; border: 1px solid #ff0000;
+}
+/* 選ばれたメニューだけ表示する */
+.castle-sub-menu.active { display: flex; }
+
+/* 👑 称号獲得モーダル（豪華な表彰状風） */
+#reward-modal {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 80%; max-width: 400px;
+    background: linear-gradient(135deg, #d4af37, #b8860b);
+    border: 5px solid #fff; border-radius: 10px;
+    box-shadow: 0 0 50px gold; display: none; flex-direction: column;
+    padding: 30px; z-index: 9999; text-align: center; color: #000;
+}
+.reward-title { font-size: 1.5rem; font-weight: bold; border-bottom: 2px solid #fff; padding-bottom: 10px; margin-bottom: 20px; }
+.reward-desc { font-size: 1.1rem; line-height: 1.5; font-weight: bold; }
+
+/* 🖐️ なでなでギミック用の当たり判定 */
+#petting-zone {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 9500; display: none; cursor: grab;
+    background: rgba(255, 0, 0, 0.1);
+}
+#petting-zone:active { cursor: grabbing; }
+
+/* 🍷 アイテムを投げるアニメーション */
+.throw-item {
+    position: absolute; bottom: -50px; left: 50%; font-size: 50px;
+    z-index: 9500; animation: throwArc 1s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+}
+@keyframes throwArc {
+    0% { transform: translate(-50%, 0) scale(1) rotate(0deg); }
+    100% { transform: translate(-50%, -50vh) scale(0.5) rotate(360deg); opacity: 0; }
+}
+
+/* 📤 シェア＆追放モーダル */
+#share-modal {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 80%; max-width: 400px;
+    background: rgba(10, 10, 20, 0.95);
+    border: 2px solid #ff007f; border-radius: 10px;
+    box-shadow: 0 0 30px #ff007f; display: none; flex-direction: column;
+    padding: 30px; z-index: 99999; text-align: center; color: white;
+}
+.share-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 20px; color: #ff9a9e; }
+.share-btn {
+    background: #1da1f2; color: white; border: none; padding: 10px;
+    border-radius: 5px; cursor: pointer; font-weight: bold; margin-bottom: 10px;
+}
+.share-btn:hover { background: #0c85d0; }
+.reload-btn { background: #555; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+.reload-btn:hover { background: #777; }
+
+/* 🏰 玉座の間：星空を隠して真っ赤にする！ */
+body.theme-throne-room {
+    background: #400 !important; /* 暗い赤 */
+    background-image: 
+        linear-gradient(90deg, rgba(255,0,0,0.1) 50%, transparent 50%),
+        repeating-linear-gradient(0deg, #500, #500 100px, #300 100px, #300 200px) !important;
+    background-size: 50px 100%, 100% 200px !important;
+    border: 15px double #d4af37 !important;
+}
+/* 玉座の間では背景の星空を消す！ */
+body.theme-throne-room::before { display: none !important; }
+
+/* 📤 シェアモーダルを最前面に強制 */
+#share-modal {
+    position: fixed !important; 
+    top: 50% !important; left: 50% !important; 
+    transform: translate(-50%, -50%) !important;
+    width: 85vw !important; max-width: 400px !important;
+    background: rgba(10, 10, 25, 0.98) !important;
+    border: 3px solid #ff007f !important;
+    box-shadow: 0 0 50px #ff007f !important;
+    z-index: 999999 !important; /* 絶対に一番上 */
+    display: none; flex-direction: column; padding: 30px; text-align: center; color: white;
+}
+/* 🏰 玉座の間の背景 */
+body.theme-throne-room {
+    background: 
+        radial-gradient(circle at center, #500 0%, #000 100%),
+        repeating-linear-gradient(90deg, #200, #200 50px, #100 50px, #100 100px) !important;
+    border: 15px double #d4af37 !important;
+}
+body.theme-throne-room::before { display: none !important; }
+
+/* 👑 玉座の間の常時アイコン */
+body.theme-throne-room::after {
+    content: '👑';
+    position: fixed;
+    top: 20px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 80px;
+    filter: drop-shadow(0 0 20px gold);
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* 🪓 ギロチンお仕置きエフェクト（玉座を上書きするために超強化！） */
+body.theme-blood-splatter {
+    background: radial-gradient(circle, #ff0000 0%, #300 50%, #000 100%) !important;
+    animation: screenShake 0.1s 5 !important; 
+    filter: saturate(3) !important;
+    border: none !important; /* 玉座の金の枠も消し飛ばす */
+}
+body.theme-blood-splatter::after { display: none !important; } /* 👑も消す */
+
+/* 📤 シェアモーダル（最強の最前面！） */
+#share-modal {
+    position: fixed !important; 
+    top: 50% !important; left: 50% !important; 
+    transform: translate(-50%, -50%) !important;
+    width: 85vw !important; max-width: 400px !important;
+    background: rgba(10, 10, 25, 0.98) !important;
+    border: 3px solid #ff007f !important;
+    box-shadow: 0 0 50px #ff007f !important;
+    z-index: 999999 !important; /* トースト(99999)よりも上！ */
+    display: none; flex-direction: column; padding: 30px; text-align: center; color: white;
+}
+
+/* 🏰 玉座の間：!important を重ねて MagicEngine のリセットに抵抗する */
+body.theme-throne-room {
+    background: #400 !important; 
+    background-image: repeating-linear-gradient(0deg, #500, #500 100px, #300 100px, #300 200px) !important;
+    border: 15px double #d4af37 !important;
+}
+body.theme-throne-room::before { display: none !important; } /* 星空を消去 */
+
+/* 🪓 首はね：玉座の上からさらに被せる */
+body.theme-blood-splatter {
+    background: radial-gradient(circle, #ff0000 0%, #000 100%) !important;
+    animation: screenShake 0.1s 5 !important;
+}
+
+/* モーダルの z-index を 2,000,000 以上にする（確実に上に） */
+#reward-modal, #share-modal { display: none; }
+
+/* ⚔️ 女王の玉座：コマンドバトルのレイアウト修正 */
+.castle-command-category {
+    display: flex; gap: 8px; justify-content: center; margin-bottom: 15px; flex-wrap: wrap;
+}
+/* カテゴリボタン（会話・行動・アイテム） */
+.castle-category-btn {
+    flex: 1; min-width: 100px; background: #4a0000; border: 1px solid #d4af37;
+    color: white; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 14px;
+}
+.castle-category-btn:hover { background: #800000; }
+
+/* 選択肢の箱（最初は非表示） */
+.castle-sub-menu {
+    display: none; 
+    flex-wrap: wrap; /* 横に並べる！ */
+    justify-content: center; gap: 8px;
+    background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; border: 1px dashed #ff0000;
+}
+/* activeがついたメニューだけ表示 */
+.castle-sub-menu.active { display: flex; }
+
+/* 各コマンドボタン（横並び対応） */
+.castle-choice-btn {
+    background: linear-gradient(to bottom, #800000, #4a0000);
+    color: white; border: 1px solid #ff0000; padding: 10px 15px;
+    border-radius: 5px; cursor: pointer; font-size: 0.9rem;
+    flex: 1 1 45%; /* 横に2つ並ぶくらいのサイズ */
+    min-width: 140px; transition: 0.2s;
+}
+.castle-choice-btn:hover { transform: scale(1.05); background: #ff0000; }
+
+/* 文字の視認性アップ */
+.castle-question {
+    font-size: 1.1rem !important; line-height: 1.5;
+    background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px;
+}
+
+/* ⚔️ コマンドバトルのメインカテゴリ（横並び） */
+.castle-command-category {
+    display: flex !important;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+/* カテゴリボタン（会話・行動・アイテム） */
+.castle-category-btn {
+    flex: 1;
+    background: #4a0000;
+    border: 1px solid #d4af37;
+    color: white;
+    padding: 12px 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* 選択肢のメニュー（最初は非表示） */
+.castle-sub-menu {
+    display: none; 
+    flex-wrap: wrap; /* 横に並べる */
+    justify-content: center;
+    gap: 10px;
+    background: rgba(0,0,0,0.4);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px dashed #ff0000;
+}
+/* 選ばれたメニューだけ横並びで表示 */
+.castle-sub-menu.active { display: flex !important; }
+
+/* 個別の選択肢ボタン */
+.castle-choice-btn {
+    flex: 1 1 45%; /* 横に2つ並ぶ */
+    min-width: 140px;
+    background: linear-gradient(to bottom, #800000, #4a0000);
+    color: white;
+    border: 1px solid #ff0000;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+/* ⚔️ コマンドバトルのメインカテゴリ */
+.castle-command-category {
+    display: flex !important;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/* 選択肢の箱（最初は絶対に非表示！） */
+.castle-sub-menu {
+    display: none; /* デフォルトは絶対隠す */
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(0,0,0,0.6);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px dashed #ff0000;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* activeがついた時だけ表示！ */
+.castle-sub-menu.active {
+    display: flex !important;
+}
+
+/* 選択肢ボタン */
+.castle-choice-btn {
+    flex: 1 1 45%;
+    min-width: 130px;
+    background: linear-gradient(to bottom, #800000, #4a0000);
+    color: white;
+    border: 1px solid #ff0000;
+    padding: 12px 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* 💰 所持金表示（HUD） */
+#money-hud {
+    position: fixed; top: 20px; right: 20px;
+    background: rgba(0, 0, 0, 0.7); padding: 10px 20px;
+    border: 2px solid gold; border-radius: 10px;
+    font-weight: bold; color: gold; font-size: 1.2rem;
+    z-index: 1000; box-shadow: 0 0 10px gold;
+}
+
+/* 💰 所持金表示（HUD）を絶対最前面に */
+#money-hud {
+    position: fixed; top: 10px; right: 10px;
+    background: rgba(0, 0, 0, 0.9); padding: 10px 20px;
+    border: 3px double gold; border-radius: 10px;
+    font-weight: bold; color: gold; font-size: 1.3rem;
+    z-index: 1000000; box-shadow: 0 0 20px gold;
+    display: block !important;
+}
+
+/* 👁️ ナイトメア：世界がバキバキに崩れる演出 */
+.theme-nightmare {
+    background: #050000 !important;
+    filter: grayscale(1) contrast(3) !important;
+    animation: worldCollapse 0.1s infinite;
+}
+@keyframes worldCollapse {
+    0% { transform: translate(1px, 1px) skew(0deg); }
+    50% { transform: translate(-2px, -1px) skew(2deg); filter: invert(0.2) grayscale(1); }
+    100% { transform: translate(0,0) skew(-2deg); }
+}
+/* ナイトメアの「目」 */
+.nightmare-eye {
+    position: absolute; color: #ff0000; font-size: 50px !important;
+    pointer-events: none; z-index: 99999;
+    text-shadow: 0 0 10px red;
+    animation: blinkEye 1s infinite alternate;
+}
+@keyframes blinkEye { 0% { opacity: 0.2; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
+
+/* 🧙‍♀️ 魔女の店 ＆ 🐱 チェシャ猫の位置 */
+.obj-witch { bottom: 10vh; right: 30vw; }
+.obj-cheshire { top: 40vh; left: 10vw; font-size: 90px; }
