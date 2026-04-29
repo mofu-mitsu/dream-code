@@ -8,7 +8,7 @@ const magicData = {
         "混沌": { theme: "theme-chaos", msg: "「……理性が、崩壊していく……🌀」" },
         "反転": { theme: "theme-invert", msg: "「上下なんて最初から無かったのよ……🙃」" },
         "巨大芋虫": { theme: "theme-giant-bug", msg: "🐛「……貴様、私を巨大化させてどうするつもりだ。」" },
-        
+        "ナイトメア": { theme: "theme-nightmare", msg: "「……いい夢は、もう終わり。深淵から覗く恐怖に耐えられるかしら……？👁️🩸」" },
         // 🕊️ 新魔法！
         "天国": { theme: "theme-heaven", msg: "「……ここは争いのない、白昼夢の果てよ……👼」" },
         "青空": { theme: "theme-blue-sky", msg: "ジェミ：「雲ひとつない青空！深呼吸したくなるね！☀️」" }, // 既存の使い回し+色変更（JS側で処理）
