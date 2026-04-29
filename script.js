@@ -3,18 +3,22 @@
 function startFall() {
     const nameModal = document.getElementById("name-modal");
     const rabbitScreen = document.getElementById("rabbit-hole-screen");
-    const worldMap = document.getElementById("world-map");
-    const magicBar = document.getElementById("dream-code-bar"); // 🪄 取得！
+    const worldMapWrapper = document.getElementById("world-map-wrapper");
+    const worldMap = document.getElementById("world-map"); // 🔥 追加
+    const magicBar = document.getElementById("dream-code-bar");
 
     nameModal.style.display = "none";
     rabbitScreen.style.display = "flex"; 
+    
     setTimeout(() => { document.body.classList.add("falling"); }, 50);
 
     setTimeout(() => {
         document.body.classList.remove("falling");
         rabbitScreen.style.display = "none";
-        worldMap.style.display = "block";
-        magicBar.style.display = "flex"; // 🪄 マップと一緒に表示！
+        
+        if (worldMapWrapper) worldMapWrapper.style.display = "block"; 
+        if (worldMap) worldMap.style.display = "block"; // 🔥 エンジンのために明示！
+        if (magicBar) magicBar.style.display = "flex";
     }, 3000);
 }
 
