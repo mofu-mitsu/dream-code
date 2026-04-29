@@ -41,7 +41,9 @@ const MagicEngine = {
             if (input === "巨大芋虫") {
                 setTimeout(() => this.startGiantBug(), 100); // 描画タイミングを少しずらして確実に
             }
-            
+            if (input === "ナイトメア") {
+                this.startParticles(['👁️', '👁️‍🗨️', '🩸'], "scatter", "nightmare-eye");
+            }
             // 🎩 進化するカラオケ
             if (input === "カラオケ") {
                 this.karaokeIntensity = 1; // 盛り上がりリセット
