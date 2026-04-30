@@ -25,15 +25,13 @@
         <span class="rabbit-text">「遅刻だ、遅刻だ！急がないと！」</span>
     </div>
 </div>
-<div id="money-hud">💰 0 G</div>
+
 <!-- 🗺️ マップエリア -->
 <div id="world-map-wrapper" style="display: none;">
     <div id="world-map">
         <div class="wonder-object obj-library" onclick="LibraryEngine.openHouse()">📚<span>ジェミの書庫</span></div>
         <!-- 🧙‍♀️ 新規：森の魔女 -->
         <div class="wonder-object obj-witch" onclick="WitchEngine.openShop()">🧙‍♀️<span>魔女の店</span></div>
-        <!-- 🐱 新規：チェシャ猫 -->
-        <div class="wonder-object obj-cheshire" onclick="CheshireEngine.talk()">🐱<span>チェシャ猫</span></div>
         <div class="wonder-object obj-tea" onclick="TeaPartyEngine.openHouse()">☕<span>狂ったお茶会</span></div>
         <div class="wonder-object obj-darling" onclick="openDarlingHouse()">💋<span>秘密の扉</span></div>
         <div class="wonder-object obj-mushroom" onclick="CaterpillarEngine.openHouse()">🍄<span>巨大なキノコ</span></div>
@@ -187,12 +185,21 @@
         <div id="library-shop-list" style="text-align: left; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px;"></div>
     </div>
 </div>
+<!-- 🧙‍♀️ 森の魔女のアトリエ（チェシャ猫と番犬を統合！） -->
 <div id="witch-window" class="modal-overlay" style="display:none;">
-    <div class="chat-container" style="border-color: #9c27b0; box-shadow: 0 0 50px rgba(156, 39, 176, 0.6);">
+    <div class="chat-container" style="border-color: #9c27b0; box-shadow: 0 0 50px rgba(156, 39, 176, 0.6); max-width: 600px;">
         <button class="close-btn" onclick="WitchEngine.closeShop()">×</button>
-        <div style="font-size: 60px;">🧙‍♀️🔮🧹</div>
-        <div id="char-name" style="color: #e1bee7;">森の魔女の怪しい調合所</div>
-        <div id="witch-response" style="min-height: 80px; margin-bottom: 20px;"></div>
+        
+        <!-- 🧙‍♀️🐱🐕 キャラクター勢揃い -->
+        <div class="witch-characters">
+            <div class="cheshire-anim" style="cursor:pointer;" onclick="WitchEngine.talkToCheshire()" title="話しかける">🐱</div>
+            <div style="font-size: 80px;">🧙‍♀️</div>
+            <div class="dog-anim" style="cursor:pointer;" onclick="WitchEngine.pokeDog()" title="触る">🐕</div>
+        </div>
+        
+        <div id="char-name" style="color: #e1bee7; font-weight: bold;">森の魔女の怪しい調合所</div>
+        <div id="witch-response" style="font-size: 1.1rem; min-height: 80px; margin-bottom: 20px; color: #fff;"></div>
+        
         <div id="witch-shop-list"></div>
     </div>
 </div>
@@ -212,5 +219,6 @@
 <script src="script.js"></script>
 <script src="library.js"></script>
 <script src="witch.js"></script>
+<script src="pigeon.js"></script>
 </body>
 </html>
