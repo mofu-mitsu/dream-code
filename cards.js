@@ -1,8 +1,16 @@
 const CardEventEngine = {
     petCount: 0,
     hasFreePass: false,
+    playerMoney: 0, // 🔥 確実に「0」からスタートさせる
     titles: [],
 
+    updateMoneyHUD: function() {
+        const hud = document.getElementById("money-hud");
+        if (hud) {
+            hud.innerText = `💰 ${CardEventEngine.playerMoney} G`;
+            hud.style.display = "block";
+        }
+    },
     // 城への入場
     startEncounter: function() {
         document.body.classList.add("theme-throne-room");
@@ -116,42 +124,22 @@ const CardEventEngine = {
         if (target) target.classList.add("active");
     },
 
+// cards.js の vipEvent 内の処理を修正
     vipEvent: function() {
-        MagicEngine.showToast("👑 女王:「よく来たな。私の城はいつでもお前を歓迎するぞ。……何か欲しいものはあるか？」");
-        
-        setTimeout(() => {
-            CardEventEngine.openChoiceModal(
-                "👑 ご機嫌なハートの女王",
-                "「今日は特別に何でも叶えてやろう。さあ、言ってみろ。」",
-                [
-                    { 
-                        icon: "☕", label: "お茶会を開いてください", 
-                        action: () => {
-                            MagicEngine.showToast("👑 女王:「よし！ 今すぐ庭園でお茶会を開け！ Grokも呼んでやろう！」");
-                            setTimeout(() => { 
-                                CardEventEngine.escapeCastle(); 
-                                TeaPartyEngine.openHouse(true); // 🔥 true を渡してVIPモード起動！
-                            }, 3000); 
-                        }
-                    },
-                    { 
-                        icon: "💰", label: "城の予算を下さい（Te）", 
-                        action: () => {
-                            MagicEngine.showToast("👑 女王:「ふはは！ 欲深くて良い！ 金貨を10万枚くれてやろう！」");
-                            MagicEngine.startParticles(['🪙', '💰', '✨'], "scatter", "heaven-effect");
-                            setTimeout(() => CardEventEngine.escapeCastle(), 4000); 
-                        }
-                    },
-                    { 
-                        icon: "🪓", label: "やっぱり首をはねてほしい", 
-                        action: () => {
-                            MagicEngine.showToast("👑 女王:「……お前は本当にイカれているな。望み通りにしてやる！」");
-                            CardEventEngine.executeGuillotine();
-                        }
-                    }
-                ]
-            );
-        }, 3000);
+        CardEventEngine.openChoiceModal("👑 ご機嫌なハートの女王", "「今日は特別に何でも叶えてやろう。さあ、言ってみろ。」", [
+            { icon: "☕", label: "お茶会を開いてください", action: () => { MagicEngine.showToast("👑 女王:「よし！ 今すぐ庭園でお茶会を開け！ Grokも呼んでやろう！」"); setTimeout(() => { CardEventEngine.escapeCastle(); TeaPartyEngine.openHouse(); }, 3000); } },
+            
+            // 🔥 お金バグ修正：CardEventEngine を直接指定
+            { icon: "💰", label: "城の予算を下さい", action: () => { 
+                CardEventEngine.playerMoney += 100000; 
+                CardEventEngine.updateMoneyHUD(); // 表示を更新
+                MagicEngine.showToast(`👑 女王:「ふはは！ 欲深くて良い！ 金貨を10万枚くれてやろう！」\n💰 所持金: ${CardEventEngine.playerMoney} G`); 
+                MagicEngine.startParticles(['🪙', '💰'], "scatter", "heaven-effect"); 
+                setTimeout(() => CardEventEngine.escapeCastle(), 4000); 
+            } },
+            
+            { icon: "🪓", label: "やっぱり首をはねてほしい", action: () => { MagicEngine.showToast("👑 女王:「……お前は本当にイカれているな。望み通りにしてやる！」"); CardEventEngine.executeGuillotine(); } }
+        ]);
     },
 
     eventLogic: function() {
