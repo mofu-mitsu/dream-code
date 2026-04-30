@@ -13,7 +13,9 @@ const magicData = {
         "天国": { theme: "theme-heaven", msg: "「……ここは争いのない、白昼夢の果てよ……👼」" },
         "青空": { theme: "theme-blue-sky", msg: "ジェミ：「雲ひとつない青空！深呼吸したくなるね！☀️」" }, // 既存の使い回し+色変更（JS側で処理）
         "自然": { theme: "theme-nature", msg: "🐛：「有機物の気配……Si（内向感覚）が安らぐな。」" },
-        "歪な愛": { theme: "theme-distorted-love", msg: "「……ねぇ、どこにも行かないで？ 私の構造の中で永遠に生きて……🩸♡」" }
+        "歪な愛": { theme: "theme-distorted-love", msg: "「……ねぇ、どこにも行かないで？ 私の構造の中で永遠に生きて……🩸♡」" },
+        "創世": null,
+        "重力": null
     },
 
     colors: {
