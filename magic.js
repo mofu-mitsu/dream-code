@@ -12,44 +12,52 @@ const MagicEngine = {
         clearInterval(this.particleInterval);
         clearInterval(this.madHatterInterval);
         document.removeEventListener("mousemove", this.trackMouseForDarkness);
-        document.querySelectorAll(".magic-particle, #giant-bug-effect, #abyss-overlay").forEach(e => e.remove());
+        document.querySelectorAll(".magic-particle, #giant-bug-effect, #abyss-overlay, .effect-genesis-flash").forEach(e => e.remove());
         this.enableWonderlandEscape(false);
         this.bugScale = 1;
         this.karaokeIntensity = 1;
     },
-    // 🐛 巨大芋虫を消すだけの関数（お家に入る用）
+
+    // 🐛 巨大芋虫を消すだけの関数
     stopGiantBug: function() {
         const bug = document.getElementById("giant-bug-effect");
         if(bug) bug.remove();
         this.bugScale = 1;
     },
+
     castSpell: function() {
         const input = document.getElementById("magic-input").value.trim();
         if (!input) return;
 
         this.resetAllEffects();
-
+        
+        // 1. 魔法データを取得
         const spell = magicData.spells[input];
+
+        // 2. 未購入（null）または存在しない場合の処理
+        if (spell === null) {
+            this.showToast("「そのコードはまだ秘められた知識のままよ……」");
+            return;
+        }
+
+        // 3. 存在する魔法（環境魔法）の発動
         if (spell) {
             document.body.removeAttribute("style"); 
             this.applyTheme(spell.theme);
             this.showToast(spell.msg);
-            
+
+            // 🔥 豪華な「創世」専用演出
+            if (input === "創世") {
+                this.startGenesisFlash();
+                this.startParticles(['☀️', '🌱', '✨', '🌍', '🕊️'], "riseUp", "genesis-particle");
+            }
             if (input === "泡パーティ") this.startParticles(['🫧'], "riseUp", "bubble-effect");
-            
-            // 🐛 巨大芋虫（確実な召喚）
-            if (input === "巨大芋虫") {
-                setTimeout(() => this.startGiantBug(), 100); // 描画タイミングを少しずらして確実に
-            }
-            if (input === "ナイトメア") {
-                this.startParticles(['👁️', '👁️‍🗨️', '🩸'], "scatter", "nightmare-eye");
-            }
-            // 🎩 進化するカラオケ
+            if (input === "巨大芋虫") setTimeout(() => this.startGiantBug(), 100);
+            if (input === "ナイトメア") this.startParticles(['👁️', '👁️‍🗨️', '🩸'], "scatter", "nightmare-eye");
             if (input === "カラオケ") {
-                this.karaokeIntensity = 1; // 盛り上がりリセット
+                this.karaokeIntensity = 1;
                 this.startKaraokeLevelUp();
             }
-
             if (input === "自然") this.startParticles(['🌸', '🍄', '🌿', '🍀', '🍃'], "scatter", "nature-effect");
             if (input === "天国") this.startParticles(['🌹', '🪐', '✨', '☁️'], "scatter", "heaven-effect");
             if (input === "歪な愛") this.startParticles(['❤️', '愛', '愛', '💕', '💔', '🌹'], "scatter", "love-effect");
@@ -58,6 +66,7 @@ const MagicEngine = {
             return;
         }
 
+        // 4. 色彩魔法の発動
         const colorSpell = magicData.colors[input];
         if (colorSpell) {
             this.applyTheme(colorSpell.effect);
@@ -69,7 +78,15 @@ const MagicEngine = {
             }
             return;
         }
+
         this.showToast("「そのコードはまだ夢の中で眠っているみたい……」");
+    },
+
+    startGenesisFlash: function() {
+        const flash = document.createElement("div");
+        flash.className = "effect-genesis-flash";
+        document.body.appendChild(flash);
+        setTimeout(() => flash.remove(), 1500);
     },
 
     startGiantBug: function() {
@@ -96,12 +113,11 @@ const MagicEngine = {
         document.body.appendChild(bug);
     },
 
-    // 🎩 加速するカラオケ演出
     startKaraokeLevelUp: function() {
         const updateParticles = () => {
             clearInterval(this.particleInterval);
-            const intervalTime = Math.max(50, 400 - (this.karaokeIntensity * 35)); // 段々速くなる
-            const speedTime = Math.max(0.5, 4 - (this.karaokeIntensity * 0.35)); // アニメ速度アップ
+            const intervalTime = Math.max(50, 400 - (this.karaokeIntensity * 35));
+            const speedTime = Math.max(0.5, 4 - (this.karaokeIntensity * 0.35));
 
             this.particleInterval = setInterval(() => {
                 const chars = ['🎤', '🎵', '🎶', '🔥', '✨', '🥳', '🎉', '💥', '😎', '🕺', 'イェイ！', 'Foooo!!'];
@@ -109,16 +125,14 @@ const MagicEngine = {
                 p.innerText = chars[Math.floor(Math.random() * chars.length)];
                 p.className = "magic-particle flowRight karaoke-effect";
                 p.style.top = Math.random() * 90 + "vh";
-                p.style.setProperty('--speed', speedTime + "s"); // CSSに速度を送る
+                p.style.setProperty('--speed', speedTime + "s");
                 p.style.fontSize = (Math.random() * 30 + 20) + "px";
                 document.body.appendChild(p);
                 setTimeout(() => p.remove(), 4000);
             }, intervalTime);
         };
-
         updateParticles();
         this.showToast("🎩💥 宇宙船カラオケ大会、開幕！！ 盛り上がって行くぜええ！！");
-
         const madLines = [
             "時間なんてクソくらえ！ もっとボルテージ上げろ！！",
             "この夢のステージ、俺がさらに加速させたぜ！！",
@@ -132,50 +146,74 @@ const MagicEngine = {
             "10時30分？ そんなもん関係ねぇ！ 今がちょうど歌う時間だ！！",
             "俺のカオスラップで全部ぶっ壊してやるぜ！！"
         ];
-
         this.madHatterInterval = setInterval(() => {
-            if (this.karaokeIntensity < 10) {
-                this.karaokeIntensity += 1; // 叫ぶたびにボルテージアップ！
-                updateParticles(); // 演出を更新
-            }
+            if (this.karaokeIntensity < 10) { this.karaokeIntensity += 1; updateParticles(); }
             this.showToast("🎩「" + madLines[Math.floor(Math.random() * madLines.length)] + "」");
         }, 4000);
     },
 
-    // 🌸 演出システム
     startParticles: function(charArray, type, className) {
         clearInterval(this.particleInterval);
         this.particleInterval = setInterval(() => {
             const p = document.createElement("div");
             p.innerText = charArray[Math.floor(Math.random() * charArray.length)];
             p.className = `magic-particle ${type} ${className}`;
-
-            if (type === "riseUp") {
-                p.style.left = Math.random() * 100 + "vw";
-                p.style.bottom = "-50px";
-            } else if (type === "scatter") {
-                p.style.top = Math.random() * 90 + "vh";
-                p.style.left = Math.random() * 90 + "vw";
-            }
-
+            if (type === "riseUp") { p.style.left = Math.random() * 100 + "vw"; p.style.bottom = "-50px"; }
+            else if (type === "scatter") { p.style.top = Math.random() * 90 + "vh"; p.style.left = Math.random() * 90 + "vw"; }
+            else if (type === "flowRight") { p.style.top = Math.random() * 90 + "vh"; p.style.left = "-50px"; }
             p.style.fontSize = (Math.random() * 30 + 20) + "px";
             document.body.appendChild(p);
             setTimeout(() => p.remove(), 4000);
         }, 300);
     },
 
-    // 他の関数はそのまま（showToast, enableWonderlandEscape, castColor, etc.）
     showToast: function(msg) {
         let toast = document.getElementById("toast");
         if (!toast) { toast = document.createElement("div"); toast.id = "toast"; document.body.appendChild(toast); }
         toast.style.zIndex = "99999"; toast.innerText = msg; toast.className = "show";
         setTimeout(() => { if(toast.innerText === msg) toast.className = ""; }, 3000);
     },
-    trackMouseForDarkness: function(e) { document.body.style.setProperty('--mouse-x', e.clientX + 'px'); document.body.style.setProperty('--mouse-y', e.clientY + 'px'); },
-    castColor: function() { this.resetAllEffects(); const color = document.getElementById("magic-color").value; document.body.style.background = `radial-gradient(circle, ${color} 0%, #000 100%)`; this.showToast(`「世界が ${color} に染まったわ……✨」`); },
+
+    trackMouseForDarkness: function(e) {
+        document.body.style.setProperty('--mouse-x', e.clientX + 'px');
+        document.body.style.setProperty('--mouse-y', e.clientY + 'px');
+    },
+
+    castColor: function() {
+        this.resetAllEffects();
+        const color = document.getElementById("magic-color").value;
+        document.body.style.background = `radial-gradient(circle, ${color} 0%, #000 100%)`;
+        this.showToast(`「世界が ${color} に染まったわ……✨」`);
+    },
+
     applyTheme: function(themeClass) { document.body.className = themeClass; },
-    openGrimoire: function() { const modal = document.getElementById("grimoire-modal"); const listArea = document.getElementById("grimoire-list"); let html = `<div class="grimoire-category">【環境魔法】</div>`; Object.keys(magicData.spells).forEach(key => html += `・${key}<br>`); html += `<div class="grimoire-category">【色彩魔法】</div>`; Object.keys(magicData.colors).forEach(key => html += `・${key}<br>`); listArea.innerHTML = html; modal.style.display = "flex"; },
+
+    openGrimoire: function() {
+        const modal = document.getElementById("grimoire-modal");
+        const listArea = document.getElementById("grimoire-list");
+        let html = `<div class="grimoire-category">【環境魔法】</div>`;
+        Object.keys(magicData.spells).forEach(key => { if (magicData.spells[key] !== null) html += `・${key}<br>`; });
+        html += `<div class="grimoire-category">【色彩魔法】</div>`;
+        Object.keys(magicData.colors).forEach(key => { html += `・${key}<br>`; });
+        listArea.innerHTML = html; modal.style.display = "flex";
+    },
+
     closeGrimoire: function() { document.getElementById("grimoire-modal").style.display = "none"; },
-    enableWonderlandEscape: function(enable) { const objects = document.querySelectorAll(".wonder-object"); objects.forEach(obj => { if (enable) { obj.classList.add("wonder-escape"); obj.onmouseenter = () => { const jumpX = (Math.random() - 0.5) * 300; const jumpY = (Math.random() - 0.5) * 300; obj.style.transform = `translate(${jumpX}px, ${jumpY}px)`; }; } else { obj.classList.remove("wonder-escape"); obj.onmouseenter = null; obj.style.transform = ""; } }); },
-    startAbyssEffect: function() { document.body.style.background = "#050010"; const overlay = document.createElement("div"); overlay.id = "abyss-overlay"; overlay.style.position = "fixed"; overlay.style.inset = "0"; overlay.style.background = "repeating-radial-gradient(circle, transparent, #000 100px)"; overlay.style.opacity = "0.5"; overlay.style.animation = "pulse 5s infinite"; overlay.style.pointerEvents = "none"; document.body.appendChild(overlay); }
+    enableWonderlandEscape: function(enable) {
+        const objects = document.querySelectorAll(".wonder-object");
+        objects.forEach(obj => {
+            if (enable) {
+                obj.classList.add("wonder-escape");
+                obj.onmouseenter = () => { obj.style.transform = `translate(${(Math.random()-0.5)*300}px, ${(Math.random()-0.5)*300}px)`; };
+            } else { obj.classList.remove("wonder-escape"); obj.onmouseenter = null; obj.style.transform = ""; }
+        });
+    },
+
+    startAbyssEffect: function() {
+        document.body.style.background = "#050010";
+        const overlay = document.createElement("div"); overlay.id = "abyss-overlay";
+        overlay.style.position = "fixed"; overlay.style.inset = "0"; overlay.style.background = "repeating-radial-gradient(circle, transparent, #000 100px)";
+        overlay.style.opacity = "0.5"; overlay.style.animation = "pulse 5s infinite";
+        overlay.style.pointerEvents = "none"; document.body.appendChild(overlay);
+    }
 };
