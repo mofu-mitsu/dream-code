@@ -25,6 +25,7 @@ const PigeonEngine = {
         }, 100);
 
         pigeon.onclick = () => {
+            ActionLogger.addLog(`🕊️ ハトをクリックした`);
             const scale = ItemEngine.userScale;
             let msg = "🕊️「クルッポー！（のどかな昼下がりだね）」";
             
