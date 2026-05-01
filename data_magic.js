@@ -15,7 +15,8 @@ const magicData = {
         "自然": { theme: "theme-nature", msg: "🐛：「有機物の気配……Si（内向感覚）が安らぐな。」" },
         "歪な愛": { theme: "theme-distorted-love", msg: "「……ねぇ、どこにも行かないで？ 私の構造の中で永遠に生きて……🩸♡」" },
         "創世": null,
-        "重力": null
+        "重力": null,
+        "地獄": null
     },
 
     colors: {
