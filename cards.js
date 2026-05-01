@@ -149,6 +149,7 @@ const CardEventEngine = {
                 "👑 ハートの女王（ESTJ / SLE）",
                 "「よく来たな。非効率なバグは首をはねてやる！ 何か言い残すことはあるか？」",
                 (answer) => {
+                ActionLogger.addLog(`👑 女王への最後の言葉: 「${answer}」`); // 🔥 追加
                     if (answer.includes("力学") || answer.includes("計算") || answer.includes("角度") || answer.includes("どうやって")) {
                         MagicEngine.showToast(`👑 女王:「『${answer}』だと！？ 首をはねろォォ！！」`);
                         CardEventEngine.executeGuillotine();
@@ -312,6 +313,7 @@ const CardEventEngine = {
     },
 
     executeGuillotine: function() {
+        ActionLogger.addLog(`💀 女王の怒りを買い、首をはねられた`); 
         const blade = document.createElement("div");
         blade.className = "guillotine-blade guillotine-drop";
         blade.innerText = "🪓";
