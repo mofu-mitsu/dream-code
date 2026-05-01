@@ -66,6 +66,7 @@ const ItemEngine = {
 
         // 🐿️ リスのクリック判定
         squirrel.onclick = () => {
+            ActionLogger.addLog(`🐿️ リスをクリックした`);
             if (hasStolen) {
                 // 🔥 盗んだ後なら手遅れ
                 MagicEngine.showToast("🐿️「キッキッ！！（もうボクの獲物だもんね！）」");
@@ -96,6 +97,7 @@ const ItemEngine = {
 
     // 🍰 巨大化：画面を縮小する (0.5刻みで相殺しやすく)
     eatCake: function() {
+        ActionLogger.addLog(`🍰 ケーキを食べて巨大化した`);
         this.userScale -= 0.5;
         this.applyScale();
         if (this.userScale <= 0.5) {
@@ -105,6 +107,7 @@ const ItemEngine = {
 
     // 🧪 縮小：画面を拡大する
     drinkPotion: function() {
+        ActionLogger.addLog(`🧪 ポーションを飲んで縮小化した`);
         this.userScale += 0.5;
         this.applyScale();
         if (this.userScale >= 1.5) {
