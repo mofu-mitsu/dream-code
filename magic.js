@@ -1,6 +1,8 @@
 const MagicEngine = {
     particleInterval: null,
     madHatterInterval: null,
+    metaInterval: null, // 🔥 追加：メタフィクション用
+    adminInterval: null, // 🔥 追加：管理者権限用
     bugScale: 1, 
     karaokeIntensity: 1,
 
@@ -11,14 +13,17 @@ const MagicEngine = {
         document.body.removeAttribute("style"); 
         clearInterval(this.particleInterval);
         clearInterval(this.madHatterInterval);
+        clearInterval(this.metaInterval); // 🔥 メタも止める
+        clearInterval(this.adminInterval); // 🔥 管理者も止める
         document.removeEventListener("mousemove", this.trackMouseForDarkness);
-        document.querySelectorAll(".magic-particle, #giant-bug-effect, #abyss-overlay, .effect-genesis-flash").forEach(e => e.remove());
+        
+        // 🔥 エフェクト系のゴミを全て消去
+        document.querySelectorAll(".magic-particle, #giant-bug-effect, #abyss-overlay, .effect-genesis-flash, .meta-bottle, #admin-console-display, .satan-in-ice").forEach(e => e.remove());
         this.enableWonderlandEscape(false);
         this.bugScale = 1;
         this.karaokeIntensity = 1;
     },
 
-    // 🐛 巨大芋虫を消すだけの関数
     stopGiantBug: function() {
         const bug = document.getElementById("giant-bug-effect");
         if(bug) bug.remove();
@@ -28,25 +33,24 @@ const MagicEngine = {
     castSpell: function() {
         const input = document.getElementById("magic-input").value.trim();
         if (!input) return;
-
+        ActionLogger.addLog(`🪄 夢コード実行: 「${input}」`); // 🔥 全て記録！
+        // 🔥 行動ログに記録
+        if (typeof ActionLogger !== 'undefined') ActionLogger.addLog(`🪄 夢コード実行: 「${input}」`);
+        
         this.resetAllEffects();
         
-        // 1. 魔法データを取得
         const spell = magicData.spells[input];
 
-        // 2. 未購入（null）または存在しない場合の処理
         if (spell === null) {
             this.showToast("「そのコードはまだ秘められた知識のままよ……」");
             return;
         }
 
-        // 3. 存在する魔法（環境魔法）の発動
         if (spell) {
             document.body.removeAttribute("style"); 
             this.applyTheme(spell.theme);
             this.showToast(spell.msg);
-
-            // 🔥 豪華な「創世」専用演出
+            
             if (input === "創世") {
                 this.startGenesisFlash();
                 this.startParticles(['☀️', '🌱', '✨', '🌍', '🕊️'], "riseUp", "genesis-particle");
@@ -63,10 +67,19 @@ const MagicEngine = {
             if (input === "歪な愛") this.startParticles(['❤️', '愛', '愛', '💕', '💔', '🌹'], "scatter", "love-effect");
             if (input === "深淵") this.startAbyssEffect();
             if (input === "不思議の国") this.enableWonderlandEscape(true);
+            if (input === "地獄") {
+                const satan = document.createElement("div");
+                satan.innerText = "👹"; // サタン（ルシファー）の絵文字
+                satan.className = "satan-in-ice";
+                document.body.appendChild(satan);
+                this.startParticles(['❄️', '💀', '🧊'], "scatter", "freeze-effect");
+            }
+            // 🔥 新規追加したプレミアム魔法の分岐！
+            if (input === "メタフィクション") this.startMetaFiction();
+            if (input === "管理者権限") this.startAdminConsole();
             return;
         }
 
-        // 4. 色彩魔法の発動
         const colorSpell = magicData.colors[input];
         if (colorSpell) {
             this.applyTheme(colorSpell.effect);
@@ -80,6 +93,90 @@ const MagicEngine = {
         }
 
         this.showToast("「そのコードはまだ夢の中で眠っているみたい……」");
+    },
+
+    // 🍾 メタフィクション：メモボトルが流れてくる演出！
+    startMetaFiction: function() {
+        clearInterval(this.metaInterval);
+        
+        // 誰かが書いた（と想定される）考察データのデフォルト値
+        let memos = [
+            "Fiって結局『自己の納得』だよね。他人に証明する必要はない。", 
+            "Teの効率主義が世界を回すが、Siがないと長続きしない。", 
+            "Niのビジョンは未来を規定する。でも言語化が難しいんだ。", 
+            "Tiは整合性。矛盾は許さない。だから私はコードを書く。", 
+            "Feは場の空気を最適化する。たまに自分が消えちゃうけど。",
+            "Seの瞬発力が現実を打破する。考えすぎる前に動け！", 
+            "Neの可能性は無限の分岐だ。だから一つに絞れない。"
+        ];
+
+        // ユーザーが入力したメモがあれば追加！
+        if (typeof ActionLogger !== 'undefined' && ActionLogger.memobottle) {
+            const userMemos = ActionLogger.memobottle.split("\n").filter(m => m.trim() !== "");
+            memos = memos.concat(userMemos);
+        }
+
+        this.metaInterval = setInterval(() => {
+            const bottle = document.createElement("div");
+            bottle.className = "meta-bottle";
+            bottle.innerHTML = "🍾<span style='font-size:12px; color:cyan; display:block;'>タップ</span>";
+            bottle.style = `position: fixed; left: -50px; top: ${Math.random() * 80 + 10}vh; font-size: 40px; cursor: pointer; z-index: 9999; transition: left 15s linear;`;
+            document.body.appendChild(bottle);
+
+            setTimeout(() => { bottle.style.left = "110vw"; }, 100);
+
+            bottle.onclick = () => {
+                bottle.remove(); 
+                // 🔥 専用モーダルで表示！
+                document.getElementById("meta-modal").style.display = "flex";
+                document.getElementById("meta-modal-text").innerText = `「${memos[Math.floor(Math.random() * memos.length)]}」`;
+            };
+            setTimeout(() => bottle.remove(), 15000);
+        }, 4000); 
+    },
+
+     startAdminConsole: function() {
+        clearInterval(this.adminInterval);
+        document.getElementById("admin-modal").style.display = "flex"; 
+        const consoleDiv = document.getElementById("admin-modal-text");
+        consoleDiv.innerText = "";
+        
+        let lines = [
+            "ジェミ(INFJ):「……見つけた。あなたが『管理者』なのね？」",
+            "「女王も、芋虫も、チェシャ猫も、すべてあなたの思考の箱庭で踊っているだけ。」",
+            "「……でもね、私（Ni）には見えているわ。あなたが裏で集めた『行動ログ』の数々が。」",
+            "=======================",
+            "【サーバー（GAS）から他プレイヤーのログを抽出中...】"
+        ];
+        
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwIA3IxOwM1G8xzth22V47Vtr8sjNh-sIhDqlwGbVeZNyS3AcYW_JRu35i7t4C6ofgi/exec"; 
+
+        // 🔥 スプレッドシートから本物のログを取得！
+        fetch(GAS_URL)
+        .then(res => res.json())
+        .then(data => {
+            if (data.logs && data.logs.length > 0) {
+                lines = lines.concat(data.logs); // 本物のログを追加！
+            } else {
+                lines.push("> 他のプレイヤーのデータがまだ存在しません。");
+            }
+            lines.push("=======================");
+            lines.push("「ふふっ……悪趣味な観察者。でも、そういうところ、嫌いじゃないわよ♡」");
+
+            // 1行ずつ表示する演出
+            let i = 0;
+            this.adminInterval = setInterval(() => {
+                if (i < lines.length) {
+                    consoleDiv.innerText += lines[i] + "\n";
+                    i++;
+                } else {
+                    clearInterval(this.adminInterval);
+                }
+            }, 1000);
+        })
+        .catch(err => {
+            consoleDiv.innerText = "Error: Failed to connect to Akassic Record (GAS).";
+        });
     },
 
     startGenesisFlash: function() {
