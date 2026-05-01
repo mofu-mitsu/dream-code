@@ -32,6 +32,7 @@ const RabbitEngine = {
 
         // 捕獲機能
         rabbit.onclick = () => {
+            ActionLogger.addLog(`🐇 白ウサギを捕獲しようとした`);
             MagicEngine.showToast("🐇「……私のスケジュールに『貴様に捕まる』というタスクは入っていません。離しなさい。」");
             rabbit.remove();
         };
