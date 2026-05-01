@@ -1311,25 +1311,138 @@ body.theme-blood-splatter {
 }
 .scared { animation: squirrelScare 0.3s; }
 
-/* 🧠 メタフィクション：背景にコードや文字がうっすら流れる（マトリックス風・白版） */
+/* 📚 ジェミの書庫（図書館感アップ！） */
+#library-window .chat-container {
+    /* 巨大な本棚の背景 */
+    background: 
+        linear-gradient(rgba(10, 5, 20, 0.9), rgba(10, 5, 20, 0.9)),
+        repeating-linear-gradient(0deg, transparent, transparent 40px, #4b0082 40px, #4b0082 45px),
+        repeating-linear-gradient(90deg, #2a0a4a, #2a0a4a 50px, #1a052a 50px, #1a052a 100px) !important;
+    border: 5px solid #d4af37 !important;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.9), 0 0 30px #9d81ff !important;
+}
+#library-window #char-name { color: #d4af37 !important; text-shadow: 0 0 5px #ff007f; }
+
+/* 📜 行動ログモーダル（スクロール対応＆カッコよく） */
+#log-modal {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 85%; max-width: 600px; max-height: 80vh;
+    background: rgba(0, 0, 0, 0.95); border: 2px solid #4caf50; border-radius: 10px;
+    box-shadow: 0 0 30px #4caf50; display: none; flex-direction: column;
+    padding: 20px; z-index: 100000; /* 書庫より絶対上！ */
+    color: #0f0; font-family: monospace; overflow-y: auto; text-align: left;
+}
+
+/* 💬 意見箱・メモボトル入力モーダル（Z-index最強化） */
+#input-modal {
+    z-index: 999999 !important; /* 🔥 絶対に裏に隠れないようにする */
+}
+
+/* 🧠 メタフィクション魔法（マトリックスコード風強化） */
 .theme-meta {
     background: #e0f7fa !important;
     color: #006064 !important;
-    font-family: monospace;
+    animation: metaWarp 3s infinite alternate;
 }
+@keyframes metaWarp { 0% { filter: contrast(1); } 100% { filter: contrast(2) hue-rotate(20deg); } }
 .meta-text {
-    position: absolute; font-size: 20px; font-weight: bold; color: rgba(0, 150, 136, 0.4);
-    animation: floatUp 10s linear forwards; pointer-events: none; z-index: 100;
+    position: fixed; font-size: 24px; font-weight: bold; color: rgba(0, 150, 136, 0.6);
+    text-shadow: 0 0 5px #00bcd4; font-family: monospace;
+    animation: floatMeta 8s linear forwards; pointer-events: none; z-index: 100;
+}
+@keyframes floatMeta {
+    0% { transform: translateY(110vh) scale(0.8); opacity: 0; }
+    10% { opacity: 1; } 90% { opacity: 1; }
+    100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
 }
 
-/* 💻 管理者権限：完全な黒と緑のハッカー画面 */
+/* 💻 管理者権限魔法（コンソール画面追加） */
 .theme-admin {
-    background: #000 !important;
+    background: radial-gradient(circle, #002200 0%, #000000 100%) !important;
     font-family: 'Courier New', Courier, monospace !important;
     color: #0f0 !important;
 }
-.theme-admin .wonder-object { display: none !important; } /* オブジェクトを全部消す */
+.theme-admin .wonder-object { display: none !important; }
 .admin-console {
-    position: fixed; inset: 0; padding: 20px; font-size: 14px;
-    z-index: 9999; pointer-events: none; overflow: hidden;
+    position: fixed; top: 10px; left: 10px; font-size: 16px; color: #0f0;
+    text-shadow: 0 0 5px #0f0; z-index: 9999; pointer-events: none;
+    line-height: 1.5; white-space: pre-wrap;
+}
+
+/* 📜 メタフィクション：思考の破片モーダル（羊皮紙風） */
+#meta-modal {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 80%; max-width: 400px;
+    background: #fdf5e6; border: 2px solid #8d6e63; border-radius: 5px;
+    box-shadow: 0 0 20px #00bcd4; display: none; flex-direction: column;
+    padding: 30px; z-index: 100000; text-align: center; color: #3e2723;
+    font-family: 'Times New Roman', serif;
+}
+.meta-modal-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; border-bottom: 1px dashed #8d6e63; color: #00838f; }
+
+/* 💻 管理者権限：ジェミの真の姿モーダル */
+#admin-modal {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 90%; max-width: 500px;
+    background: #000; border: 2px solid #0f0; border-radius: 5px;
+    box-shadow: 0 0 50px #0f0; display: none; flex-direction: column;
+    padding: 20px; z-index: 100000; color: #0f0; font-family: monospace;
+}
+
+/* 🔮 唯一無二診断（v2.0）専用スタイル */
+.unique-element-btn {
+    background: #004d40; color: #b2ebf2; border: 1px solid #00bcd4; padding: 5px 10px;
+    border-radius: 20px; cursor: pointer; display: inline-block; margin: 3px; font-size: 14px;
+    transition: 0.2s;
+}
+.unique-element-btn.selected { background: #00bcd4; color: #000; font-weight: bold; box-shadow: 0 0 10px #00bcd4; }
+
+.unique-slider-container { margin-bottom: 15px; text-align: left; }
+.unique-slider-label { display: flex; justify-content: space-between; color: #b2ebf2; font-size: 14px; margin-bottom: 5px; }
+.unique-slider { width: 100%; accent-color: #00bcd4; cursor: pointer; }
+
+/* 🔮 診断結果のカッコいい表示枠 */
+.unique-result-box {
+    background: rgba(0, 0, 0, 0.8); border: 1px solid #00bcd4; border-radius: 10px;
+    padding: 15px; text-align: left; box-shadow: inset 0 0 20px rgba(0, 188, 212, 0.5);
+    font-family: monospace; color: #e0f7fa; line-height: 1.6;
+}
+.unique-dream-title { font-size: 1.5rem; color: gold; font-weight: bold; text-align: center; text-shadow: 0 0 10px gold; margin-bottom: 10px; }
+
+/* 💀 新魔法：地獄（コキュートス）のエフェクト */
+.theme-hell {
+    background: radial-gradient(circle at center, #001133 0%, #000000 100%) !important;
+    animation: freezeWorld 5s infinite alternate;
+}
+@keyframes freezeWorld {
+    0% { filter: brightness(1) sepia(1) hue-rotate(180deg); }
+    100% { filter: brightness(0.5) sepia(1) hue-rotate(180deg) contrast(2); box-shadow: inset 0 0 150px #00ffff; }
+}
+
+/* 🧊 氷漬けのサタン（背景にうっすら浮かび上がる） */
+.satan-in-ice {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 400px; opacity: 0.1; z-index: -1; pointer-events: none;
+    filter: blur(5px) drop-shadow(0 0 20px #00ffff);
+    animation: satanBreathe 4s infinite alternate;
+}
+@keyframes satanBreathe { 0% { opacity: 0.05; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0.15; transform: translate(-50%, -50%) scale(1.05); } }
+
+/* 🐛 芋虫のサブモーダル（診断画面）のレイアウト修正！ */
+#caterpillar-sub-modal {
+    position: fixed !important; /* 絶対に画面中央に配置 */
+    top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important;
+    width: 90vw !important; max-width: 500px !important; max-height: 85vh !important;
+    background: rgba(10, 20, 10, 0.98); border: 2px solid #a5d6a7; border-radius: 10px;
+    box-shadow: 0 0 30px #4caf50; display: none; flex-direction: column; padding: 20px;
+    overflow-y: auto; overflow-x: hidden; z-index: 999999 !important; /* 確実に最前面 */
+    box-sizing: border-box; /* paddingで横にはみ出さないようにする */
+}
+/* 診断の選択肢ボタンがはみ出さないように！ */
+.amatorika-btn {
+    background: #2e7d32; color: white; border: 1px solid #4caf50;
+    padding: 10px; margin-bottom: 8px; width: 100%; border-radius: 5px;
+    cursor: pointer; text-align: left; font-size: 0.9rem; transition: 0.2s;
+    word-break: break-word; /* 長い文章でも折り返す！ */
+    white-space: normal;
 }
