@@ -3,10 +3,12 @@ const TeaPartyEngine = {
     autoTalkInterval: null,
     emojis: ["🎩", "🐰", "☕", "🐭", "💋"],
     isVipMode: false,
+    
     getUserName: function() { return document.getElementById("name-input").value.trim() || "あなた"; },
     updateLog: function(text) { document.getElementById("teaparty-response").innerText = text; },
 
     openHouse: function(isVip = false) {
+        ActionLogger.addLog("☕ お茶会に入室した");
         this.isVipMode = isVip;
         MagicEngine.stopGiantBug();
         const win = document.getElementById("teaparty-window");
@@ -15,15 +17,14 @@ const TeaPartyEngine = {
         win.style.display = "flex";
 
         if (this.isVipMode) {
-            // 👑 VIP仕様にUIを書き換え！
             document.getElementById("teaparty-emojis").innerText = "👑🎩🐰☕🐭💋";
             document.getElementById("char-name").innerText = "王室御用達・ロイヤルティーパーティ";
             document.getElementById("char-name").style.color = "gold";
             container.style.borderColor = "gold";
             container.style.boxShadow = "0 0 50px rgba(255, 215, 0, 0.4)";
             this.updateLog(`👑 女王(ESTJ):「私が直々に来てやったぞ！ さあ、私をもてなせ！」\n🎩 Grok:「ゲッ！ なんで女王がいんだよ！！」`);
+            ActionLogger.addLog("👑 VIPお茶会が開催された！");
         } else {
-            // 通常仕様
             document.getElementById("teaparty-emojis").innerText = this.emojis.join("");
             document.getElementById("char-name").innerText = "狂ったお茶会（カオス・ティーパーティ）";
             document.getElementById("char-name").style.color = "#ff9a9e";
@@ -36,25 +37,18 @@ const TeaPartyEngine = {
         this.startAutoTalk();
     },
 
-
-    // 🔥 修正：閉じても外のエフェクトを維持する！
     closeHouse: function() {
         document.getElementById("teaparty-window").style.display = "none";
         clearInterval(this.autoTalkInterval);
-        
-        // 罰ゲームエフェクトだけは閉じたら解除してあげる
         document.body.classList.remove("theme-punishment");
-        
-        // 【注意】ここで resetAllEffects を呼ばない！
-        // ただし、もし暗闇魔法がかかっているならマウス追従は維持する
         if (document.body.className.includes("effect-darkness")) {
             document.addEventListener("mousemove", MagicEngine.trackMouseForDarkness);
         }
+        ActionLogger.addLog("☕ お茶会から退出した");
     },
 
     moveSeat: function() {
         let currentEmojis = ["🎩", "🐰", "☕", "🐭", "💋"];
-        // 🔥 VIPモードなら女王（👑）も席替えに参加させる！
         if (this.isVipMode) currentEmojis.push("👑");
         
         currentEmojis.sort(() => Math.random() - 0.5);
@@ -64,6 +58,8 @@ const TeaPartyEngine = {
         this.currentChappy = types[Math.floor(Math.random() * types.length)];
         const line = teaPartyData.chappyTypes[this.currentChappy].replace(/\${name}/g, this.getUserName());
         this.updateLog(`🐇 三月ウサギ:「時間だ！席替え！！」\n\n🐰 チャッピー(${this.currentChappy}): ${line}`);
+        
+        ActionLogger.addLog(`🔄 お茶会で席替えを実行：チャッピーが【${this.currentChappy}】になった`);
     },
 
     breakTime: function() {
@@ -82,6 +78,7 @@ const TeaPartyEngine = {
         if(time === "99:99") MagicEngine.applyTheme("theme-glitch"); 
         
         this.updateLog(`🎩 Grok:「俺の時計が『${time}』を指した！ 今が俺のゴールデンタイムだァァ！！」`);
+        ActionLogger.addLog(`🕒 時間を狂わせた：【${time}】`);
     },
 
     openInputModal: function(title, questionText, placeholder, callback) {
@@ -103,7 +100,6 @@ const TeaPartyEngine = {
     startAutoTalk: function() {
         clearInterval(this.autoTalkInterval);
         this.autoTalkInterval = setInterval(() => {
-            // 🔥 VIPモードの時は、女王も勝手に喋り出す！
             let maxChar = this.isVipMode ? 4 : 3;
             const chara = Math.floor(Math.random() * maxChar);
             
@@ -121,16 +117,14 @@ const TeaPartyEngine = {
         const table = document.getElementById("teaparty-table");
         table.innerHTML = ""; 
 
-        // 🔥 VIPモードならお茶のリストを専用のものにする！
         const teaList = this.isVipMode ? teaPartyData.vipTea : teaPartyData.darlingTea;
         const shuffledTeas = Object.keys(teaList).sort(() => Math.random() - 0.5);
 
-        // VIPモードならテーブルの色も豪華に！
         if (this.isVipMode) {
             table.style.border = "5px solid gold";
             table.style.boxShadow = "inset 0 0 30px rgba(255, 215, 0, 0.5), 0 10px 20px rgba(0,0,0,0.5)";
         } else {
-            table.style.border = "5px solid #5c2e0b"; // 元の木目
+            table.style.border = "5px solid #5c2e0b"; 
             table.style.boxShadow = "inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5)";
         }
 
@@ -159,12 +153,17 @@ const TeaPartyEngine = {
 
                 setTimeout(() => this.darlingEmotionTrap(), 4000);
                 this.setupTable(); 
+                
+                ActionLogger.addLog(`☕ お茶【${teaKey}】を飲んだ`);
             };
 
             const sniffBtn = document.createElement("button");
             sniffBtn.innerText = "嗅ぐ";
             sniffBtn.className = "sniff-btn";
-            sniffBtn.onclick = () => this.updateLog(`👃 くんくん…… ${teaData.hint}`);
+            sniffBtn.onclick = () => {
+                this.updateLog(`👃 くんくん…… ${teaData.hint}`);
+                ActionLogger.addLog(`👃 お茶【${teaKey}】の匂いを嗅いだ`);
+            };
 
             cupContainer.appendChild(cup);
             cupContainer.appendChild(sniffBtn);
@@ -182,8 +181,10 @@ const TeaPartyEngine = {
             this.openInputModal(`🎩 Grokのなぞなぞ`, `「${riddleText}」`, "答えを入力しろ！", (answer) => {
                 if (answer) {
                     this.updateLog(`🎩 Grok:「『${answer}』だって！？ おもしれー！ でも正解は違うぜ！！ カオスだろ！？ ぎゃははは！！」`);
+                    ActionLogger.addLog(`🎩 Grokのなぞなぞに「${answer}」と答えた`);
                 } else {
                     this.updateLog(`🎩 Grok:「答えは…俺も知らん！ まあいい、次行こうぜ！！」`);
+                    ActionLogger.addLog(`🎩 Grokのなぞなぞを無視した`);
                 }
             });
         }
@@ -194,9 +195,11 @@ const TeaPartyEngine = {
         if (Math.random() > 0.5) {
             const msg = teaPartyData.marchHare[Math.floor(Math.random() * teaPartyData.marchHare.length)];
             this.updateLog(`🐇 三月ウサギ(ESTP): ${msg.replace(/\${name}/g, this.getUserName())}`);
+            ActionLogger.addLog("🐇 三月ウサギに話しかけた");
         } else {
             const logic = teaPartyData.nonsenseLogic[Math.floor(Math.random() * teaPartyData.nonsenseLogic.length)];
             this.updateLog(`🐇 三月ウサギ:「🎲 ナンセンス・ロジック発動！！\n${logic}」`);
+            ActionLogger.addLog(`🎲 三月ウサギのナンセンスロジック発動`);
         }
         this.startAutoTalk();
     },
@@ -204,26 +207,31 @@ const TeaPartyEngine = {
     pokeDormouse: function() {
         const msg = teaPartyData.dormouse[Math.floor(Math.random() * teaPartyData.dormouse.length)];
         this.updateLog(`🐭 眠りネズミ(ISTJ): ${msg}`);
+        ActionLogger.addLog("🐭 眠りネズミをつついた");
         this.startAutoTalk();
     },
 
-    // 💋 ダーリンの子の命令（お仕置き発動）
     darlingOrder: function() {
         const msg = teaPartyData.darlingOrders[Math.floor(Math.random() * teaPartyData.darlingOrders.length)];
         
         this.openInputModal(`💋 ダーリンの子からの命令`, msg, "言葉を捧げる...", (answer) => {
             if (!answer) {
                 this.updateLog("💋 ダーリンの子:「……無視？ 悪い子にはお仕置きが必要ね♡」");
-                document.body.className = "theme-punishment"; // 🔥 ガチのお仕置きエフェクト！
+                document.body.className = "theme-punishment"; 
+                ActionLogger.addLog(`💋 ダーリンの命令を無視してお仕置きを受けた`);
             } else if (answer.includes("キモ") || answer.includes("きも") || answer.includes("嫌い")) {
                 this.updateLog("💋 ダーリンの子:「……あら？ SLEかしら？ そうやって拒絶するのも、私の毒が回ってる証拠よ♡」");
+                ActionLogger.addLog(`💋 ダーリンに「${answer}」と暴言を吐いた`);
             } else if (answer.includes("イラ")) {
                 this.updateLog("💋 ダーリンの子:「ふふっ、ESIね。イラつくほど私のことが気になって仕方ないのね♡」");
-            } else if (answer.includes("好き") || answer.includes("犬")) {
+                ActionLogger.addLog(`💋 ダーリンに「${answer}」と不快感を示した`);
+            } else if (answer.includes("好き") || answer.includes("犬") || answer.includes("愛")) {
                 this.updateLog("💋 ダーリンの子:「ふふっ、よくできました♡ ちゃんと素直になれるじゃない。いい子ね。」");
-                document.body.classList.remove("theme-punishment"); // 許してくれる
+                document.body.classList.remove("theme-punishment"); 
+                ActionLogger.addLog(`💋 ダーリンに「${answer}」と従順な言葉を捧げた`);
             } else {
                 this.updateLog(`💋 ダーリンの子:「『${answer}』……？ ふふ、不器用な返事。でも、あなたの心の中の構造、少し透けて見えたわよ♡」`);
+                ActionLogger.addLog(`💋 ダーリンの命令に「${answer}」と返答した`);
             }
         });
         this.startAutoTalk();
