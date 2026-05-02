@@ -15,13 +15,20 @@ const MagicEngine = {
         clearInterval(this.madHatterInterval);
         clearInterval(this.metaInterval); // 🔥 メタも止める
         clearInterval(this.adminInterval); // 🔥 管理者も止める
-        document.removeEventListener("mousemove", this.trackMouseForDarkness);
-        
+        document.addEventListener("mousemove", this.trackMouseForDarkness);
+        document.addEventListener("touchmove", this.trackMouseForDarkness, {passive: false});
         // 🔥 エフェクト系のゴミを全て消去
-        document.querySelectorAll(".magic-particle, #giant-bug-effect, #abyss-overlay, .effect-genesis-flash, .meta-bottle, #admin-console-display, .satan-in-ice").forEach(e => e.remove());
+        document.querySelectorAll(".magic-particle, #giant-bug-effect, #abyss-overlay, .effect-genesis-flash, .meta-bottle, #admin-console-display, .satan-in-ice, .comet-particle, .bokeh-light, .calendar-text, .idea-image").forEach(e => e.remove());
         this.enableWonderlandEscape(false);
         this.bugScale = 1;
         this.karaokeIntensity = 1;
+    },
+    trackMouseForDarkness: function(e) {
+        // e.touches があればスマホ、なければPC
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        document.body.style.setProperty('--mouse-x', clientX + 'px');
+        document.body.style.setProperty('--mouse-y', clientY + 'px');
     },
 
     stopGiantBug: function() {
@@ -74,6 +81,10 @@ const MagicEngine = {
                 document.body.appendChild(satan);
                 this.startParticles(['❄️', '💀', '🧊'], "scatter", "freeze-effect");
             }
+            if (input === "彗星") this.startCometEffect();
+            if (input === "夜景") this.startNightViewEffect();
+            if (input === "カレンダー") this.startCalendarEffect();
+            if (input === "イデア") this.startIdeaEffect();
             // 🔥 新規追加したプレミアム魔法の分岐！
             if (input === "メタフィクション") this.startMetaFiction();
             if (input === "管理者権限") this.startAdminConsole();
@@ -111,31 +122,36 @@ const MagicEngine = {
         ];
 
         // ユーザーが入力したメモがあれば追加！
-        if (typeof ActionLogger !== 'undefined' && ActionLogger.memobottle) {
-            const userMemos = ActionLogger.memobottle.split("\n").filter(m => m.trim() !== "");
-            memos = memos.concat(userMemos);
-        }
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwSMJJljWrOlLlHGGoHaa7_ardZdlHHZsB6LE7q93YRhV0XGWUyX3qPWgTeadqH0MA-Cg/exec"; 
 
-        this.metaInterval = setInterval(() => {
-            const bottle = document.createElement("div");
-            bottle.className = "meta-bottle";
-            bottle.innerHTML = "🍾<span style='font-size:12px; color:cyan; display:block;'>タップ</span>";
-            bottle.style = `position: fixed; left: -50px; top: ${Math.random() * 80 + 10}vh; font-size: 40px; cursor: pointer; z-index: 9999; transition: left 15s linear;`;
-            document.body.appendChild(bottle);
+        // 🔥 GASから他人のメモボトルを取得！
+        fetch(GAS_URL + "?req=memos")
+        .then(res => res.json())
+        .then(data => {
+            if (data.data && data.data.length > 0) memos = memos.concat(data.data);
+            
+            // 演出開始
+            this.metaInterval = setInterval(() => {
+                const bottle = document.createElement("div");
+                bottle.className = "meta-bottle";
+                bottle.innerHTML = "🍾<span style='font-size:12px; color:cyan; display:block;'>タップ</span>";
+                bottle.style = `position: fixed; left: -50px; top: ${Math.random() * 80 + 10}vh; font-size: 40px; cursor: pointer; z-index: 9999; transition: left 15s linear;`;
+                document.body.appendChild(bottle);
 
-            setTimeout(() => { bottle.style.left = "110vw"; }, 100);
+                setTimeout(() => { bottle.style.left = "110vw"; }, 100);
 
-            bottle.onclick = () => {
-                bottle.remove(); 
-                // 🔥 専用モーダルで表示！
-                document.getElementById("meta-modal").style.display = "flex";
-                document.getElementById("meta-modal-text").innerText = `「${memos[Math.floor(Math.random() * memos.length)]}」`;
-            };
-            setTimeout(() => bottle.remove(), 15000);
-        }, 4000); 
+                bottle.onclick = () => {
+                    bottle.remove(); 
+                    document.getElementById("meta-modal").style.display = "flex";
+                    document.getElementById("meta-modal-text").innerText = `「${memos[Math.floor(Math.random() * memos.length)]}」`;
+                };
+                setTimeout(() => bottle.remove(), 15000);
+            }, 4000);
+        });
     },
 
-     startAdminConsole: function() {
+
+    startAdminConsole: function() {
         clearInterval(this.adminInterval);
         document.getElementById("admin-modal").style.display = "flex"; 
         const consoleDiv = document.getElementById("admin-modal-text");
@@ -149,21 +165,21 @@ const MagicEngine = {
             "【サーバー（GAS）から他プレイヤーのログを抽出中...】"
         ];
         
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwIA3IxOwM1G8xzth22V47Vtr8sjNh-sIhDqlwGbVeZNyS3AcYW_JRu35i7t4C6ofgi/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwSMJJljWrOlLlHGGoHaa7_ardZdlHHZsB6LE7q93YRhV0XGWUyX3qPWgTeadqH0MA-Cg/exec"; 
 
-        // 🔥 スプレッドシートから本物のログを取得！
-        fetch(GAS_URL)
+        fetch(GAS_URL + "?req=logs")
         .then(res => res.json())
         .then(data => {
-            if (data.logs && data.logs.length > 0) {
-                lines = lines.concat(data.logs); // 本物のログを追加！
+            if (data.data && data.data.length > 0) {
+                // 🔥 受け取ったログ配列をさらにJS側でもシャッフルする！
+                const shuffledLogs = data.data.sort(() => Math.random() - 0.5);
+                lines = lines.concat(shuffledLogs); 
             } else {
                 lines.push("> 他のプレイヤーのデータがまだ存在しません。");
             }
             lines.push("=======================");
             lines.push("「ふふっ……悪趣味な観察者。でも、そういうところ、嫌いじゃないわよ♡」");
 
-            // 1行ずつ表示する演出
             let i = 0;
             this.adminInterval = setInterval(() => {
                 if (i < lines.length) {
@@ -175,7 +191,7 @@ const MagicEngine = {
             }, 1000);
         })
         .catch(err => {
-            consoleDiv.innerText = "Error: Failed to connect to Akassic Record (GAS).";
+            consoleDiv.innerText += "\nError: Failed to connect to Akassic Record (GAS). URLを確認してください。";
         });
     },
 
@@ -263,7 +279,92 @@ const MagicEngine = {
             setTimeout(() => p.remove(), 4000);
         }, 300);
     },
+    // ☄️ 彗星（斜めに流れる星）
+    startCometEffect: function() {
+        clearInterval(this.particleInterval);
+        this.particleInterval = setInterval(() => {
+            const p = document.createElement("div");
+            p.className = "comet-particle";
+            // 画面の右上から少しランダムにずらして発射
+            p.style.top = (Math.random() * -20) + "vh";
+            p.style.left = (Math.random() * 100 + 20) + "vw"; 
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 2500);
+        }, 400); // 0.4秒に1発流れる
+    },
 
+    // 🌃 夜景（下部にピンボケの光がチカチカ）
+    startNightViewEffect: function() {
+        clearInterval(this.particleInterval);
+        const colors = ["#ff007f", "#00ffff", "#ffff00", "#ffaa00", "#00ff00"];
+        
+        this.particleInterval = setInterval(() => {
+            const p = document.createElement("div");
+            p.className = "bokeh-light";
+            // 画面の下半分に集中させる
+            p.style.top = (Math.random() * 40 + 60) + "vh"; 
+            p.style.left = Math.random() * 100 + "vw";
+            
+            const size = Math.random() * 50 + 20; // 20px〜70px
+            p.style.width = size + "px";
+            p.style.height = size + "px";
+            p.style.background = colors[Math.floor(Math.random() * colors.length)];
+            
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 4000);
+        }, 200);
+    },
+
+    // 📅 カレンダー（数字や日付がフワッと浮かぶ）
+    startCalendarEffect: function() {
+        clearInterval(this.particleInterval);
+        this.particleInterval = setInterval(() => {
+            const p = document.createElement("div");
+            p.className = "calendar-text";
+            
+            // ランダムな日付や時間を生成
+            const isTime = Math.random() > 0.5;
+            if (isTime) {
+                const h = String(Math.floor(Math.random() * 24)).padStart(2, '0');
+                const m = String(Math.floor(Math.random() * 60)).padStart(2, '0');
+                p.innerText = `${h}:${m}`;
+            } else {
+                const y = Math.floor(Math.random() * 50) + 1990;
+                const mo = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+                const d = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+                p.innerText = `${y}/${mo}/${d}`;
+            }
+
+            p.style.top = Math.random() * 100 + "vh";
+            p.style.left = Math.random() * 100 + "vw";
+            p.style.fontSize = (Math.random() * 30 + 15) + "px";
+            
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 6000);
+        }, 500);
+    },
+    startIdeaEffect: function() {
+        clearInterval(this.particleInterval);
+        
+        this.particleInterval = setInterval(() => {
+            const img = document.createElement("img");
+            img.className = "idea-image";
+            
+            // 🔥 確実に表示される Picsum Photos API に変更！
+            // ?blur=2 をつけて抽象的なボケ感を出し、ランダムなIDで毎回違う画像にする！
+            const randomId = Math.floor(Math.random() * 1000);
+            const size = Math.floor(Math.random() * 200) + 200; 
+            img.src = `https://picsum.photos/id/${randomId}/${size}/${size}?blur=2`; 
+            
+            img.style.top = Math.random() * 70 + "vh";
+            img.style.left = Math.random() * 80 + "vw";
+            img.style.width = size + "px";
+            img.style.height = size + "px";
+            
+            document.body.appendChild(img);
+            setTimeout(() => img.remove(), 8000);
+        }, 3000); 
+    },
     showToast: function(msg) {
         let toast = document.getElementById("toast");
         if (!toast) { toast = document.createElement("div"); toast.id = "toast"; document.body.appendChild(toast); }
@@ -301,8 +402,22 @@ const MagicEngine = {
         objects.forEach(obj => {
             if (enable) {
                 obj.classList.add("wonder-escape");
-                obj.onmouseenter = () => { obj.style.transform = `translate(${(Math.random()-0.5)*300}px, ${(Math.random()-0.5)*300}px)`; };
-            } else { obj.classList.remove("wonder-escape"); obj.onmouseenter = null; obj.style.transform = ""; }
+                
+                // PC用
+                obj.onmouseenter = () => {
+                    obj.style.transform = `translate(${(Math.random()-0.5)*300}px, ${(Math.random()-0.5)*300}px)`;
+                };
+                // 📱 スマホ用（触れようとした瞬間に逃げる！）
+                obj.ontouchstart = (e) => {
+                    e.preventDefault(); // クリック判定を無効化
+                    obj.style.transform = `translate(${(Math.random()-0.5)*300}px, ${(Math.random()-0.5)*300}px)`;
+                };
+            } else {
+                obj.classList.remove("wonder-escape");
+                obj.onmouseenter = null;
+                obj.ontouchstart = null;
+                obj.style.transform = "";
+            }
         });
     },
 
