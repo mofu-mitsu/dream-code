@@ -1428,16 +1428,6 @@ body.theme-blood-splatter {
 }
 @keyframes satanBreathe { 0% { opacity: 0.05; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0.15; transform: translate(-50%, -50%) scale(1.05); } }
 
-/* 🐛 芋虫のサブモーダル（診断画面）のレイアウト修正！ */
-#caterpillar-sub-modal {
-    position: fixed !important; /* 絶対に画面中央に配置 */
-    top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important;
-    width: 90vw !important; max-width: 500px !important; max-height: 85vh !important;
-    background: rgba(10, 20, 10, 0.98); border: 2px solid #a5d6a7; border-radius: 10px;
-    box-shadow: 0 0 30px #4caf50; display: none; flex-direction: column; padding: 20px;
-    overflow-y: auto; overflow-x: hidden; z-index: 999999 !important; /* 確実に最前面 */
-    box-sizing: border-box; /* paddingで横にはみ出さないようにする */
-}
 /* 診断の選択肢ボタンがはみ出さないように！ */
 .amatorika-btn {
     background: #2e7d32; color: white; border: 1px solid #4caf50;
@@ -1445,4 +1435,264 @@ body.theme-blood-splatter {
     cursor: pointer; text-align: left; font-size: 0.9rem; transition: 0.2s;
     word-break: break-word; /* 長い文章でも折り返す！ */
     white-space: normal;
+}
+
+/* 📜 行動ログモーダルも同じように修正 */
+#log-modal {
+    position: fixed; 
+    top: 5vh !important; 
+    left: 50% !important; 
+    transform: translateX(-50%) !important;
+    width: 85%; max-width: 600px; max-height: 90vh;
+    background: rgba(0, 0, 0, 0.95); border: 2px solid #4caf50; border-radius: 10px;
+    box-shadow: 0 0 30px #4caf50; display: none; flex-direction: column;
+    padding: 20px; z-index: 100000; color: #0f0; font-family: monospace; 
+    overflow-y: auto; text-align: left;
+}
+
+/* 🧩 感情モデル構築パズル用UI */
+.puzzle-container { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; text-align: left; }
+.puzzle-status { background: rgba(0,0,0,0.8); padding: 10px; border-radius: 5px; color: #b2ebf2; font-family: monospace; border-left: 3px solid #00bcd4; }
+.puzzle-tags { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; }
+.emotion-tag { background: #004d40; color: #fff; border: 1px solid #00bcd4; padding: 5px 10px; border-radius: 20px; cursor: pointer; transition: 0.2s; font-size: 14px; }
+.emotion-tag:hover { background: #00bcd4; color: #000; }
+.emotion-tag.used { opacity: 0.3; pointer-events: none; }
+
+.puzzle-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.puzzle-box { background: rgba(0,0,0,0.5); border: 1px dashed #ff007f; padding: 10px; border-radius: 5px; min-height: 50px; }
+.puzzle-box-title { color: #ff9a9e; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
+.puzzle-box-content { display: flex; flex-wrap: wrap; gap: 5px; }
+
+/* 🧠 パズルの結果画面（解剖モード） */
+.puzzle-result { background: rgba(10, 0, 20, 0.9); border: 2px solid #9d81ff; padding: 15px; border-radius: 10px; color: #e2e2e2; font-family: monospace; line-height: 1.6; }
+.puzzle-rank { font-size: 1.5rem; color: gold; text-align: center; font-weight: bold; margin: 10px 0; text-shadow: 0 0 10px gold; }
+
+/* 🐛 芋虫のサブモーダル（上端が切れるバグの最終解決版！） */
+#caterpillar-sub-modal {
+    position: fixed !important; 
+    top: 50% !important; 
+    left: 50% !important; 
+    transform: translate(-50%, -50%) !important;
+    width: 90vw !important; 
+    max-width: 500px !important; 
+    max-height: 85vh !important; /* 🔥 画面の85%以上の高さには絶対ならない */
+    background: rgba(10, 20, 10, 0.98); border: 2px solid #a5d6a7; border-radius: 10px;
+    box-shadow: 0 0 30px #4caf50; display: none; flex-direction: column; 
+    padding: 0; /* paddingを消して内部の構造に任せる */
+    z-index: 999999 !important;
+    box-sizing: border-box;
+    overflow: hidden !important; /* 🔥 ここではスクロールさせない！ */
+}
+
+/* 🔥 モーダルの中に専用のスクロール領域を作る！ */
+.caterpillar-sub-content {
+    flex: 1; /* 余ったスペースを全部使う */
+    overflow-y: auto !important; /* ここだけスクロールさせる！ */
+    padding: 20px;
+}
+
+/* スマホ対応（メディアクエリ） */
+@media (max-width: 600px) {
+    .amatorika-btn { font-size: 0.8rem; padding: 12px 10px; }
+    .chat-container { max-height: 90vh; }
+    .wonder-object { font-size: 60px; }
+    #dream-code-bar { width: 95vw; flex-wrap: wrap; justify-content: center; }
+}
+
+/* 📱 スマホ対応：懐中電灯（指でタッチした場所を光らせる！） */
+.effect-darkness {
+    background: radial-gradient(circle 150px at var(--mouse-x, 50vw) var(--mouse-y, 50vh), transparent 0%, rgba(0,0,0,0.95) 80%, black 100%) !important;
+    touch-action: none; /* スマホでスクロールするのを防ぐ */
+}
+
+/* 🧩 ドラッグ＆ドロップ用スタイル */
+.puzzle-tags { min-height: 50px; border: 1px solid #555; display: flex; flex-wrap: wrap; gap: 5px; padding: 10px; }
+.emotion-tag { 
+    background: #004d40; color: #fff; border: 1px solid #00bcd4; padding: 5px 10px; 
+    border-radius: 20px; cursor: grab; font-size: 14px; user-select: none;
+    /* スマホでドラッグできるようにする */
+    touch-action: none; 
+}
+.emotion-tag:active { cursor: grabbing; }
+.puzzle-box-content { min-height: 50px; border: 1px dashed #777; padding: 5px; display: flex; flex-wrap: wrap; gap: 5px; }
+.drag-over { background: rgba(0, 188, 212, 0.3) !important; border: 2px dashed #00bcd4 !important; }
+
+/* 🃏 感情構造の完成カード（シェア用） */
+.emotion-card {
+    background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid #00bcd4;
+    border-radius: 10px; padding: 20px; text-align: center; box-shadow: 0 0 20px #00bcd4;
+    margin-top: 15px;
+}
+.emotion-card-title { font-size: 1.5rem; color: gold; font-weight: bold; margin-bottom: 15px; }
+
+/* style.css に追加 */
+#exit-dream-btn {
+    position: fixed; 
+    top: 15px; 
+    right: 150px; /* 🔥 お金HUDの左側に配置！ */
+    background: #555; color: white; border: 2px solid #aaa;
+    padding: 8px 12px; border-radius: 5px; font-weight: bold;
+    cursor: pointer; z-index: 8000; box-shadow: 0 0 10px #000;
+    font-size: 14px;
+}
+#exit-dream-btn:hover { background: #ff007f; border-color: #fff; }
+/* ☄️ 彗星（コメット）のエフェクト */
+.theme-comet {
+    background: radial-gradient(circle at top right, #0b1a40 0%, #000000 100%) !important;
+}
+.comet-particle {
+    position: absolute;
+    width: 6px; height: 6px; /* 🔥 大きくした */
+    background: #ffffff;
+    border-radius: 50%;
+    /* 尾っぽを長く、明るく！ */
+    box-shadow: 
+        0 0 15px 5px #00ffff, 
+        -15px -15px 0 0 rgba(0, 255, 255, 0.9), 
+        -30px -30px 0 0 rgba(0, 255, 255, 0.6),
+        -50px -50px 0 0 rgba(0, 255, 255, 0.3);
+    animation: shootingStar 2s linear forwards;
+    pointer-events: none; z-index: 1000;
+}
+@keyframes shootingStar {
+    0% { transform: translate(100vw, -20vh) rotate(45deg) scale(1); opacity: 1; }
+    100% { transform: translate(-20vw, 100vh) rotate(45deg) scale(0.5); opacity: 0; }
+}
+
+/* 🌃 夜景（ナイトビュー）のエフェクト */
+.theme-nightview {
+    background: linear-gradient(to bottom, #000010 0%, #1a0b2e 70%, #4a0e4e 100%) !important;
+}
+.bokeh-light {
+    position: absolute; border-radius: 50%;
+    filter: blur(8px); /* ピンボケの光 */
+    animation: bokehTwinkle 4s infinite alternate;
+    pointer-events: none; z-index: 50;
+}
+@keyframes bokehTwinkle {
+    0% { opacity: 0.2; transform: scale(0.8); }
+    100% { opacity: 0.8; transform: scale(1.2); }
+}
+
+/* 📅 カレンダー（時間の崩壊）のエフェクト */
+.theme-calendar {
+    /* 🔥 白茶色のグラデーション */
+    background: linear-gradient(135deg, #f5f5dc 0%, #e8e4c9 50%, #d7ccc8 100%) !important;
+    /* 古びた質感 */
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px) !important;
+    filter: sepia(0.2) contrast(1.1);
+}
+.calendar-text {
+    position: absolute; 
+    font-family: 'Times New Roman', Times, serif; /* フォントを古風に */
+    font-weight: bold; 
+    color: #4e342e; /* 🔥 黒と茶の中間色（ダークブラウン） */
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    animation: timeFade 6s linear forwards;
+    pointer-events: none; z-index: 50;
+}
+@keyframes timeFade {
+    0% { transform: translateY(0) scale(0.5); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translateY(-50px) scale(1.5); opacity: 0; }
+}
+
+/* 👁️‍🗨️ 新魔法：イデア（抽象画像のフェード） */
+.theme-idea {
+    background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%) !important;
+}
+.idea-image {
+    position: absolute;
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+    /* 抽象画っぽく見せるためのフィルター */
+    filter: sepia(0.5) hue-rotate(180deg) blur(1px) contrast(1.2) opacity(0.7);
+    mix-blend-mode: screen; /* 背景と不気味に混ざる */
+    animation: ideaFade 8s ease-in-out forwards;
+    pointer-events: none; z-index: 50;
+    object-fit: cover;
+}
+
+@keyframes ideaFade {
+    0% { transform: scale(0.8) rotate(-5deg); opacity: 0; filter: blur(10px); }
+    30% { transform: scale(1) rotate(0deg); opacity: 0.8; filter: blur(0px); }
+    70% { transform: scale(1.1) rotate(5deg); opacity: 0.8; filter: blur(2px); }
+    100% { transform: scale(1.5) rotate(10deg); opacity: 0; filter: blur(15px); }
+}
+
+/* =========================================
+   📱 スマホ・タブレット向けレスポンシブ対応
+   ========================================= */
+@media screen and (max-width: 768px) {
+    
+    /* 🏠 マップ上のオブジェクトを少し大きくして押しやすくする */
+    .wonder-object { font-size: 60px !important; }
+    .obj-darling { font-size: 80px !important; }
+    .obj-tea { font-size: 80px !important; }
+    
+    /* 🗺️ マップのスクロールをより滑らかに */
+    #world-map-wrapper {
+        -webkit-overflow-scrolling: touch; /* iOSでのスクロールをスムーズに */
+    }
+
+    /* 💬 チャットウィンドウ（お家の中）の調整 */
+    .chat-container {
+        padding: 20px !important; /* 余白を狭くして広く使う */
+        width: 95vw !important;
+        max-height: 90vh !important;
+    }
+
+    /* ⌨️ 入力欄とボタンを押しやすく */
+    input[type="text"], .hack-input, .castle-input {
+        width: 95% !important;
+        font-size: 16px !important; /* iOSでズームされるのを防ぐため16px以上必須 */
+        padding: 15px 10px !important; /* タップしやすく高くする */
+    }
+    button {
+        padding: 12px 15px !important;
+        font-size: 14px !important;
+        margin: 5px 2px !important;
+    }
+
+    /* 🪄 夢コードバー（魔法入力）の調整 */
+    #dream-code-bar {
+        width: 95vw;
+        bottom: 10px;
+        padding: 10px;
+        flex-wrap: wrap; /* 画面が狭い時は折り返す */
+        justify-content: center;
+        border-radius: 15px;
+    }
+    #magic-input { width: 60% !important; }
+
+    /* ⚔️ 城のコマンドボタン（横並びだとキツいので縦並びに近い形へ） */
+    .castle-choice-btn {
+        flex: 1 1 100% !important; /* スマホでは縦1列に並べる */
+        min-width: 100%;
+        padding: 15px !important;
+        font-size: 1rem !important;
+    }
+
+    /* 🧩 感情パズルのタグをタッチしやすく */
+    .emotion-tag {
+        padding: 10px 15px !important;
+        font-size: 16px !important;
+    }
+    .puzzle-box { min-height: 70px !important; } /* ドロップ先を広げる */
+
+    /* 🚪 退出ボタンの調整 */
+    #exit-dream-btn {
+        top: 10px; right: 10px;
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    /* 💰 お金HUDの調整 */
+    #money-hud {
+        top: 10px; left: 10px; /* 退出ボタンと被らないように左へ */
+        right: auto;
+        padding: 8px 15px;
+        font-size: 1rem;
+    }
 }
