@@ -2,11 +2,32 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>夢コード - Wonderland Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 🔥 SEO ＆ メタデータ設定 -->
+    <title>夢コード - Wonderland Edition | LIIのための心理デバッグゲーム</title>
+    <meta name="description" content="ソシオニクスやMBTIの知識を活用して不思議の国を探索し、女王の城や狂ったお茶会を生き延びる心理デバッグゲーム。あなたの『夢コード』は何人目？">
+    <meta name="keywords" content="ソシオニクス,MBTI,LII,INTJ,夢コード,心理機能,性格診断">
+    
+    <!-- 🐇 ファビコン -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐇</text></svg>">
+    
+    <!-- 🖼️ OGP（TwitterやLINEでシェアした時に出る画像と情報） -->
+    <meta property="og:title" content="夢コード - Wonderland Edition">
+    <meta property="og:description" content="不思議の国の世界で心理機能をデバッグする探索ゲーム。あなたの『夢コード』を診断しよう！">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mofu-mitsu.github.io/dream-code">
+    <meta property="og:image" content="https://mofu-mitsu.github.io/dream-code/ogp.png"> <!-- みつきのogp.pngを配置してね！ -->
+    <meta name="twitter:card" content="summary_large_image">
+
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+
+<!-- 🏠 ホームに戻るボタン（左上に固定） -->
+<a href="https://mofu-mitsu.github.io/lab.html" style="position:fixed; top:10px; left:10px; z-index:9000; background:rgba(0,0,0,0.7); color:white; padding:8px 15px; border-radius:20px; text-decoration:none; border:1px solid #9d81ff;"><i class="fas fa-home"></i> ホームへ戻る</a>
+
 
 <!-- ☪* 夢のパスポート -->
 <div id="name-modal" class="modal-overlay">
@@ -38,7 +59,9 @@
         <div class="wonder-object obj-castle" onclick="DoorEngine.enterRoom()">🏰<span>ハートの女王の城</span></div>
     </div>
 </div>
-
+<button id="exit-dream-btn" onclick="CardEventEngine.showShareModal('🌙 夢からの帰還', 'この世界の探索を終え、現実へ帰還する。', 'voluntary')" style="display: none;">
+    <i class="fas fa-door-open"></i> 夢から覚める
+</button>
 <!-- 💋 ダーリンの家 -->
 <div id="darling-window" class="modal-overlay" style="display:none;">
     <div class="chat-container">
