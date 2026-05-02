@@ -18,6 +18,7 @@ function startFall() {
         
         if (worldMapWrapper) worldMapWrapper.style.display = "block"; 
         if (worldMap) worldMap.style.display = "block"; // 🔥 エンジンのために明示！
+        document.getElementById("exit-dream-btn").style.display = "block";
         if (magicBar) magicBar.style.display = "flex";
     }, 3000);
 }
@@ -26,6 +27,7 @@ function startFall() {
 function openDarlingHouse() {
     MagicEngine.stopGiantBug();
     document.getElementById("darling-window").style.display = "flex";
+    if (typeof ActionLogger !== 'undefined') ActionLogger.addLog("💋 ダーリンの家に入室した");
     const type = document.getElementById("type-input").value.toUpperCase();
     
     const liiBtn1 = document.getElementById("lii-special-btn");
