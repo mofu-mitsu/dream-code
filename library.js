@@ -6,13 +6,10 @@ const ActionLogger = {
         this.logs.push(`[${time}] ${action}`);
         console.log(`Log added: ${action}`);
 
-        // 🔥 書庫の行動ログモーダルが開いていれば、中身をリアルタイム更新する！
         const logModal = document.getElementById("log-modal-content");
         if (logModal && document.getElementById("log-modal").style.display === "flex") {
             logModal.innerText = this.logs.join("\n");
         }
-
-        if (this.logs.length > 30) this.sendToGAS(); // 30件でこまめに送信！
     },
 
     sendToGAS: function() {
@@ -26,24 +23,23 @@ const ActionLogger = {
             feedback: this.feedback, memobottle: this.memobottle
         };
         
-        // 🔥 新しいデプロイURLをここに必ず貼る！！ 🔥
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwIA3IxOwM1G8xzth22V47Vtr8sjNh-sIhDqlwGbVeZNyS3AcYW_JRu35i7t4C6ofgi/exec"; 
+        this.logs = []; this.feedback = ""; this.memobottle = "";
+
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwSMJJljWrOlLlHGGoHaa7_ardZdlHHZsB6LE7q93YRhV0XGWUyX3qPWgTeadqH0MA-Cg/exec"; 
         
+        // 🔥 mode: 'no-cors' を指定することで、ブラウザのブロックを無視して送りつける！
         fetch(GAS_URL, { 
             method: "POST", 
             body: JSON.stringify(payload), 
+            mode: "no-cors", // これが重要！
             headers: { "Content-Type": "text/plain;charset=utf-8" } 
         })
-        .then(res => {
-            console.log("GAS送信成功！");
-            // 🔥 送信に成功した時だけローカルのログを空にする！（データロスト防止）
-            this.logs = []; this.feedback = ""; this.memobottle = "";
-        })
-        .catch(e => console.error("GASエラー（ログは保持されます）:", e));
+        .then(() => console.log("GASへの送信を完了（no-cors）"))
+        .catch(e => console.error("GASエラー:", e));
     }
 };
 
-setInterval(() => ActionLogger.sendToGAS(), 30000); 
+// 🔥 定期送信（setInterval）は削除！ 閉じる時だけ送る！
 window.addEventListener("beforeunload", () => { ActionLogger.sendToGAS(); });
 
 const LibraryEngine = {
@@ -191,7 +187,7 @@ const LibraryEngine = {
         this.uniqueData.sliders.logic = document.getElementById("slider-logic").value;
         this.uniqueData.sliders.chaos = document.getElementById("slider-chaos").value;
         this.uniqueData.sliders.emotion = document.getElementById("slider-emotion").value;
-        this.uniqueDreamName = this.generateDreamName(); // 二つ名生成！
+        this.uniqueDreamName = this.generateDreamName(); 
 
         const choiceDataString = JSON.stringify(this.uniqueData);
 
@@ -201,12 +197,22 @@ const LibraryEngine = {
         
         ActionLogger.addLog(`🔮 唯一診断実行: ${this.uniqueDreamName}`);
 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwIA3IxOwM1G8xzth22V47Vtr8sjNh-sIhDqlwGbVeZNyS3AcYW_JRu35i7t4C6ofgi/exec"; 
-        const payload = { mode: "unique", name: document.getElementById("name-input").value.trim(), choiceData: choiceDataString, dreamName: this.uniqueDreamName };
+        // 🔥 新しいデプロイURLをここに貼る！
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwSMJJljWrOlLlHGGoHaa7_ardZdlHHZsB6LE7q93YRhV0XGWUyX3qPWgTeadqH0MA-Cg/exec"; 
+        const name = document.getElementById("name-input").value.trim() || "匿名";
 
-        fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload), headers: { "Content-Type": "text/plain;charset=utf-8" } })
+        // 🔥 GETリクエストで送るためにパラメータをURLにくっつける！
+        const params = new URLSearchParams({
+            mode: "unique",
+            name: name,
+            choiceData: choiceDataString,
+            dreamName: this.uniqueDreamName
+        }).toString();
+
+        fetch(`${GAS_URL}?${params}`) // 🔥 GETで送信！
         .then(res => res.json())
         .then(data => {
+            const count = data.count || 1; // エラー対策で最低1人にする
             const resultHtml = `
                 <div class="unique-result-box">
                     <div style="text-align:center; margin-bottom:10px;">あなたの夢コードは：</div>
@@ -218,14 +224,18 @@ const LibraryEngine = {
                     混沌: ${this.uniqueData.sliders.chaos}%<br>
                     感情: ${this.uniqueData.sliders.emotion}%<br><br>
                     <div style="text-align:center; color:gold; border-top:1px dashed #00bcd4; padding-top:10px;">
-                        この夢コードを持つ存在は、<br>現在【 <span style="font-size:1.5em; color:#fff;">${data.count}</span> 人 】しか確認されていません。
+                        この夢コードを持つ存在は、<br>現在【 <span style="font-size:1.5em; color:#fff;">${count}</span> 人 】しか確認されていません。
                     </div>
                 </div>
-                <button onclick="LibraryEngine.shareUniqueTest(${data.count})" style="background:#1da1f2; color:white; border:none; padding:10px; width:100%; margin-top:15px; border-radius:5px; cursor:pointer; font-weight:bold;"><i class="fas fa-share-nodes"></i> 結果をシェアする</button>
+                <button onclick="LibraryEngine.shareUniqueTest(${count})" style="background:#1da1f2; color:white; border:none; padding:10px; width:100%; margin-top:15px; border-radius:5px; cursor:pointer; font-weight:bold;"><i class="fas fa-share-nodes"></i> 結果をシェアする</button>
             `;
             document.getElementById("unique-result").innerHTML = resultHtml;
+            ActionLogger.addLog(`🔮 診断結果: ${this.uniqueDreamName} (${count}人目)`);
         })
-        .catch(err => { document.getElementById("unique-result").innerText = "ジェミ：「ごめんなさい、通信が途絶えたみたい……。」"; });
+        .catch(err => { 
+            console.error("GAS Error:", err);
+            document.getElementById("unique-result").innerText = "ジェミ：「ごめんなさい、通信が途絶えたみたい……。」"; 
+        });
     },
 
     // 📤 唯一診断専用シェア機能
