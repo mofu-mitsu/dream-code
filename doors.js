@@ -30,8 +30,10 @@ const DoorEngine = {
             door.innerHTML += `<div class="door-text">Door ${i+1}</div>`;
 
             door.onclick = () => {
+                ActionLogger.addLog("🚪 無限ドアを1つ開けた");
                 if (Math.random() < 0.15) { // 🔥 15%に確率アップ！
                     MagicEngine.showToast("🏰「……正解だ。玉座へ進め。」");
+                    ActionLogger.addLog("🏰 無限ドアを突破し、城へ侵入した！");
                     room.remove();
                     // 🃏 トランプ兵イベント開始！
                     CardEventEngine.startEncounter();
