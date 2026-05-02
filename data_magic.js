@@ -16,7 +16,11 @@ const magicData = {
         "歪な愛": { theme: "theme-distorted-love", msg: "「……ねぇ、どこにも行かないで？ 私の構造の中で永遠に生きて……🩸♡」" },
         "創世": null,
         "重力": null,
-        "地獄": null
+        "地獄": null,
+        "彗星": null,
+        "夜景": null,
+        "カレンダー": null,
+        "イデア": null
     },
 
     colors: {
