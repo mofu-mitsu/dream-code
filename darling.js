@@ -1,5 +1,5 @@
 // 🔑 Groq API Key
-const GROQ_API_KEY = "REPLACE_ME_BY_GITHUB_ACTIONS";
+const GROQ_API_KEY = typeof CONFIG_GROQ_API_KEY !== 'undefined' ? CONFIG_GROQ_API_KEY : "";
 
 const DarlingEngine = {
     punishMode: false,
