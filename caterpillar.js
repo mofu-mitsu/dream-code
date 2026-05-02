@@ -97,16 +97,21 @@ const CaterpillarEngine = {
     startJumperChecker: function() { if(!this.isCrushed) this.openModal("⚡ ジャンパー型診断", caterpillarData.jumperChecker, "jumper", "https://note.com/ni_intp/n/ne0a16bfc726b"); },
 
     // 🎯 エラー修正版・共通モーダル構築関数
+// caterpillar.js 内の openModal 関数だけ書き換え！
+
     openModal: function(title, data, typeName, noteUrl = null) {
         const modal = document.getElementById("caterpillar-sub-modal");
         modal.style.display = "flex";
         
+        // 🔥 中にスクロール専用のdiv（caterpillar-sub-content）を作る！
         let html = `
-            <div class="amatorika-title">${title}</div>
-            <div class="amatorika-text" id="sub-desc">${data.intro}</div>
-            <div id="sub-options" style="width:100%;"></div>
-            <div id="result-actions" style="display:none; margin-top:15px;"><div id="share-area"></div></div>
-            <button class="amatorika-close" onclick="CaterpillarEngine.closeModal()">閉じる</button>
+            <div class="caterpillar-sub-content">
+                <div class="amatorika-title">${title}</div>
+                <div class="amatorika-text" id="sub-desc">${data.intro}</div>
+                <div id="sub-options" style="width:100%;"></div>
+                <div id="result-actions" style="display:none; margin-top:15px;"><div id="share-area"></div></div>
+                <button class="amatorika-close" onclick="CaterpillarEngine.closeModal()" style="margin-top:15px;">閉じる</button>
+            </div>
         `;
         modal.innerHTML = html;
 
@@ -122,7 +127,6 @@ const CaterpillarEngine = {
                 document.getElementById("result-actions").style.display = "block";
                 this.showShareButton(resultText);
 
-                // 🔥 ここで診断結果をログに送る！
                 if (typeof ActionLogger !== 'undefined') ActionLogger.addLog(`🔬 診断[${typeName}]: 『${key}』を選択した`);
 
                 if (noteUrl && key !== "None" && key !== "E") {
@@ -146,7 +150,7 @@ const CaterpillarEngine = {
         shareBtn.innerHTML = "<i class='fas fa-share-nodes'></i> 結果をシェアする";
         shareBtn.style = "background: #1da1f2; color: white; padding: 10px; border-radius: 5px; border: none; cursor: pointer; width: 100%; font-weight:bold;";
         
-        const shareContent = `🐛 芋虫の家で診断したぞ！\n\n${resultText}\n\n#夢コード\nhttps://mofu-mitsu.github.io/dream-code`;
+        const shareContent = `🐛 芋虫の家で診断したぞ！\n\n${resultText}\n\n#夢コード #MBTI\nhttps://mofu-mitsu.github.io/dream-code`;
 
         shareBtn.onclick = () => {
             if (navigator.share) navigator.share({ text: shareContent }).catch(console.error);
