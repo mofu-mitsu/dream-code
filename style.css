@@ -2002,29 +2002,45 @@ body.theme-blood-splatter {
     #exit-dream-btn { font-size: 12px !important; padding: 6px 10px !important; height: 35px !important; box-sizing: border-box; }
 }
 
-/* 💰 🚪 上部HUDコンテナの修正 */
-#top-hud-container {
+/* 💰 お金HUD：世界で一番手前に表示（ショップ用） */
+#money-hud {
     position: fixed !important;
     top: 15px !important;
     right: 15px !important;
-    display: flex;
-    flex-direction: column; /* 🔥 縦に並べることで横幅の侵食を防ぐ！ */
-    align-items: flex-end; /* 右寄せ */
-    gap: 10px;
-    z-index: 9000; /* モーダル(10000)よりは下にする */
-    pointer-events: none; /* 下の要素を触れるように（ボタンは個別設定） */
+    background: rgba(0, 0, 0, 0.9); padding: 10px 20px;
+    border: 3px double gold; border-radius: 10px;
+    font-weight: bold; color: gold; font-size: 1.3rem;
+    box-shadow: 0 0 20px gold;
+    z-index: 2000000 !important; /* 🔥 全てのモーダル（10000〜）より上に設定 */
+    white-space: nowrap !important;
+    display: none; /* 最初は非表示、JSで出す */
 }
 
-#money-hud, #exit-dream-btn {
-    pointer-events: auto; /* ボタンとお金は触れるように戻す */
+/* 🚪 夢から覚めるボタン：家（モーダル）よりは下に配置 */
+#exit-dream-btn {
+    position: fixed !important;
+    top: 80px !important; /* 🔥 お金の下に配置（絶対に被らない） */
+    right: 15px !important;
+    background: rgba(0, 0, 0, 0.7); color: white;
+    border: 2px solid #aaa; padding: 10px 15px;
+    border-radius: 20px; font-weight: bold;
+    cursor: pointer;
+    z-index: 8000 !important; /* 🔥 家（10000）より下に設定。これで家に入ると裏に隠れる！ */
+    box-shadow: 0 0 10px #000;
+    white-space: nowrap !important;
+    display: none; /* 最初は非表示、JSで出す */
 }
 
-/* スマホ時の調整 */
+/* 📱 スマホ時のレスポンシブ：左上に縦並び */
 @media screen and (max-width: 768px) {
-    #top-hud-container {
-        top: 60px !important;
-        left: 10px !important;
-        right: auto !important;
-        align-items: flex-start; /* 左寄せ */
+    #money-hud {
+        top: 60px !important; /* ホームボタンの下 */
+        left: 10px !important; right: auto !important;
+        font-size: 1rem !important; padding: 8px 12px;
+    }
+    #exit-dream-btn {
+        top: 110px !important; /* お金の下 */
+        left: 10px !important; right: auto !important;
+        font-size: 12px !important; padding: 8px 12px;
     }
 }
