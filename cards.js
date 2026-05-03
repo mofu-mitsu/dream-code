@@ -17,7 +17,8 @@ const CardEventEngine = {
         document.getElementById("world-map-wrapper").style.display = "none";
         document.getElementById("dream-code-bar").style.display = "none";
         document.querySelectorAll(".wonder-item, #istj-rabbit").forEach(e => e.remove());
-
+        const exitBtn = document.getElementById("exit-dream-btn");
+        if (exitBtn) exitBtn.style.display = "none";
         const soldier = document.createElement("div");
         soldier.id = "trump-soldier-obj";
         soldier.className = "trump-soldier";
@@ -357,6 +358,11 @@ const CardEventEngine = {
         document.body.classList.remove("theme-throne-room", "theme-blood-splatter");
         document.getElementById("world-map-wrapper").style.display = "block";
         document.getElementById("dream-code-bar").style.display = "flex";
+        
+        // 🔥 城から出たら退出ボタンを戻す！
+        const exitBtn = document.getElementById("exit-dream-btn");
+        if (exitBtn) exitBtn.style.display = "block";
+        
         MagicEngine.resetAllEffects();
     },
 
