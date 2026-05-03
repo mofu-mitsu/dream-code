@@ -152,30 +152,47 @@ const LibraryEngine = {
         setTimeout(() => {
             let analysis = "【ジェミの行動分析レポート】\n";
             
-            // 🔥 汎用的な心理機能の指摘に変更！
-            if (logText.includes("女王の怒りを買い、首をはねられた")) {
-                analysis += "▶ 女王（Te-Si）の圧力に正面からぶつかって死んだわね。不器用な自己主張（Fi）か、構造（Ti）へのこだわりが身を滅ぼしたのかしら？\n";
-            } else if (logText.includes("ご機嫌取り")) {
-                analysis += "▶ 女王のご機嫌取り、頑張ってたわね。相手の感情（Fe/Fi）に合わせる適応力はなかなかのものよ。お疲れ様♡\n";
-            }
-            
-            if (logText.includes("芋虫を30回タップして爆散させた")) {
-                analysis += "▶ あの芋虫（LSI）を物理で潰したわね？ あなたの中の隠れた破壊衝動（Se）が見え隠れしてるわよ。\n";
-            } else if (logText.includes("芋虫をハッキングして")) {
-                analysis += "▶ 芋虫のシステムをハッキングしてたわね。相手のルール（Ti）をハックして上書きする……効率的で強かなやり方ね。\n";
+            // 👑 女王関連
+            if (logText.includes("機嫌取り：頭を撫で始めた") || logText.includes("物理的に撫で回して屈服させた")) {
+                analysis += "▶ 女王（Te-Si）を『物理的な接触（Se）』で黙らせたわね。権力には腕力で対抗する……野生的で悪くない判断よ。\n";
+            } else if (logText.includes("機嫌取り：データ(Si)を提示した") || logText.includes("機嫌取り：感情(Fi)で褒めた")) {
+                analysis += "▶ 女王の機嫌取り、頑張ってたわね。相手の求める機能（SiやFi）を察知して合わせる適応力はなかなかのものよ。\n";
+            } else if (logText.includes("機嫌取り：芋虫を投げた") || logText.includes("機嫌取り：淀んだ紫の液体を投げた")) {
+                analysis += "▶ 城でとんでもないアイテム（カオス）を投げて切り抜けたわね？ Ne（外向直観）のトリックスターぶりが発揮されてるわ。\n";
             }
 
+            // 🐛 芋虫関連
+            if (logText.includes("爆散させた")) {
+                analysis += "▶ あの芋虫（LSI）を限界まで叩き潰したわね？ あなたの中の抑えきれない破壊衝動（Se）が見え隠れしてるわよ。\n";
+            } else if (logText.includes("ハッキングして")) {
+                analysis += "▶ 芋虫のシステムをハッキングしてたわね。相手のルール（Ti）を強制上書きする……効率的で強かなやり方ね。\n";
+            }
+
+            // 💋 ダーリン関連
             if (logText.includes("ダーリンにチャット送信") && logText.includes("ダーリンちゃんを見つめた")) {
-                analysis += "▶ ダーリンの子（INTP）に随分かまってるみたいね。論理と好奇心のゲーム（Ti-Ne）がお好きなのかしら？ 観察されてるのはあなたの方なのにね♡\n";
+                analysis += "▶ ダーリンの子（INTP）に随分かまってるみたいね。論理と好奇心のゲーム（Ti-Ne）がお好きなのかしら？\n";
+            }
+            if (logText.includes("感情モデル構築パズル")) {
+                analysis += "▶ 感情をラベリングするパズル……あれ、楽しかったでしょ？ 複雑なものを構造化（Ti）して紐解くのは快感よね♡\n";
+            }
+
+            // ☕ お茶会＆その他
+            if (logText.includes("時間狂わせた") || logText.includes("席替えを実行")) {
+                analysis += "▶ お茶会の時間を狂わせたり席を入れ替えたり……カオスな状況（Ne）を楽しめるタイプみたいね。\n";
+            }
+            if (logText.includes("ケーキを食べて巨大化した") || logText.includes("ポーションを飲んで縮小した")) {
+                analysis += "▶ 落ちている怪しいアイテムを躊躇なく口にするなんて、なかなかのチャレンジャーね（Se）。\n";
+            }
+            if (logText.includes("ハトをクリックした")) {
+                analysis += "▶ ハトを驚かせて遊んでいたわね？ 夢の住人への干渉実験……観察者としての素質は十分よ。\n";
             }
 
             if (analysis === "【ジェミの行動分析レポート】\n") {
                 analysis += "▶ まだ特徴的な行動は見られないわ。もっとカオスを楽しんでちょうだい！";
             }
 
-            this.lastAnalysis = analysis; // シェア用に保存
+            this.lastAnalysis = analysis; 
             
-            // 画面に表示しつつ、シェアボタンも出す！
             document.getElementById("library-response").innerHTML = `
                 ${analysis.replace(/\n/g, '<br>')}
                 <br><button onclick="LibraryEngine.shareAnalysis()" style="background:#1da1f2; color:white; border:none; padding:8px 15px; margin-top:10px; border-radius:5px; cursor:pointer;"><i class="fas fa-share-nodes"></i> 分析結果をシェアする</button>
@@ -183,7 +200,7 @@ const LibraryEngine = {
             ActionLogger.addLog("👁️ ジェミに行動を分析された");
         }, 2000);
     },
-
+    
     // 📤 行動分析結果のシェア
     shareAnalysis: function() {
         const text = `👁️ ジェミの行動分析レポート\n\n${this.lastAnalysis.replace("【ジェミの行動分析レポート】\n", "")}\n#夢コード #心理機能\nhttps://mofu-mitsu.github.io/dream-code`;
