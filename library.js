@@ -152,13 +152,12 @@ const LibraryEngine = {
         setTimeout(() => {
             let analysisList = []; // 該当した分析結果を溜める配列
             
-            // 👑 女王関連
             if (logText.includes("機嫌取り：頭を撫で始めた") || logText.includes("物理的に撫で回して屈服させた")) {
-                analysisList.push("▶ 女王（Te-Si）を『物理的接触（Se）』で黙らせたわね。権力には腕力で対抗する……野生的で悪くない判断よ。");
-            } else if (logText.includes("機嫌取り：データ(Si)を提示した") || logText.includes("機嫌取り：感情(Fi)で褒めた")) {
-                analysisList.push("▶ 女王の機嫌取り、頑張ってたわね。相手の求める機能（SiやFi）を察知して合わせる適応力はなかなかのものよ。");
-            } else if (logText.includes("機嫌取り：芋虫を投げた") || logText.includes("機嫌取り：淀んだ紫の液体を投げた")) {
-                analysisList.push("▶ 城でとんでもないアイテム（カオス）を投げて切り抜けたわね？ Ne（外向直観）のトリックスターぶりが発揮されてるわ。");
+                analysisList.push("▶ 女王を『物理的接触（Se）』で黙らせたわね。野生的で悪くない判断よ。");
+            } else if (logText.includes("機嫌取り：感情(Fi)で褒めた")) { // 🔥 ここを cards.js と完全一致させた
+                analysisList.push("▶ 女王の機嫌取り、頑張ってたわね。相手の求める感情（Fi）を察知して合わせる適応力はなかなかのものよ。");
+            } else if (logText.includes("機嫌取り：データ(Si)を提示した")) {
+                analysisList.push("▶ 女王にデータ（Si）を提示して納得させたわね。事実に基づいた論理的な攻略、お見事よ。");
             }
 
             // 🐛 芋虫関連
