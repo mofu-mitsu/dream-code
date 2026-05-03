@@ -60,12 +60,11 @@
     </div>
 </div>
 <!-- 💰🚪 上部HUDコンテナ（これに入れれば絶対に被らない！） -->
-<div id="top-hud-container">
-    <div id="money-hud">💰 0 G</div>
-    <button id="exit-dream-btn" onclick="CardEventEngine.showShareModal('🌙 夢からの帰還', 'この世界の探索を終え、現実へ帰還する。', 'voluntary')">
-        <i class="fas fa-door-open"></i> 夢から覚める
-    </button>
-</div>
+<!-- 💰 お金と退出ボタンをバラバラに配置（CSSのz-indexで制御するため） -->
+<div id="money-hud">💰 0 G</div>
+<button id="exit-dream-btn" onclick="CardEventEngine.showShareModal('🌙 夢からの帰還', 'この世界の探索を終え、現実へ帰還する。', 'voluntary')">
+    <i class="fas fa-door-open"></i> 夢から覚める
+</button>
 <!-- 💋 ダーリンの家 -->
 <div id="darling-window" class="modal-overlay" style="display:none;">
     <div class="chat-container">
