@@ -2001,3 +2001,30 @@ body.theme-blood-splatter {
     #money-hud { font-size: 1rem !important; padding: 6px 10px !important; height: 35px !important; box-sizing: border-box; }
     #exit-dream-btn { font-size: 12px !important; padding: 6px 10px !important; height: 35px !important; box-sizing: border-box; }
 }
+
+/* 💰 🚪 上部HUDコンテナの修正 */
+#top-hud-container {
+    position: fixed !important;
+    top: 15px !important;
+    right: 15px !important;
+    display: flex;
+    flex-direction: column; /* 🔥 縦に並べることで横幅の侵食を防ぐ！ */
+    align-items: flex-end; /* 右寄せ */
+    gap: 10px;
+    z-index: 9000; /* モーダル(10000)よりは下にする */
+    pointer-events: none; /* 下の要素を触れるように（ボタンは個別設定） */
+}
+
+#money-hud, #exit-dream-btn {
+    pointer-events: auto; /* ボタンとお金は触れるように戻す */
+}
+
+/* スマホ時の調整 */
+@media screen and (max-width: 768px) {
+    #top-hud-container {
+        top: 60px !important;
+        left: 10px !important;
+        right: auto !important;
+        align-items: flex-start; /* 左寄せ */
+    }
+}
