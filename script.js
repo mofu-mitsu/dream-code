@@ -1,5 +1,6 @@
 // script.js 完全版
 
+// script.js の startFall 関数の中に追加
 function startFall() {
     const nameModal = document.getElementById("name-modal");
     const rabbitScreen = document.getElementById("rabbit-hole-screen");
@@ -7,7 +8,7 @@ function startFall() {
     const worldMap = document.getElementById("world-map"); 
     const magicBar = document.getElementById("dream-code-bar");
     
-    // 🔥 ここ！ 穴に落ちる瞬間にホームボタンを消す！
+    // 🔥 ホームボタンを隠す！
     const homeBtn = document.getElementById("home-btn");
     if (homeBtn) homeBtn.style.display = "none";
 
@@ -23,9 +24,13 @@ function startFall() {
         if (worldMapWrapper) worldMapWrapper.style.display = "block"; 
         if (worldMap) worldMap.style.display = "block"; 
         if (magicBar) magicBar.style.display = "flex";
+        
+        // 🔥 夢の世界に入ったら「退出ボタン」を表示する！
+        const exitBtn = document.getElementById("exit-dream-btn");
+        if (exitBtn) exitBtn.style.display = "block";
+
     }, 3000);
 }
-
 // 💋 ダーリンの家を開く
 function openDarlingHouse() {
     MagicEngine.stopGiantBug();
