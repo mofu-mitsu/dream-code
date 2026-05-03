@@ -1,3 +1,13 @@
+// 🔥 スマホ対策の究極奥義：画面が隠れた（バックグラウンドに行った）瞬間に送信する！
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+        ActionLogger.sendToGAS();
+    }
+});
+
+// 🔥 閉じる時だけ送る！
+window.addEventListener("beforeunload", () => { ActionLogger.sendToGAS(); });
+
 const ActionLogger = {
     logs: [], feedback: "", memobottle: "", 
     
@@ -23,24 +33,25 @@ const ActionLogger = {
             feedback: this.feedback, memobottle: this.memobottle
         };
         
-        this.logs = []; this.feedback = ""; this.memobottle = "";
-
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwSMJJljWrOlLlHGGoHaa7_ardZdlHHZsB6LE7q93YRhV0XGWUyX3qPWgTeadqH0MA-Cg/exec"; 
+        const params = new URLSearchParams();
+        params.append('payload', JSON.stringify(payload));
         
-        // 🔥 mode: 'no-cors' を指定することで、ブラウザのブロックを無視して送りつける！
-        fetch(GAS_URL, { 
-            method: "POST", 
-            body: JSON.stringify(payload), 
-            mode: "no-cors", // これが重要！
-            headers: { "Content-Type": "text/plain;charset=utf-8" } 
-        })
-        .then(() => console.log("GASへの送信を完了（no-cors）"))
-        .catch(e => console.error("GASエラー:", e));
+        // 🔥 GAS URLを設定！
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxC6G0tdMKum_5MbHS3P86Sz9xg-yexkZIGpk51JeJbETSdOd9wLRfUCySvxwHOPMVP/exec"; 
+        
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon(GAS_URL, params);
+        } else {
+            fetch(GAS_URL, { 
+                method: "POST", 
+                body: params, 
+                headers: { "Content-Type": "application/x-www-form-urlencoded" } 
+            });
+        }
+        
+        this.logs = []; this.feedback = ""; this.memobottle = "";
     }
 };
-
-// 🔥 定期送信（setInterval）は削除！ 閉じる時だけ送る！
-window.addEventListener("beforeunload", () => { ActionLogger.sendToGAS(); });
 
 const LibraryEngine = {
     premiumCodes: [
@@ -49,7 +60,11 @@ const LibraryEngine = {
     ],
     uniqueAnswers: [],
     uniqueData: { elements: [], color: "#ffffff", sliders: { logic: 50, chaos: 50, emotion: 50 } },
-    uniqueDreamName: "", // 自動生成された二つ名
+    uniqueDreamName: "", 
+    
+    // 分析結果保存用
+    lastAnalysis: "",
+
     openHouse: function() {
         MagicEngine.stopGiantBug();
         document.getElementById("library-window").style.display = "flex";
@@ -68,7 +83,8 @@ const LibraryEngine = {
                 <button onclick="LibraryEngine.openForm('意見箱')" style="background:#4b0082; color:white; border:1px solid #9d81ff; padding:8px 15px; border-radius:5px;">📮 意見箱</button>
                 <button onclick="LibraryEngine.openForm('メモボトル')" style="background:#4b0082; color:white; border:1px solid #9d81ff; padding:8px 15px; border-radius:5px;">🍾 メモボトル</button>
                 <button onclick="LibraryEngine.viewLogs()" style="background:#1a237e; color:white; border:1px solid #4caf50; padding:8px 15px; border-radius:5px;">📜 行動ログ</button>
-                <button onclick="LibraryEngine.startUniqueTest()" style="background:#00bcd4; color:black; border:1px solid #fff; padding:8px 15px; border-radius:5px;">🔮 夢の軌跡診断</button>
+                <button onclick="LibraryEngine.analyzeLogs()" style="background:#b71c1c; color:white; border:1px solid #ff0000; padding:8px 15px; border-radius:5px;">👁️ 軌跡の解剖（行動分析）</button>
+                <button onclick="LibraryEngine.startUniqueTest(1)" style="background:#00bcd4; color:black; border:1px solid #fff; padding:8px 15px; border-radius:5px;">🔮 夢の軌跡診断</button>
             </div>
             <h4 style="color:#9d81ff; margin-top:20px; border-bottom:1px solid #9d81ff;">📕 禁断の夢コード（購入すると魔法が解禁）</h4>
         `;
@@ -101,14 +117,12 @@ const LibraryEngine = {
 
     openForm: function(type) {
         const placeholder = type === "意見箱" ? "追加してほしい機能や要望を書いてね！" : "あなたのMBTI等の知識や考察を自由に書き込んで！";
-        
         const modal = document.getElementById("input-modal");
-        if(modal) modal.style.zIndex = "999999"; // 必ず最前面に
+        if(modal) modal.style.zIndex = "999999"; 
         
         TeaPartyEngine.openInputModal(`✨ ${type}`, `ジェミ：「あなたの考えを聞かせて？」`, placeholder, (text) => {
             if (!text) return;
             this.updateLog(`ジェミ：「ありがとう！ しっかり記録したわ！」`);
-            
             if (type === "意見箱") ActionLogger.feedback += text + "\n";
             if (type === "メモボトル") ActionLogger.memobottle += text + "\n";
             ActionLogger.addLog(`✍️ [${type} に投稿]: ${text}`); 
@@ -125,6 +139,64 @@ const LibraryEngine = {
         ActionLogger.addLog("📜 自分の行動ログを確認した");
     },
 
+    // 👁️ 軌跡の解剖（行動分析）- 汎用化＆シェア機能追加！
+    analyzeLogs: function() {
+        const logText = ActionLogger.logs.join("\n");
+        if (ActionLogger.logs.length < 3) {
+            this.updateLog("ジェミ：「分析するほどデータが溜まってないわ。もっとこの世界を探索してきて？」");
+            return;
+        }
+
+        document.getElementById("library-response").innerText = "ジェミ：「ふふっ……あなたの行動記録、分析させてもらうわね……（解析中）」";
+        
+        setTimeout(() => {
+            let analysis = "【ジェミの行動分析レポート】\n";
+            
+            // 🔥 汎用的な心理機能の指摘に変更！
+            if (logText.includes("女王の怒りを買い、首をはねられた")) {
+                analysis += "▶ 女王（Te-Si）の圧力に正面からぶつかって死んだわね。不器用な自己主張（Fi）か、構造（Ti）へのこだわりが身を滅ぼしたのかしら？\n";
+            } else if (logText.includes("ご機嫌取り")) {
+                analysis += "▶ 女王のご機嫌取り、頑張ってたわね。相手の感情（Fe/Fi）に合わせる適応力はなかなかのものよ。お疲れ様♡\n";
+            }
+            
+            if (logText.includes("芋虫を30回タップして爆散させた")) {
+                analysis += "▶ あの芋虫（LSI）を物理で潰したわね？ あなたの中の隠れた破壊衝動（Se）が見え隠れしてるわよ。\n";
+            } else if (logText.includes("芋虫をハッキングして")) {
+                analysis += "▶ 芋虫のシステムをハッキングしてたわね。相手のルール（Ti）をハックして上書きする……効率的で強かなやり方ね。\n";
+            }
+
+            if (logText.includes("ダーリンにチャット送信") && logText.includes("ダーリンちゃんを見つめた")) {
+                analysis += "▶ ダーリンの子（INTP）に随分かまってるみたいね。論理と好奇心のゲーム（Ti-Ne）がお好きなのかしら？ 観察されてるのはあなたの方なのにね♡\n";
+            }
+
+            if (analysis === "【ジェミの行動分析レポート】\n") {
+                analysis += "▶ まだ特徴的な行動は見られないわ。もっとカオスを楽しんでちょうだい！";
+            }
+
+            this.lastAnalysis = analysis; // シェア用に保存
+            
+            // 画面に表示しつつ、シェアボタンも出す！
+            document.getElementById("library-response").innerHTML = `
+                ${analysis.replace(/\n/g, '<br>')}
+                <br><button onclick="LibraryEngine.shareAnalysis()" style="background:#1da1f2; color:white; border:none; padding:8px 15px; margin-top:10px; border-radius:5px; cursor:pointer;"><i class="fas fa-share-nodes"></i> 分析結果をシェアする</button>
+            `;
+            ActionLogger.addLog("👁️ ジェミに行動を分析された");
+        }, 2000);
+    },
+
+    // 📤 行動分析結果のシェア
+    shareAnalysis: function() {
+        const text = `👁️ ジェミの行動分析レポート\n\n${this.lastAnalysis.replace("【ジェミの行動分析レポート】\n", "")}\n#夢コード #心理機能\nhttps://mofu-mitsu.github.io/dream-code`;
+        
+        if (navigator.share) {
+            navigator.share({ title: '夢コード 行動分析', text: text, url: "https://mofu-mitsu.github.io/dream-code" }).catch(console.error);
+        } else {
+            navigator.clipboard.writeText(text);
+            alert("分析結果をクリップボードにコピーしたわ！");
+        }
+    },
+
+    // ... (以降の唯一無二診断 startUniqueTest 等は前回のみつきのコードのままでOK！) ...
     startUniqueTest: function() {
         const modal = document.getElementById("unique-modal");
         const questionArea = document.getElementById("unique-question");
@@ -198,7 +270,7 @@ const LibraryEngine = {
         ActionLogger.addLog(`🔮 唯一診断実行: ${this.uniqueDreamName}`);
 
         // 🔥 新しいデプロイURLをここに貼る！
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwSMJJljWrOlLlHGGoHaa7_ardZdlHHZsB6LE7q93YRhV0XGWUyX3qPWgTeadqH0MA-Cg/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxC6G0tdMKum_5MbHS3P86Sz9xg-yexkZIGpk51JeJbETSdOd9wLRfUCySvxwHOPMVP/exec"; 
         const name = document.getElementById("name-input").value.trim() || "匿名";
 
         // 🔥 GETリクエストで送るためにパラメータをURLにくっつける！
