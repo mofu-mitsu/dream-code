@@ -2031,16 +2031,44 @@ body.theme-blood-splatter {
     display: none; /* 最初は非表示、JSで出す */
 }
 
-/* 📱 スマホ時のレスポンシブ：左上に縦並び */
+/* 🚪 夢から覚める（退出）ボタン：【左上の一番端】に固定！ */
+#exit-dream-btn {
+    position: fixed !important; 
+    top: 15px !important; /* 🔥 タイトルのホームボタンと同じ位置 */
+    left: 15px !important; 
+    right: auto !important; 
+    bottom: auto !important; 
+    
+    width: max-content !important;
+    height: 40px !important;
+    background: rgba(0, 0, 0, 0.7) !important; 
+    color: white !important; 
+    border: 2px solid #aaa !important; 
+    padding: 0 15px !important; 
+    border-radius: 20px !important; 
+    font-weight: bold !important;
+    cursor: pointer !important; 
+    z-index: 8000 !important; /* 🔥 モーダル（10000）より下にする */
+    box-shadow: 0 0 10px #000 !important;
+    display: none; /* JSで出す */
+}
+
+/* 💰 お金HUD：【退出ボタンのすぐ下】に配置！ */
+#money-hud {
+    position: fixed !important; 
+    top: 65px !important; /* 🔥 ボタンの分だけ下にズラす */
+    left: 15px !important; 
+    right: auto !important; 
+    background: rgba(0, 0, 0, 0.9); padding: 5px 15px;
+    border: 3px double gold; border-radius: 10px;
+    font-weight: bold; color: gold; font-size: 1.1rem;
+    z-index: 2000000 !important; /* 🔥 お金は常に最前面 */
+    box-shadow: 0 0 15px gold;
+}
+
+/* 📱 スマホ時の調整 */
 @media screen and (max-width: 768px) {
-    #money-hud {
-        top: 60px !important; /* ホームボタンの下 */
-        left: 10px !important; right: auto !important;
-        font-size: 1rem !important; padding: 8px 12px;
-    }
-    #exit-dream-btn {
-        top: 110px !important; /* お金の下 */
-        left: 10px !important; right: auto !important;
-        font-size: 12px !important; padding: 8px 12px;
-    }
+    #exit-dream-btn { top: 10px !important; left: 10px !important; height: 35px !important; font-size: 12px !important; }
+    #money-hud { top: 55px !important; left: 10px !important; font-size: 0.9rem !important; }
+    #home-btn { top: 10px !important; left: 10px !important; } /* タイトルのホームボタン */
 }
