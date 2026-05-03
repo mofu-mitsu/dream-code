@@ -37,7 +37,7 @@ const ActionLogger = {
         params.append('payload', JSON.stringify(payload));
         
         // 🔥 GAS URLを設定！
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxC6G0tdMKum_5MbHS3P86Sz9xg-yexkZIGpk51JeJbETSdOd9wLRfUCySvxwHOPMVP/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbx988ciQ_MCO5WVjcnjt3prlU5kOEd5ZRN4u6zEXKPa_Q88j775OK4sM9B_RENSxMw/exec"; 
         
         if (navigator.sendBeacon) {
             navigator.sendBeacon(GAS_URL, params);
@@ -322,7 +322,7 @@ const LibraryEngine = {
         ActionLogger.addLog(`🔮 唯一診断実行: ${this.uniqueDreamName}`);
 
         // 🔥 新しいデプロイURLをここに貼る！
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxC6G0tdMKum_5MbHS3P86Sz9xg-yexkZIGpk51JeJbETSdOd9wLRfUCySvxwHOPMVP/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbx988ciQ_MCO5WVjcnjt3prlU5kOEd5ZRN4u6zEXKPa_Q88j775OK4sM9B_RENSxMw/exec"; 
         const name = document.getElementById("name-input").value.trim() || "匿名";
 
         // 🔥 GETリクエストで送るためにパラメータをURLにくっつける！
