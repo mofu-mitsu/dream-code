@@ -1,21 +1,11 @@
-// 🔥 スマホ対策の究極奥義：画面が隠れた（バックグラウンドに行った）瞬間に送信する！
-document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") {
-        ActionLogger.sendToGAS();
-    }
-});
-
-// 🔥 閉じる時だけ送る！
-window.addEventListener("beforeunload", () => { ActionLogger.sendToGAS(); });
-
 const ActionLogger = {
-    logs: [], feedback: "", memobottle: "", 
+    logs: [],
+    feedback: "",
+    memobottle: "",
     
     addLog: function(action) {
         const time = new Date().toLocaleTimeString();
         this.logs.push(`[${time}] ${action}`);
-        console.log(`Log added: ${action}`);
-
         const logModal = document.getElementById("log-modal-content");
         if (logModal && document.getElementById("log-modal").style.display === "flex") {
             logModal.innerText = this.logs.join("\n");
@@ -25,31 +15,33 @@ const ActionLogger = {
     sendToGAS: function() {
         if (this.logs.length === 0 && !this.feedback && !this.memobottle) return;
         
+        // 🔥 送信用データを先にコピーする（ここが重要！）
+        const logData = this.logs.join("\n");
+        const fbData = this.feedback;
+        const mbData = this.memobottle;
+
+        // コピーしたら即座にリセット（次の送信に備える）
+        this.logs = []; this.feedback = ""; this.memobottle = "";
+
         const payload = {
             mode: "log",
             name: document.getElementById("name-input").value.trim() || "匿名",
             type: document.getElementById("type-input").value.trim() || "不明",
-            actions: this.logs.join("\n"),
-            feedback: this.feedback, memobottle: this.memobottle
+            actions: logData,
+            feedback: fbData,
+            memobottle: mbData
         };
         
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwJs-NxZPFG9XPOrGxZyBraIG_nviDs2QbXrbBEn1jFo3W1NpVOxG-N0cfjhmMVlj0/exec"; 
         const params = new URLSearchParams();
         params.append('payload', JSON.stringify(payload));
         
-        // 🔥 GAS URLを設定！
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwJs-NxZPFG9XPOrGxZyBraIG_nviDs2QbXrbBEn1jFo3W1NpVOxG-N0cfjhmMVlj0/exec"; 
-        
-        if (navigator.sendBeacon) {
-            navigator.sendBeacon(GAS_URL, params);
-        } else {
-            fetch(GAS_URL, { 
-                method: "POST", 
-                body: params, 
-                headers: { "Content-Type": "application/x-www-form-urlencoded" } 
-            });
-        }
-        
-        this.logs = []; this.feedback = ""; this.memobottle = "";
+        fetch(GAS_URL, { 
+            method: "POST", 
+            body: params, 
+            mode: "no-cors",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" } 
+        });
     }
 };
 
@@ -61,8 +53,6 @@ const LibraryEngine = {
     uniqueAnswers: [],
     uniqueData: { elements: [], color: "#ffffff", sliders: { logic: 50, chaos: 50, emotion: 50 } },
     uniqueDreamName: "", 
-    
-    // 分析結果保存用
     lastAnalysis: "",
 
     openHouse: function() {
@@ -83,86 +73,52 @@ const LibraryEngine = {
                 <button onclick="LibraryEngine.openForm('意見箱')" style="background:#4b0082; color:white; border:1px solid #9d81ff; padding:8px 15px; border-radius:5px;">📮 意見箱</button>
                 <button onclick="LibraryEngine.openForm('メモボトル')" style="background:#4b0082; color:white; border:1px solid #9d81ff; padding:8px 15px; border-radius:5px;">🍾 メモボトル</button>
                 <button onclick="LibraryEngine.viewLogs()" style="background:#1a237e; color:white; border:1px solid #4caf50; padding:8px 15px; border-radius:5px;">📜 行動ログ</button>
-                <button onclick="LibraryEngine.analyzeLogs()" style="background:#b71c1c; color:white; border:1px solid #ff0000; padding:8px 15px; border-radius:5px;">👁️ 軌跡の解剖（行動分析）</button>
-                <button onclick="LibraryEngine.startUniqueTest(1)" style="background:#00bcd4; color:black; border:1px solid #fff; padding:8px 15px; border-radius:5px;">🔮 夢の軌跡診断</button>
+                <button onclick="LibraryEngine.analyzeLogs()" style="background:#b71c1c; color:white; border:1px solid #ff0000; padding:8px 15px; border-radius:5px;">👁️ 行動分析</button>
+                <button onclick="LibraryEngine.startUniqueTest(1)" style="background:#00bcd4; color:black; border:1px solid #fff; padding:8px 15px; border-radius:5px;">🔮 唯一診断</button>
             </div>
-            <h4 style="color:#9d81ff; margin-top:20px; border-bottom:1px solid #9d81ff;">📕 禁断の夢コード（購入すると魔法が解禁）</h4>
+            <h4 style="color:#9d81ff; margin-top:20px; border-bottom:1px solid #9d81ff;">📕 禁断の夢コード</h4>
         `;
 
         this.premiumCodes.forEach(item => {
             const div = document.createElement("div");
             div.className = "tool-box"; div.style.borderColor = "#9d81ff";
-            div.innerHTML = `
-                <b>${item.code}</b> (${item.price} G)<br>
-                <small>${item.desc}</small><br>
-                <button onclick="LibraryEngine.buyCode('${item.code}', ${item.price})" style="background:#9d81ff; color:white; border:none; padding:5px 10px; margin-top:5px; border-radius:3px; cursor:pointer;">知識を授かる</button>
-            `;
+            div.innerHTML = `<b>${item.code}</b> (${item.price} G)<br><small>${item.desc}</small><br>
+                <button onclick="LibraryEngine.buyCode('${item.code}', ${item.price})" style="background:#9d81ff; color:white; border:none; padding:5px 10px; margin-top:5px; border-radius:3px; cursor:pointer;">知識を授かる</button>`;
             list.appendChild(div);
         });
     },
 
-    buyCode: function(code, price) {
-        if (CardEventEngine.playerMoney >= price) {
-            CardEventEngine.playerMoney -= price;
-            CardEventEngine.updateMoneyHUD();
-            this.updateLog(`ジェミ：「まいどあり♡ 特別な魔法『${code}』を使えるようにしておいたわ。」`);
-            ActionLogger.addLog(`💰 魔法 '${code}' を ${price}G で購入した`);
-            
-            if (code === "メタフィクション") magicData.spells["メタフィクション"] = { theme: "theme-meta", msg: "ジェミ：「みんなの思考の破片が、世界に溶け出していく……🧠✨」" };
-            if (code === "管理者権限") magicData.spells["管理者権限"] = { theme: "theme-admin", msg: "「……System Override. Welcome back, Administrator.」" };
-        } else {
-            this.updateLog("ジェミ：「あら。お金が足りないみたいよ？」");
-        }
-    },
-
-// library.js の一部を修正
     openForm: function(type) {
-        const placeholder = type === "意見箱" ? "追加してほしい機能や要望を書いてね！" : "あなたの考察を自由に書き込んで！";
+        const placeholder = type === "意見箱" ? "追加してほしい機能や要望を書いてね！" : "あなたの心理機能の考察を自由に書き込んで！";
+        const modal = document.getElementById("input-modal");
+        modal.style.zIndex = "999999"; 
         
-        TeaPartyEngine.openInputModal(`✨ ${type}`, `ジェミ：「あなたの考えを聞かせて？」`, placeholder, (text) => {
+        TeaPartyEngine.openInputModal(`✨ ${type}`, `ジェミ：「考えを聞かせて？」`, placeholder, (text) => {
             if (!text) return;
+            if (type === "意見箱") ActionLogger.feedback = text;
+            if (type === "メモボトル") ActionLogger.memobottle = text;
+            
+            ActionLogger.addLog(`✍️ [${type} に投稿]: ${text}`); 
+            ActionLogger.sendToGAS(); // 🔥 即送信！
             this.updateLog(`ジェミ：「ありがとう！ しっかり記録したわ！」`);
-            
-            // 🔥 その場ですぐ送信！ 溜めない！
-            const payload = {
-                mode: (type === "意見箱" ? "feedback" : "memobottle"),
-                name: document.getElementById("name-input").value.trim() || "匿名",
-                type: document.getElementById("type-input").value.trim() || "不明",
-                feedback: (type === "意見箱" ? text : ""),
-                memobottle: (type === "メモボトル" ? text : ""),
-                actions: ""
-            };
-
-            const GAS_URL = "https://script.google.com/macros/s/AKfycbxkHuCzCLOzoW3wb2yyieC1hcYKvahGwcQlkulFrogW-yOehvsXqY1ejkfATMSBJS7G/exec";
-            fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload), mode: "no-cors" });
-            
-            ActionLogger.addLog(`✍️ [${type} に投稿した]`); 
         });
     },
 
-    viewLogs: function() {
-        if (ActionLogger.logs.length === 0) {
-            this.updateLog(`ジェミ：「まだ記録はないみたい。夢の世界を探索してみて！」`);
-            return;
-        }
-        document.getElementById("log-modal").style.display = "flex";
-        document.getElementById("log-modal-content").innerText = ActionLogger.logs.join("\n");
-        ActionLogger.addLog("📜 自分の行動ログを確認した");
-    },
-
-    // 👁️ 軌跡の解剖（行動分析）- 汎用化＆シェア機能追加！
     analyzeLogs: function() {
         const logText = ActionLogger.logs.join("\n");
         if (ActionLogger.logs.length < 3) {
-            this.updateLog("ジェミ：「分析するほどデータが溜まってないわ。もっとこの世界を探索してきて？」");
+            this.updateLog("ジェミ：「分析するほどデータが溜まってないわ。」");
             return;
         }
-
-        document.getElementById("library-response").innerText = "ジェミ：「ふふっ……あなたの行動記録、分析させてもらうわね……（解析中）」";
-        
+        document.getElementById("library-response").innerText = "ジェミ：「あなたの行動記録、分析させてもらうわね……（解析中）」";
         setTimeout(() => {
-            let analysisList = []; // 該当した分析結果を溜める配列
-            
+            let analysisList = [];
+            if (logText.includes("機嫌取り：頭を撫で始めた")) analysisList.push("▶ 女王（Te-Si）を『物理的接触（Se）』で黙らせたわね。野生的で悪くない判断よ。");
+            if (logText.includes("機嫌取り：感情(Fi)で褒めた")) analysisList.push("▶ 女王の機嫌取り、頑張ってたわね。相手の求める感情に合わせる適応力はなかなかのものよ。");
+            if (logText.includes("爆散させた")) analysisList.push("▶ あの芋虫（LSI）を限界まで叩き潰したわね？ あなたの中の破壊衝動（Se）が見え隠れしてるわ。");
+            if (logText.includes("ハッキングして")) analysisList.push("▶ 芋虫のシステムをハッキングしてたわね。相手のルール（Ti）を上書きする強かなやり方ね。");
+            if (logText.includes("夢コード実行")) analysisList.push("▶ 夢コードを使いこなしているわね。世界を自分の望む形に再定義したいという欲求かしら？");
+            if (logText.includes("魔女の店で")) analysisList.push("▶ 魔女の店で買い物をしたのね。実用性（Te）より知的好奇心が勝るタイプみたいね。");
             if (logText.includes("機嫌取り：頭を撫で始めた") || logText.includes("物理的に撫で回して屈服させた")) {
                 analysisList.push("▶ 女王を『物理的接触（Se）』で黙らせたわね。野生的で悪くない判断よ。");
             } else if (logText.includes("機嫌取り：感情(Fi)で褒めた")) { // 🔥 ここを cards.js と完全一致させた
@@ -224,26 +180,24 @@ const LibraryEngine = {
             if (logText.includes("ハイ＆ローを開始") || logText.includes("ババ抜きを開始")) {
                 analysisList.push("▶ ダーリンの子とのゲーム、白熱してたみたいね。相手の思考（Ti）を読むのは得意？ それとも運任せ？");
             }
-            // 🔥 分析結果の組み立て（ランダムに3個抽出）
             let finalAnalysis = "【ジェミの行動分析レポート】\n";
-            
             if (analysisList.length > 0) {
-                // シャッフルして最大3つ取り出す
                 analysisList.sort(() => Math.random() - 0.5);
-                const selectedAnalysis = analysisList.slice(0, 3);
-                finalAnalysis += selectedAnalysis.join("\n");
+                finalAnalysis += analysisList.slice(0, 3).join("\n");
             } else {
                 finalAnalysis += "▶ まだ特徴的な行動は見られないわ。もっとカオスを楽しんでちょうだい！";
             }
-
             this.lastAnalysis = finalAnalysis; 
-            
             document.getElementById("library-response").innerHTML = `
                 ${finalAnalysis.replace(/\n/g, '<br>')}
-                <br><button onclick="LibraryEngine.shareAnalysis()" style="background:#1da1f2; color:white; border:none; padding:8px 15px; margin-top:10px; border-radius:5px; cursor:pointer;"><i class="fas fa-share-nodes"></i> 分析結果をシェアする</button>
-            `;
-            ActionLogger.addLog("👁️ ジェミに行動を分析された");
+                <br><button onclick="LibraryEngine.shareAnalysis()" style="background:#1da1f2; color:white; border:none; padding:8px 15px; margin-top:10px; border-radius:5px; cursor:pointer;"><i class="fas fa-share-nodes"></i> 分析結果をシェアする</button>`;
         }, 2000);
+    },
+
+    shareAnalysis: function() {
+        const text = `👁️ ジェミの行動分析レポート\n\n${this.lastAnalysis.replace("【ジェミの行動分析レポート】\n", "")}\n#夢コード #心理機能\nhttps://mofu-mitsu.github.io/dream-code`;
+        if (navigator.share) navigator.share({ text }).catch(console.error);
+        else { navigator.clipboard.writeText(text); alert("コピーしたわ！"); }
     },
 
     // 📤 行動分析結果のシェア
