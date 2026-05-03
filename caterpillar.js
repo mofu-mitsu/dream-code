@@ -1,5 +1,5 @@
 const CaterpillarEngine = {
-    tapCount: 0, maxTaps: 30, isCrushed: false, sporeInterval: null,
+    tapCount: 0, totalTapCount: 0, maxTaps: 30, isCrushed: false, sporeInterval: null,
 
     updateLog: function(text) { document.getElementById("caterpillar-response").innerText = text; },
 
@@ -20,6 +20,9 @@ const CaterpillarEngine = {
     closeHouse: function() {
         document.getElementById("caterpillar-window").style.display = "none";
         this.stopSpores();
+        if (this.totalTapCount > 0 && !this.isCrushed) {
+            if (typeof ActionLogger !== 'undefined') ActionLogger.addLog(`🐛 芋虫を合計【${this.totalTapCount}回】タップした`);
+        }
     },
 
     talk: function() {
@@ -40,7 +43,9 @@ const CaterpillarEngine = {
         }
 
         this.tapCount++;
+        this.totalTapCount++; // 🔥 タップするたびに総回数をプラス
         const remain = this.maxTaps - this.tapCount;
+
         avatar.style.transform = `scale(${1 - (this.tapCount * 0.02)})`;
         avatar.style.animation = "shake 0.1s"; setTimeout(() => avatar.style.animation = "", 100);
 
@@ -51,11 +56,12 @@ const CaterpillarEngine = {
             this.updateLog(caterpillarData.crushed);
             avatar.innerText = "💥"; avatar.style.transform = "scale(1.5)";
             
-            // 🔥 行動ログ追加！
-            if (typeof ActionLogger !== 'undefined') ActionLogger.addLog("💥 芋虫を30回タップして爆散させた");
+            // 🔥 爆発した時も記録！
+            if (typeof ActionLogger !== 'undefined') ActionLogger.addLog(`💥 芋虫を${this.totalTapCount}回タップして爆散させた！`);
 
             setTimeout(() => {
-                this.isCrushed = false; avatar.innerText = "🐛"; avatar.style.transform = "scale(1)"; this.tapCount = 0;
+                this.isCrushed = false; avatar.innerText = "🐛"; avatar.style.transform = "scale(1)"; 
+                this.tapCount = 0; // 内部の耐久度はリセットするが、totalTapCountは維持
                 this.updateLog("「……フン。バックアップから復元した。これ以上物理ダメージを与えるなよ。」");
             }, 5000);
         } else {
