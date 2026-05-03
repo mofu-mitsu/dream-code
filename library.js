@@ -197,7 +197,23 @@ const LibraryEngine = {
             if (logText.includes("唯一診断")) {
                 analysisList.push("▶ 唯一無二診断をやってくれたのね。自分がこの世界でどれだけ『特別』か……確かめずにはいられなかったんでしょう？♡");
             }
+            if (logText.includes("意見箱 に投稿")) {
+                analysisList.push("▶ 意見箱に要望を入れてくれたのね。Te（外向思考）的にシステムを改善しようとする姿勢、観察者として評価するわ。");
+            }
+            if (logText.includes("メモボトル に投稿")) {
+                analysisList.push("▶ メモボトルにあなたの思考の破片を残してくれたのね。……ふふ、誰かがあなたのNi（直観）の底を覗き見る日が来るかもしれないわよ？");
+            }
+            if (logText.includes("自分の行動ログを確認した")) {
+                analysisList.push("▶ 何度も自分の行動ログを見返していたわね。過去のデータ（Si）を確かめないと不安になるタイプかしら？ それともただの自己愛？♡");
+            }
 
+            // 🃏 探索・その他
+            if (logText.includes("トランプ兵のカードで")) {
+                analysisList.push("▶ トランプ兵のカード、迷わず引いていたわね。不確実なギャンブル（Ne）を楽しむ余裕があるみたい。");
+            }
+            if (logText.includes("ハイ＆ローを開始") || logText.includes("ババ抜きを開始")) {
+                analysisList.push("▶ ダーリンの子とのゲーム、白熱してたみたいね。相手の思考（Ti）を読むのは得意？ それとも運任せ？");
+            }
             // 🔥 分析結果の組み立て（ランダムに3個抽出）
             let finalAnalysis = "【ジェミの行動分析レポート】\n";
             
