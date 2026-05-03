@@ -1960,3 +1960,44 @@ body.theme-blood-splatter {
         white-space: nowrap !important;
     }
 }
+
+/* 💰 🚪 上部のHUDコンテナ（お金と退出ボタンをグループ化！） */
+#top-hud-container {
+    position: fixed !important;
+    top: 15px !important;
+    right: 15px !important; /* PCは右上 */
+    display: flex;
+    align-items: center;
+    gap: 15px; /* お金とボタンの隙間 */
+    z-index: 1000000;
+}
+
+/* お金（HUD内のスタイル） */
+#money-hud {
+    background: rgba(0, 0, 0, 0.9); padding: 10px 20px;
+    border: 3px double gold; border-radius: 10px;
+    font-weight: bold; color: gold; font-size: 1.3rem;
+    box-shadow: 0 0 20px gold; white-space: nowrap !important;
+    display: none; /* 初期は非表示 */
+}
+
+/* 退出ボタン（HUD内のスタイル） */
+#exit-dream-btn {
+    background: #555; color: white; border: 2px solid #aaa;
+    padding: 10px 15px !important; border-radius: 10px; font-weight: bold;
+    cursor: pointer; box-shadow: 0 0 10px #000; white-space: nowrap !important;
+    display: none; /* 初期は非表示 */
+}
+#exit-dream-btn:hover { background: #ff007f; border-color: #fff; }
+
+/* 📱 スマホ時の調整 */
+@media screen and (max-width: 768px) {
+    #top-hud-container {
+        top: 60px !important; /* ホームボタンの下に配置 */
+        left: 10px !important; /* スマホは左上に配置！ */
+        right: auto !important;
+        gap: 5px !important; /* 隙間を詰める */
+    }
+    #money-hud { font-size: 1rem !important; padding: 6px 10px !important; height: 35px !important; box-sizing: border-box; }
+    #exit-dream-btn { font-size: 12px !important; padding: 6px 10px !important; height: 35px !important; box-sizing: border-box; }
+}
