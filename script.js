@@ -4,8 +4,12 @@ function startFall() {
     const nameModal = document.getElementById("name-modal");
     const rabbitScreen = document.getElementById("rabbit-hole-screen");
     const worldMapWrapper = document.getElementById("world-map-wrapper");
-    const worldMap = document.getElementById("world-map"); // 🔥 追加
+    const worldMap = document.getElementById("world-map"); 
     const magicBar = document.getElementById("dream-code-bar");
+    
+    // 🔥 ここ！ 穴に落ちる瞬間にホームボタンを消す！
+    const homeBtn = document.getElementById("home-btn");
+    if (homeBtn) homeBtn.style.display = "none";
 
     nameModal.style.display = "none";
     rabbitScreen.style.display = "flex"; 
@@ -17,8 +21,7 @@ function startFall() {
         rabbitScreen.style.display = "none";
         
         if (worldMapWrapper) worldMapWrapper.style.display = "block"; 
-        if (worldMap) worldMap.style.display = "block"; // 🔥 エンジンのために明示！
-        document.getElementById("exit-dream-btn").style.display = "block";
+        if (worldMap) worldMap.style.display = "block"; 
         if (magicBar) magicBar.style.display = "flex";
     }, 3000);
 }
