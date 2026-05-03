@@ -122,7 +122,7 @@ const MagicEngine = {
         ];
 
         // ユーザーが入力したメモがあれば追加！
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxC6G0tdMKum_5MbHS3P86Sz9xg-yexkZIGpk51JeJbETSdOd9wLRfUCySvxwHOPMVP/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbx988ciQ_MCO5WVjcnjt3prlU5kOEd5ZRN4u6zEXKPa_Q88j775OK4sM9B_RENSxMw/exec"; 
 
         // 🔥 GASから他人のメモボトルを取得！
         fetch(GAS_URL + "?req=memos")
@@ -142,9 +142,19 @@ const MagicEngine = {
                 bottle.onclick = () => {
                     bottle.remove(); 
                     document.getElementById("meta-modal").style.display = "flex";
-                    // 🔥 改行（\n）を <br> に変換してHTMLとして表示させる！
+                    
+                    // 🔥 長文でも読めるようにスクロール可能にし、改行を <br> に変換！
                     const memoText = memos[Math.floor(Math.random() * memos.length)];
-                    document.getElementById("meta-modal-text").innerHTML = `「${memoText.replace(/\n/g, '<br>')}」`;
+                    const modalText = document.getElementById("meta-modal-text");
+                    modalText.innerHTML = `「${memoText.replace(/\n/g, '<br>')}」`;
+                    
+                    // 長文対応のスタイル（CSSではなくここで直接補強！）
+                    modalText.style.maxHeight = "60vh";
+                    modalText.style.overflowY = "auto";
+                    modalText.style.textAlign = "left";
+                    modalText.style.padding = "10px";
+                    modalText.style.background = "rgba(0,0,0,0.05)";
+                    modalText.style.borderRadius = "5px";
                 };
                 setTimeout(() => bottle.remove(), 15000);
             }, 4000);
@@ -165,7 +175,7 @@ const MagicEngine = {
             "【サーバー（GAS）から他プレイヤーのログを抽出中...】"
         ];
         
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxC6G0tdMKum_5MbHS3P86Sz9xg-yexkZIGpk51JeJbETSdOd9wLRfUCySvxwHOPMVP/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbx988ciQ_MCO5WVjcnjt3prlU5kOEd5ZRN4u6zEXKPa_Q88j775OK4sM9B_RENSxMw/exec"; 
 
         fetch(GAS_URL + "?req=logs")
         .then(res => res.json())
