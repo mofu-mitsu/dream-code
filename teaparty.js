@@ -140,21 +140,18 @@ const TeaPartyEngine = {
             
             cup.onclick = () => {
                 this.updateLog(`💋 ダーリンの子: ${teaData.msg}`);
-                MagicEngine.resetAllEffects(); 
+                // 🔥 teaKey（お茶の名前）を直接ログに入れる！
+                ActionLogger.addLog(`☕ お茶【${teaKey}】を飲んだ`);
                 
+                MagicEngine.resetAllEffects(); 
                 if (teaData.effect === "effect-darkness") {
                     document.body.className = "effect-darkness";
                     document.addEventListener("mousemove", MagicEngine.trackMouseForDarkness);
-                } else {
-                    MagicEngine.applyTheme(teaData.effect);
-                }
+                } else { MagicEngine.applyTheme(teaData.effect); }
 
                 if (teaData.effect === "theme-foam") MagicEngine.startFoamParty();
-
                 setTimeout(() => this.darlingEmotionTrap(), 4000);
                 this.setupTable(); 
-                
-                ActionLogger.addLog(`☕ お茶【${teaKey}】を飲んだ`);
             };
 
             const sniffBtn = document.createElement("button");
