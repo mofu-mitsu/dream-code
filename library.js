@@ -37,7 +37,7 @@ const ActionLogger = {
         params.append('payload', JSON.stringify(payload));
         
         // 🔥 GAS URLを設定！
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbx988ciQ_MCO5WVjcnjt3prlU5kOEd5ZRN4u6zEXKPa_Q88j775OK4sM9B_RENSxMw/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwZsLgWniq50Jp1AQZVtOYrJU9LSqL9W8VmAdKwcaXxHo01AzXgoSSpFYsGX_pU5QAq/exec"; 
         
         if (navigator.sendBeacon) {
             navigator.sendBeacon(GAS_URL, params);
@@ -115,17 +115,28 @@ const LibraryEngine = {
         }
     },
 
+// library.js の一部を修正
     openForm: function(type) {
-        const placeholder = type === "意見箱" ? "追加してほしい機能や要望を書いてね！" : "あなたのMBTI等の知識や考察を自由に書き込んで！";
-        const modal = document.getElementById("input-modal");
-        if(modal) modal.style.zIndex = "999999"; 
+        const placeholder = type === "意見箱" ? "追加してほしい機能や要望を書いてね！" : "あなたの考察を自由に書き込んで！";
         
         TeaPartyEngine.openInputModal(`✨ ${type}`, `ジェミ：「あなたの考えを聞かせて？」`, placeholder, (text) => {
             if (!text) return;
             this.updateLog(`ジェミ：「ありがとう！ しっかり記録したわ！」`);
-            if (type === "意見箱") ActionLogger.feedback += text + "\n";
-            if (type === "メモボトル") ActionLogger.memobottle += text + "\n";
-            ActionLogger.addLog(`✍️ [${type} に投稿]: ${text}`); 
+            
+            // 🔥 その場ですぐ送信！ 溜めない！
+            const payload = {
+                mode: (type === "意見箱" ? "feedback" : "memobottle"),
+                name: document.getElementById("name-input").value.trim() || "匿名",
+                type: document.getElementById("type-input").value.trim() || "不明",
+                feedback: (type === "意見箱" ? text : ""),
+                memobottle: (type === "メモボトル" ? text : ""),
+                actions: ""
+            };
+
+            const GAS_URL = "https://script.google.com/macros/s/AKfycbwZsLgWniq50Jp1AQZVtOYrJU9LSqL9W8VmAdKwcaXxHo01AzXgoSSpFYsGX_pU5QAq/exec";
+            fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload), mode: "no-cors" });
+            
+            ActionLogger.addLog(`✍️ [${type} に投稿した]`); 
         });
     },
 
