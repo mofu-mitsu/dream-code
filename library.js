@@ -87,7 +87,29 @@ const LibraryEngine = {
             list.appendChild(div);
         });
     },
+    // 📜 行動ログを表示する（復活！）
+    viewLogs: function() {
+        if (ActionLogger.logs.length === 0) {
+            this.updateLog(`ジェミ：「まだ記録はないみたい。夢の世界を探索してみて！」`);
+            return;
+        }
+        document.getElementById("log-modal").style.display = "flex";
+        document.getElementById("log-modal-content").innerText = ActionLogger.logs.join("\n");
+        ActionLogger.addLog("📜 自分の行動ログを確認した");
+    },
 
+    buyCode: function(code, price) {
+        if (CardEventEngine.playerMoney >= price) {
+            CardEventEngine.playerMoney -= price;
+            CardEventEngine.updateMoneyHUD();
+            this.updateLog(`ジェミ：「まいどあり♡ 特別な魔法『${code}』を使えるようにしておいたわ。」`);
+            ActionLogger.addLog(`💰 魔法 '${code}' を ${price}G で購入した`);
+            if (code === "メタフィクション") magicData.spells["メタフィクション"] = { theme: "theme-meta", msg: "ジェミ：「みんなの思考の破片が、世界に溶け出していく……🧠✨」" };
+            if (code === "管理者権限") magicData.spells["管理者権限"] = { theme: "theme-admin", msg: "「……System Override. Welcome back, Administrator.」" };
+        } else {
+            this.updateLog("ジェミ：「あら。お金が足りないみたいよ？」");
+        }
+    },
     openForm: function(type) {
         const placeholder = type === "意見箱" ? "追加してほしい機能や要望を書いてね！" : "あなたの心理機能の考察を自由に書き込んで！";
         const modal = document.getElementById("input-modal");
