@@ -1797,3 +1797,43 @@ body.theme-blood-splatter {
     padding: 10px; margin-bottom: 15px; outline: none; border-radius: 5px; 
     width: 90%; font-size: 16px; min-height: 100px; resize: vertical; /* 縦に伸ばせるように */
 }
+
+/* 🚪 夢から覚める（退出）ボタン：縦伸びバグを完全・究極に修正！！ */
+#exit-dream-btn {
+    position: fixed !important; 
+    top: auto !important; 
+    bottom: 80px !important; /* 夢コードバーの少し上 */
+    right: 15px !important; 
+    left: auto !important; 
+    
+    /* 🔥 縦横を完全に固定して、絶対に伸びないようにする！ */
+    width: auto !important; 
+    max-width: 150px !important;
+    height: auto !important;
+    max-height: 50px !important;
+    white-space: nowrap !important; /* 文字の折り返し禁止 */
+    
+    background: rgba(0, 0, 0, 0.8) !important; 
+    color: white !important; 
+    border: 2px solid #aaa !important; 
+    padding: 10px 15px !important; 
+    border-radius: 20px !important; 
+    font-weight: bold !important;
+    cursor: pointer !important; 
+    z-index: 9000 !important; 
+    box-shadow: 0 0 10px #000 !important;
+}
+
+/* 📱 スマホ時の追加調整 */
+@media screen and (max-width: 768px) {
+    #money-hud { top: 10px !important; left: 10px !important; right: auto !important; font-size: 1rem !important; padding: 8px 12px; }
+    #home-btn { top: 60px !important; left: 10px !important; font-size: 12px !important; padding: 8px 12px !important; }
+    
+    /* スマホの時はさらに小さく・絶対固定！ */
+    #exit-dream-btn { 
+        bottom: 70px !important; 
+        right: 10px !important; 
+        padding: 8px 12px !important; 
+        font-size: 12px !important; 
+    }
+}
