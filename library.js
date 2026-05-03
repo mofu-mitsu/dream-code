@@ -1,32 +1,15 @@
-// =========================================
-// 🚀 1. 自動送信トリガー（ここが消えてた！）
-// =========================================
-
-// 🔥 スマホ対策：画面が裏に隠れた瞬間に送信（最強の確実性）
 document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") {
-        ActionLogger.sendToGAS();
-    }
+    if (document.visibilityState === "hidden") ActionLogger.sendToGAS();
 });
+window.addEventListener("beforeunload", () => { ActionLogger.sendToGAS(); });
 
-// 🔥 PC対策：ページを閉じたりリロードした瞬間に送信
-window.addEventListener("beforeunload", () => {
-    ActionLogger.sendToGAS();
-});
-
-// =========================================
-// 📊 2. 行動ロガー（ActionLogger）
-// =========================================
+// 📊 2. 行動ロガー
 const ActionLogger = {
-    logs: [],
-    feedback: "",
-    memobottle: "",
+    logs: [], feedback: "", memobottle: "", 
     
     addLog: function(action) {
         const time = new Date().toLocaleTimeString();
         this.logs.push(`[${time}] ${action}`);
-        console.log(`Log added: ${action}`);
-
         const logModal = document.getElementById("log-modal-content");
         if (logModal && document.getElementById("log-modal").style.display === "flex") {
             logModal.innerText = this.logs.join("\n");
@@ -36,7 +19,6 @@ const ActionLogger = {
     sendToGAS: function() {
         if (this.logs.length === 0 && !this.feedback && !this.memobottle) return;
         
-        // 送信用データのコピー
         const payload = {
             mode: "log",
             name: document.getElementById("name-input").value.trim() || "匿名",
@@ -46,24 +28,19 @@ const ActionLogger = {
             memobottle: this.memobottle
         };
         
+        // 🔥 送信準備ができたらローカルをクリア
+        this.logs = []; this.feedback = ""; this.memobottle = "";
+
         const GAS_URL = "https://script.google.com/macros/s/AKfycbwJs-NxZPFG9XPOrGxZyBraIG_nviDs2QbXrbBEn1jFo3W1NpVOxG-N0cfjhmMVlj0/exec"; 
-        
-        const params = new URLSearchParams();
-        params.append('payload', JSON.stringify(payload));
-        
-        // 送信！
+
+        // 🔥 究極の送信設定：keepaliveとno-corsの組み合わせ
         fetch(GAS_URL, { 
             method: "POST", 
-            body: params, 
-            mode: "no-cors",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" } 
-        }).then(() => {
-            console.log("GAS送信トリガー完了");
-            // 送信完了後にローカルのバッファをクリア（ActionLoggerを指定して確実に！）
-            ActionLogger.logs = []; 
-            ActionLogger.feedback = ""; 
-            ActionLogger.memobottle = "";
-        }).catch(e => console.error("GAS送信失敗:", e));
+            body: JSON.stringify(payload), 
+            mode: "no-cors", 
+            keepalive: true, // 🔥 これがページを閉じても送信を維持させる魔法
+            headers: { "Content-Type": "text/plain" } 
+        });
     }
 };
 
