@@ -37,7 +37,7 @@ const ActionLogger = {
         params.append('payload', JSON.stringify(payload));
         
         // 🔥 GAS URLを設定！
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwZsLgWniq50Jp1AQZVtOYrJU9LSqL9W8VmAdKwcaXxHo01AzXgoSSpFYsGX_pU5QAq/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwrYTFVk1upb9t1ouX79Srofs3_YoqOhi616eMdz_mSjlFPPcyKkSI-XYudcdZ2HMNZ/exec"; 
         
         if (navigator.sendBeacon) {
             navigator.sendBeacon(GAS_URL, params);
@@ -133,7 +133,7 @@ const LibraryEngine = {
                 actions: ""
             };
 
-            const GAS_URL = "https://script.google.com/macros/s/AKfycbwZsLgWniq50Jp1AQZVtOYrJU9LSqL9W8VmAdKwcaXxHo01AzXgoSSpFYsGX_pU5QAq/exec";
+            const GAS_URL = "https://script.google.com/macros/s/AKfycbwrYTFVk1upb9t1ouX79Srofs3_YoqOhi616eMdz_mSjlFPPcyKkSI-XYudcdZ2HMNZ/exec";
             fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload), mode: "no-cors" });
             
             ActionLogger.addLog(`✍️ [${type} に投稿した]`); 
