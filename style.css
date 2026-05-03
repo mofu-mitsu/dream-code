@@ -1766,3 +1766,34 @@ body.theme-blood-splatter {
     #money-hud { top: 10px !important; right: 10px !important; font-size: 1rem !important; padding: 8px 12px; }
     #exit-dream-btn { top: 10px !important; right: 110px !important; padding: 8px 12px; font-size: 12px; }
 }
+
+/* 📱 スマホ時のレイアウト調整（お金と閉じるボタンの被り防止！） */
+@media screen and (max-width: 768px) {
+    /* お金は「左上」に移動して絶対に被らないようにする！ */
+    #money-hud {
+        top: 10px !important; 
+        left: 10px !important; 
+        right: auto !important; 
+        font-size: 1rem !important; 
+        padding: 8px 12px; 
+    }
+    
+    /* ホームボタンはお金の下に逃がす */
+    #home-btn { top: 60px !important; left: 10px !important; font-size: 12px !important; padding: 8px 12px !important; }
+
+    /* 退出ボタンは「右下」 */
+    #exit-dream-btn { bottom: 70px !important; right: 10px !important; padding: 8px 12px; font-size: 12px; }
+
+    /* ❌ モーダルの閉じるボタンを少し内側に寄せる（画面端のタップミス防止） */
+    .close-btn {
+        transform: translate(5px, -5px) !important;
+        width: 35px !important; height: 35px !important; font-size: 16px !important;
+    }
+}
+
+/* 📝 複数行入力（Textarea）用のスタイル */
+.input-textarea {
+    background: rgba(0,0,0,0.5); border: 1px solid #ff9a9e; color: white; 
+    padding: 10px; margin-bottom: 15px; outline: none; border-radius: 5px; 
+    width: 90%; font-size: 16px; min-height: 100px; resize: vertical; /* 縦に伸ばせるように */
+}
