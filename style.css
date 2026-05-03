@@ -1891,3 +1891,72 @@ body.theme-blood-splatter {
     /* ❌ モーダルの閉じるボタン */
     .close-btn { transform: translate(5px, -5px) !important; width: 35px !important; height: 35px !important; font-size: 16px !important; }
 }
+
+/* =========================================
+   📱 スマホ・タブレット向けレスポンシブ対応
+   ========================================= */
+@media screen and (max-width: 768px) {
+    /* 🏠 マップ上のオブジェクト調整（変更なし） */
+    .wonder-object { font-size: 60px !important; }
+    .obj-darling { font-size: 80px !important; }
+    .obj-tea { font-size: 80px !important; }
+    .obj-witch { bottom: 25vh !important; right: 20vw !important; }
+    .obj-cheshire { top: 30vh !important; left: 10vw !important; }
+    
+    #world-map-wrapper { -webkit-overflow-scrolling: touch; }
+
+    /* 💬 チャットウィンドウ調整（変更なし） */
+    .chat-container { padding: 20px !important; width: 95vw !important; max-height: 90vh !important; }
+    input[type="text"], .hack-input, .castle-input { width: 95% !important; font-size: 16px !important; padding: 15px 10px !important; }
+    button { padding: 12px 15px !important; font-size: 14px !important; margin: 5px 2px !important; }
+
+    /* 🪄 夢コードバー調整（変更なし） */
+    #dream-code-bar { width: 95vw; bottom: 10px; padding: 10px; flex-wrap: wrap; justify-content: center; border-radius: 15px; }
+    #magic-input { width: 60% !important; }
+
+    /* ⚔️ 城のコマンド調整（変更なし） */
+    .castle-choice-btn { flex: 1 1 100% !important; min-width: 100%; padding: 15px !important; font-size: 1rem !important; }
+    .emotion-tag { padding: 10px 15px !important; font-size: 16px !important; }
+    .puzzle-box { min-height: 70px !important; }
+
+    /* ❌ モーダルの閉じるボタン（右上のままだけど少し小さくして押しやすく） */
+    .close-btn { transform: translate(5px, -5px) !important; width: 35px !important; height: 35px !important; font-size: 16px !important; }
+
+
+    /* =========================================
+       🔥 ここから修正！ スマホ版は左上に配置！
+       ========================================= */
+
+    /* 🏠 ホームボタン（一番左上） */
+    #home-btn { 
+        top: 10px !important; 
+        left: 10px !important; 
+        font-size: 12px !important; 
+        padding: 8px 12px !important; 
+    }
+
+    /* 💰 お金HUD（ホームボタンの下、左側に配置） */
+    #money-hud {
+        top: 55px !important; /* ホームボタンの分だけ下にズラす */
+        left: 10px !important; /* 🔥 左端に配置！ */
+        right: auto !important; /* 右指定は解除 */
+        font-size: 0.9rem !important; 
+        padding: 6px 10px !important; 
+        height: 35px !important; 
+        box-sizing: border-box !important;
+    }
+    
+    /* 🚪 夢から覚める（退出）ボタン（お金の右隣に配置！） */
+    #exit-dream-btn { 
+        top: 55px !important; /* お金と同じ高さ */
+        left: 100px !important; /* 🔥 お金の幅の分だけ右にズラす！ */
+        right: auto !important; /* 右指定は解除 */
+        bottom: auto !important; 
+        font-size: 12px !important; 
+        padding: 6px 10px !important; 
+        height: 35px !important; 
+        line-height: 18px !important;
+        box-sizing: border-box !important;
+        white-space: nowrap !important;
+    }
+}
