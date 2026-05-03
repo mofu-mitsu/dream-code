@@ -430,7 +430,14 @@ const MagicEngine = {
             }
         });
     },
-
+// magic.js に管理権限終了の関数を追加！
+    stopAdminConsole: function() {
+        clearInterval(this.adminInterval);
+        document.getElementById("admin-modal").style.display = "none";
+        // 🔥 theme-admin クラスを外して、お家（wonder-object）を復活させる！
+        document.body.classList.remove("theme-admin");
+        MagicEngine.resetAllEffects(); // ついでにエフェクトもリセット
+    },
     startAbyssEffect: function() {
         document.body.style.background = "#050010";
         const overlay = document.createElement("div"); overlay.id = "abyss-overlay";
