@@ -141,7 +141,21 @@
 <div id="grimoire-modal" class="modal-overlay" style="display:none;"><div class="grimoire-title">📖 夢の魔導書 📖</div><div id="grimoire-list" class="grimoire-list"></div><button onclick="MagicEngine.closeGrimoire()" style="background: #800000; padding: 10px; color: white;">閉じる</button></div>
 <div id="hack-modal" class="modal-overlay" style="display:none;"><div class="modal-content" style="background:#000; border:2px solid #0f0;"><div class="hack-title">root@lsi-caterpillar:~# override_voice</div><input type="text" id="hack-word" class="hack-input" placeholder="_"><button onclick="CaterpillarEngine.executeHack()" style="background:#0f0; color:#000;">Execute</button><button onclick="CaterpillarEngine.closeHackModal()" style="background:#333;">Abort</button></div></div>
 <div id="caterpillar-sub-modal" class="modal-overlay" style="display:none;"><div class="modal-content" id="sub-modal-content"></div></div>
-<div id="input-modal" class="modal-overlay" style="display:none;"><div class="modal-content"><div id="input-modal-title" class="input-title"></div><div id="input-modal-question" class="input-question"></div><input type="text" id="input-modal-field" class="input-field"><button id="input-submit-btn" class="input-btn">答える</button><button onclick="TeaPartyEngine.closeInputModal()" class="input-btn">無視</button></div></div>
+<!-- 💬 汎用入力モーダル（修正！） -->
+<div id="input-modal" class="modal-overlay" style="display:none; z-index: 200000;">
+    <div class="modal-content" style="border: 2px solid #ff9a9e;">
+        <div id="input-modal-title" class="input-title" style="color: #ff9a9e; font-weight: bold; margin-bottom: 10px;"></div>
+        <div id="input-modal-question" class="input-question" style="margin-bottom: 15px;"></div>
+        
+        <!-- 🔥 ここを input から textarea に変更！ これで改行できる！ -->
+        <textarea id="input-modal-field" class="input-textarea" placeholder="ここに入力..."></textarea>
+        
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button onclick="TeaPartyEngine.closeInputModal()" style="background: #555; padding: 10px; border: none; border-radius: 5px; color: white;">無視する</button>
+            <button id="input-submit-btn" style="background: #ff007f; padding: 10px; border: none; border-radius: 5px; color: white; font-weight: bold;">答える</button>
+        </div>
+    </div>
+</div>
 
 <!-- 👑 女王の謁見モーダル（これ1つに統一！） -->
 <div id="castle-modal" class="modal-overlay" style="display:none;">
