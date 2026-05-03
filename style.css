@@ -1837,3 +1837,57 @@ body.theme-blood-splatter {
         font-size: 12px !important; 
     }
 }
+
+/* =========================================
+   📱 スマホ・タブレット向けレスポンシブ対応
+   ========================================= */
+@media screen and (max-width: 768px) {
+    /* 🏠 マップ上のオブジェクト調整 */
+    .wonder-object { font-size: 60px !important; }
+    .obj-darling { font-size: 80px !important; }
+    .obj-tea { font-size: 80px !important; }
+    .obj-witch { bottom: 25vh !important; right: 20vw !important; }
+    .obj-cheshire { top: 30vh !important; left: 10vw !important; }
+    
+    #world-map-wrapper { -webkit-overflow-scrolling: touch; }
+
+    /* 💬 チャットウィンドウ調整 */
+    .chat-container { padding: 20px !important; width: 95vw !important; max-height: 90vh !important; }
+    input[type="text"], .hack-input, .castle-input { width: 95% !important; font-size: 16px !important; padding: 15px 10px !important; }
+    button { padding: 12px 15px !important; font-size: 14px !important; margin: 5px 2px !important; }
+
+    /* 🪄 夢コードバー調整 */
+    #dream-code-bar { width: 95vw; bottom: 10px; padding: 10px; flex-wrap: wrap; justify-content: center; border-radius: 15px; }
+    #magic-input { width: 60% !important; }
+
+    /* ⚔️ 城のコマンド調整 */
+    .castle-choice-btn { flex: 1 1 100% !important; min-width: 100%; padding: 15px !important; font-size: 1rem !important; }
+    .emotion-tag { padding: 10px 15px !important; font-size: 16px !important; }
+    .puzzle-box { min-height: 70px !important; }
+
+    /* 🏠 ホームボタン */
+    #home-btn { top: 60px !important; left: 10px !important; font-size: 12px !important; padding: 8px 12px !important; }
+
+    /* 💰 スマホ版：お金と退出ボタンの配置（右上＆その左隣！） */
+    #money-hud {
+        top: 10px !important; 
+        right: 10px !important; /* 右上端 */
+        left: auto !important; 
+        font-size: 0.9rem !important; 
+        padding: 6px 10px !important; 
+        height: 35px !important; /* 高さを小さく固定 */
+    }
+    
+    #exit-dream-btn { 
+        top: 10px !important; /* お金と同じ高さ */
+        right: 90px !important; /* スマホの時はお金の幅に合わせて隙間を狭くする！ */
+        bottom: auto !important; 
+        font-size: 12px !important; 
+        padding: 6px 10px !important; 
+        height: 35px !important; /* 高さを小さく固定 */
+        line-height: 18px !important;
+    }
+    
+    /* ❌ モーダルの閉じるボタン */
+    .close-btn { transform: translate(5px, -5px) !important; width: 35px !important; height: 35px !important; font-size: 16px !important; }
+}
