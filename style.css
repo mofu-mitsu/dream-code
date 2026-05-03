@@ -1696,3 +1696,41 @@ body.theme-blood-splatter {
         font-size: 1rem;
     }
 }
+
+/* 💰 所持金表示（HUD）は常に右上！ */
+#money-hud {
+    position: fixed !important; 
+    top: 15px !important; 
+    right: 15px !important; /* 絶対に右！ */
+    left: auto !important; /* 左指定を解除 */
+    background: rgba(0, 0, 0, 0.9); padding: 10px 20px;
+    border: 3px double gold; border-radius: 10px;
+    font-weight: bold; color: gold; font-size: 1.3rem;
+    z-index: 1000000; box-shadow: 0 0 20px gold;
+}
+
+/* 🚪 夢から覚める（退出）ボタンは右下の中段に！ */
+#exit-dream-btn {
+    position: fixed !important; 
+    bottom: 100px !important; /* 夢コードバーの上に配置 */
+    right: 15px !important; 
+    background: #555; color: white; border: 2px solid #aaa;
+    padding: 10px 15px; border-radius: 5px; font-weight: bold;
+    cursor: pointer; z-index: 8000; box-shadow: 0 0 10px #000;
+}
+#exit-dream-btn:hover { background: #ff007f; border-color: #fff; }
+
+/* スマホ対応（メディアクエリ）の中の余計な指定を上書き！ */
+@media screen and (max-width: 768px) {
+    /* 魔女の店やチェシャ猫を少し上に逃がす */
+    .obj-witch { bottom: 25vh !important; right: 20vw !important; }
+    .obj-cheshire { top: 30vh !important; left: 10vw !important; }
+
+    /* スマホ版でもお金は右上で固定！ */
+    #money-hud {
+        top: 10px !important; 
+        right: 10px !important; 
+        left: auto !important; 
+        font-size: 1rem !important;
+    }
+}
