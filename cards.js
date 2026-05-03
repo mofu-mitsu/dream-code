@@ -152,21 +152,28 @@ const CardEventEngine = {
     },
 
     eventLogic: function() {
-        MagicEngine.showToast("♠「陛下がお待ちだ。」");
+        MagicEngine.showToast("♠「謁見の間へ通そう。陛下がお待ちだ。」");
         setTimeout(() => {
             CardEventEngine.openInputModal(
-                "👑 ハートの女王（ESTJ / SLE）",
+                "👑 ハートの女王 (ESTJ)",
                 "「よく来たな。非効率なバグは首をはねてやる！ 何か言い残すことはあるか？」",
                 (answer) => {
-                    ActionLogger.addLog(`👑 女王への最後の言葉: 「${answer}」`); 
+                    ActionLogger.addLog(`👑 女王(♠)への返答: 「${answer}」`);
+                    
                     if (answer.includes("力学") || answer.includes("計算") || answer.includes("角度") || answer.includes("どうやって")) {
                         MagicEngine.showToast(`👑 女王:「『${answer}』だと！？ 首をはねろォォ！！」`);
                         CardEventEngine.executeGuillotine();
-                    } else if (answer.includes("ごめんなさい") || answer.includes("従") || answer.includes("すみません") || answer.includes("申し訳ありません")) {
+                    } 
+                    // 🔥 【新設】Te（外向思考）に訴えかける「有能ルート」！
+                    else if (answer.includes("効率") || answer.includes("最適化") || answer.includes("秩序") || answer.includes("管理") || answer.includes("システム")) {
+                        MagicEngine.showToast(`👑 女王:「……ほう？ お前、なかなか分かっているじゃないか（Te共鳴）。その視点、気に入ったぞ。」`);
+                        CardEventEngine.successRoute("「お前の有能さに免じて、特別に城の出入りを許可してやろう。」", "王室の最高執行官", "論理的な有能さを認められ、フリーパスを獲得！");
+                    }
+                    else if (answer.includes("ごめんなさい") || answer.includes("従う") || answer.includes("すみません") || answer.includes("申し訳ありません")) {
                         MagicEngine.showToast(`👑 女王:「……ふん。下がれ。」`);
                         setTimeout(() => CardEventEngine.escapeCastle(), 4000);
                     } else {
-                        MagicEngine.showToast(`👑 女王:「『${answer}』？ 首をはねろ！」`);
+                        MagicEngine.showToast(`👑 女王:「首をはねろ！」`);
                         CardEventEngine.executeGuillotine();
                     }
                 }
