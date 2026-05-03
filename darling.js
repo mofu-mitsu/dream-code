@@ -1,5 +1,5 @@
 // 🔑 Groq API Key
-const GROQ_API_KEY = typeof CONFIG_GROQ_API_KEY !== 'undefined' ? CONFIG_GROQ_API_KEY : "";
+const GROQ_API_KEY = "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";
 
 const DarlingEngine = {
     punishMode: false,
