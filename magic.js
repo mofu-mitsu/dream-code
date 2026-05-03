@@ -130,7 +130,6 @@ const MagicEngine = {
         .then(data => {
             if (data.data && data.data.length > 0) memos = memos.concat(data.data);
             
-            // 演出開始
             this.metaInterval = setInterval(() => {
                 const bottle = document.createElement("div");
                 bottle.className = "meta-bottle";
@@ -143,13 +142,14 @@ const MagicEngine = {
                 bottle.onclick = () => {
                     bottle.remove(); 
                     document.getElementById("meta-modal").style.display = "flex";
-                    document.getElementById("meta-modal-text").innerText = `「${memos[Math.floor(Math.random() * memos.length)]}」`;
+                    // 🔥 改行（\n）を <br> に変換してHTMLとして表示させる！
+                    const memoText = memos[Math.floor(Math.random() * memos.length)];
+                    document.getElementById("meta-modal-text").innerHTML = `「${memoText.replace(/\n/g, '<br>')}」`;
                 };
                 setTimeout(() => bottle.remove(), 15000);
             }, 4000);
         });
     },
-
 
     startAdminConsole: function() {
         clearInterval(this.adminInterval);
