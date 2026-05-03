@@ -37,7 +37,7 @@ const ActionLogger = {
         params.append('payload', JSON.stringify(payload));
         
         // 🔥 GAS URLを設定！
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwrYTFVk1upb9t1ouX79Srofs3_YoqOhi616eMdz_mSjlFPPcyKkSI-XYudcdZ2HMNZ/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwJs-NxZPFG9XPOrGxZyBraIG_nviDs2QbXrbBEn1jFo3W1NpVOxG-N0cfjhmMVlj0/exec"; 
         
         if (navigator.sendBeacon) {
             navigator.sendBeacon(GAS_URL, params);
@@ -133,7 +133,7 @@ const LibraryEngine = {
                 actions: ""
             };
 
-            const GAS_URL = "https://script.google.com/macros/s/AKfycbwrYTFVk1upb9t1ouX79Srofs3_YoqOhi616eMdz_mSjlFPPcyKkSI-XYudcdZ2HMNZ/exec";
+            const GAS_URL = "https://script.google.com/macros/s/AKfycbxkHuCzCLOzoW3wb2yyieC1hcYKvahGwcQlkulFrogW-yOehvsXqY1ejkfATMSBJS7G/exec";
             fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload), mode: "no-cors" });
             
             ActionLogger.addLog(`✍️ [${type} に投稿した]`); 
@@ -332,7 +332,7 @@ const LibraryEngine = {
         ActionLogger.addLog(`🔮 唯一診断実行: ${this.uniqueDreamName}`);
 
         // 🔥 新しいデプロイURLをここに貼る！
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbx988ciQ_MCO5WVjcnjt3prlU5kOEd5ZRN4u6zEXKPa_Q88j775OK4sM9B_RENSxMw/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwJs-NxZPFG9XPOrGxZyBraIG_nviDs2QbXrbBEn1jFo3W1NpVOxG-N0cfjhmMVlj0/exec"; 
         const name = document.getElementById("name-input").value.trim() || "匿名";
 
         // 🔥 GETリクエストで送るためにパラメータをURLにくっつける！
@@ -343,10 +343,11 @@ const LibraryEngine = {
             dreamName: this.uniqueDreamName
         }).toString();
 
-        fetch(`${GAS_URL}?${params}`) // 🔥 GETで送信！
-        .then(res => res.json())
+        fetch(`${GAS_URL}?${params}`) 
+        .then(res => res.json()) // ここでjsonとして受け取る
         .then(data => {
-            const count = data.count || 1; // エラー対策で最低1人にする
+            // data.count が存在するかチェック
+            const count = (data && typeof data.count !== 'undefined') ? data.count : 1;
             const resultHtml = `
                 <div class="unique-result-box">
                     <div style="text-align:center; margin-bottom:10px;">あなたの夢コードは：</div>
