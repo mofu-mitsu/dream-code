@@ -107,7 +107,7 @@ const ItemEngine = {
 
     // 🧪 縮小：画面を拡大する
     drinkPotion: function() {
-        ActionLogger.addLog(`🧪 ポーションを飲んで縮小化した`);
+        ActionLogger.addLog(`🧪 ポーションを飲んで縮小した`);
         this.userScale += 0.5;
         this.applyScale();
         if (this.userScale >= 1.5) {
