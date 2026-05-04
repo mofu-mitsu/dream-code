@@ -122,7 +122,7 @@ const MagicEngine = {
         ];
 
         // ユーザーが入力したメモがあれば追加！
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwCQ5M6ngGJEUQVi_ZWbvgRiElF8Hc_zOVTEWipD_UqdFIPVvYU3Tbvs29aHyDHadMo/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyTAcqHvkx7iHf4cyJikZYxQ1CK4ns_AAPNQ_BJ-NrY3evsODenrKLuWs2xMnailQE_/exec"; 
 
         // 🔥 GASから他人のメモボトルを取得！
         fetch(GAS_URL + "?req=memos")
@@ -175,7 +175,7 @@ const MagicEngine = {
             "【サーバー（GAS）から他プレイヤーのログを抽出中...】"
         ];
         
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwCQ5M6ngGJEUQVi_ZWbvgRiElF8Hc_zOVTEWipD_UqdFIPVvYU3Tbvs29aHyDHadMo/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyTAcqHvkx7iHf4cyJikZYxQ1CK4ns_AAPNQ_BJ-NrY3evsODenrKLuWs2xMnailQE_/exec"; 
 
         fetch(GAS_URL + "?req=logs")
         .then(res => res.json())
