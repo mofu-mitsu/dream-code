@@ -1,52 +1,47 @@
-// library.js の ActionLogger の部分を修正！
 const ActionLogger = {
-    logs: [],          
-    unsentLogs: [],    
-    feedback: "", 
-    memobottle: "", 
+    logs: [], 
+    unsentLogs: [], // まだ送ってないログ
     
     addLog: function(action) {
         const time = new Date().toLocaleTimeString();
         const logText = `[${time}] ${action}`;
         
         this.logs.push(logText);
-        this.unsentLogs.push(logText); 
-        console.log(`Log added: ${action}`);
+        this.unsentLogs.push(logText);
 
         const logModal = document.getElementById("log-modal-content");
         if (logModal && document.getElementById("log-modal").style.display === "flex") {
             logModal.innerText = this.logs.join("\n");
         }
 
-        // 🔥 10件ごとにスプレッドシートに追記していく（メールはGAS側でブロックされるから来ない！）
+        // 🔥 10件溜まるごとにシンプルにGASへ投げつける！
         if (this.unsentLogs.length >= 10) {
             this.sendToGAS();
         }
     },
 
     sendToGAS: function() {
-        if (this.unsentLogs.length === 0) return; 
+        if (this.unsentLogs.length === 0) return;
         
         const payload = {
             mode: "log",
             name: document.getElementById("name-input").value.trim() || "匿名",
             type: document.getElementById("type-input").value.trim() || "不明",
-            actions: this.unsentLogs.join("\n"),
-            feedback: "",
-            memobottle: ""
+            actions: this.unsentLogs.join("\n")
         };
         
-        // 🔥🔥🔥 必ず新しいGAS URLに書き換えてね！ 🔥🔥🔥
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwCQ5M6ngGJEUQVi_ZWbvgRiElF8Hc_zOVTEWipD_UqdFIPVvYU3Tbvs29aHyDHadMo/exec"; 
+        // 🔥 みつきのGASのURLを貼る（これが最後の貼り直しだ！！）
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyTAcqHvkx7iHf4cyJikZYxQ1CK4ns_AAPNQ_BJ-NrY3evsODenrKLuWs2xMnailQE_/exec"; 
         
-        // 🔥 CORSを確実に回避する text/plain 設定
+        // 一番安定していた、純粋な no-cors ＆ application/json 通信
         fetch(GAS_URL, { 
             method: "POST", 
             body: JSON.stringify(payload), 
-            headers: { "Content-Type": "text/plain;charset=utf-8" } 
-        }).catch(e => console.error("ログ送信エラー:", e));
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" } 
+        });
 
-        this.unsentLogs = [];
+        this.unsentLogs = []; // 送ったら空にする
     },
 
     sendMemoToGAS: function(mode, text) {
@@ -55,21 +50,19 @@ const ActionLogger = {
             name: document.getElementById("name-input").value.trim() || "匿名",
             type: document.getElementById("type-input").value.trim() || "不明",
             feedback: mode === "feedback" ? text : "",
-            memobottle: mode === "memobottle" ? text : "",
-            actions: ""
+            memobottle: mode === "memobottle" ? text : ""
         };
 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwCQ5M6ngGJEUQVi_ZWbvgRiElF8Hc_zOVTEWipD_UqdFIPVvYU3Tbvs29aHyDHadMo/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyTAcqHvkx7iHf4cyJikZYxQ1CK4ns_AAPNQ_BJ-NrY3evsODenrKLuWs2xMnailQE_/exec"; 
         
         fetch(GAS_URL, { 
             method: "POST", 
             body: JSON.stringify(payload), 
-            headers: { "Content-Type": "text/plain;charset=utf-8" } 
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" } 
         });
     }
 };
-
-window.addEventListener("beforeunload", () => { ActionLogger.sendToGAS(); });
 
 const LibraryEngine = {
     premiumCodes: [
@@ -348,7 +341,7 @@ analyzeLogs: function() {
         ActionLogger.addLog(`🔮 唯一診断実行: ${this.uniqueDreamName}`);
 
         // 🔥 新しいデプロイURLをここに貼る！
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwCQ5M6ngGJEUQVi_ZWbvgRiElF8Hc_zOVTEWipD_UqdFIPVvYU3Tbvs29aHyDHadMo/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyTAcqHvkx7iHf4cyJikZYxQ1CK4ns_AAPNQ_BJ-NrY3evsODenrKLuWs2xMnailQE_/exec"; 
         const name = document.getElementById("name-input").value.trim() || "匿名";
 
         // 🔥 GETリクエストで送るためにパラメータをURLにくっつける！
