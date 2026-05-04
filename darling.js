@@ -118,11 +118,21 @@ const DarlingEngine = {
 
         try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: "POST", headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-                body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [ { role: "system", content: systemPrompt }, { role: "user", content: userText } ] })
+                method: "POST", 
+                headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    model: "llama-3.3-70b-versatile", 
+                    messages: [ { role: "system", content: systemPrompt }, { role: "user", content: userText } ] 
+                })
             });
+
             const data = await response.json();
-            this.updateLog(data.choices[0].message.content);
+            const aiReply = data.choices[0].message.content; // 🔥 AIの返答内容を取得
+
+            // 画面のログ（吹き出し）を更新
+            this.updateLog(aiReply);
+
+            // 🔥 【新規】AIの返答を「行動ログ」に記録！！
             if (typeof ActionLogger !== 'undefined') {
                 ActionLogger.addLog(`💋 ダーリンからの返答: 「${aiReply}」`);
             }
