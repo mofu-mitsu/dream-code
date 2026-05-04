@@ -113,18 +113,28 @@ const TeaPartyEngine = {
         }, 8000);
     },
 
+// teaparty.js の setupTable 関数の真ん中あたりを修正！
+
     setupTable: function() {
         const table = document.getElementById("teaparty-table");
-        if (!table) return;
         table.innerHTML = ""; 
 
         const teaList = this.isVipMode ? teaPartyData.vipTea : teaPartyData.darlingTea;
-        // 🔥 キー（お茶の名前）の配列をシャッフル
-        const shuffledKeys = Object.keys(teaList).sort(() => Math.random() - 0.5);
+        
+        // 🔥 配列にする時に、「お茶の名前（キー）」も一緒に保持しておく！
+        const teaNames = Object.keys(teaList).sort(() => Math.random() - 0.5);
+
+        if (this.isVipMode) {
+            table.style.border = "5px solid gold";
+            table.style.boxShadow = "inset 0 0 30px rgba(255, 215, 0, 0.5), 0 10px 20px rgba(0,0,0,0.5)";
+        } else {
+            table.style.border = "5px solid #5c2e0b"; 
+            table.style.boxShadow = "inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5)";
+        }
 
         for (let i = 0; i < 3; i++) {
-            const teaName = shuffledKeys[i]; // 🔥 ここが「お茶の名前」！
-            const teaData = teaList[teaName];
+            const teaName = teaNames[i]; // 🔥 ここ！ お茶の「名前」を取得！
+            const teaData = teaList[teaName]; // 名前を使ってデータを引く！
             const cupContainer = document.createElement("div");
             cupContainer.style.textAlign = "center";
 
@@ -133,20 +143,23 @@ const TeaPartyEngine = {
             cup.className = "tea-cup";
             
             cup.onclick = () => {
-                this.updateLog(`💋 ダーリンの子: ${teaData.msg}`);
-                
-                // 🔥 ここ！ teaName を使うことで【1】ではなく【黄金のネクター】と記録される！
-                if (typeof ActionLogger !== 'undefined') ActionLogger.addLog(`☕ お茶【${teaName}】を飲んだ`);
-                
+                this.updateLog(`💋 ダーリン: ${teaData.msg}`);
                 MagicEngine.resetAllEffects(); 
+                
                 if (teaData.effect === "effect-darkness") {
                     document.body.className = "effect-darkness";
                     document.addEventListener("mousemove", MagicEngine.trackMouseForDarkness);
-                } else { MagicEngine.applyTheme(teaData.effect); }
+                } else {
+                    MagicEngine.applyTheme(teaData.effect);
+                }
 
                 if (teaData.effect === "theme-foam") MagicEngine.startFoamParty();
+
                 setTimeout(() => this.darlingEmotionTrap(), 4000);
                 this.setupTable(); 
+                
+                // 🔥 ここ！ teaName（淀んだ紫の液体 など）を確実に送る！
+                ActionLogger.addLog(`☕ お茶【${teaName}】を飲んだ`);
             };
 
             const sniffBtn = document.createElement("button");
@@ -154,7 +167,7 @@ const TeaPartyEngine = {
             sniffBtn.className = "sniff-btn";
             sniffBtn.onclick = () => {
                 this.updateLog(`👃 くんくん…… ${teaData.hint}`);
-                if (typeof ActionLogger !== 'undefined') ActionLogger.addLog(`👃 お茶【${teaName}】の匂いを嗅いだ`);
+                ActionLogger.addLog(`👃 お茶【${teaName}】の匂いを嗅いだ`); // 🔥 ここも！
             };
 
             cupContainer.appendChild(cup);
