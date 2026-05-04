@@ -18,7 +18,7 @@ const MagicEngine = {
         document.addEventListener("mousemove", this.trackMouseForDarkness);
         document.addEventListener("touchmove", this.trackMouseForDarkness, {passive: false});
         // 🔥 エフェクト系のゴミを全て消去
-        document.querySelectorAll(".magic-particle, #giant-bug-effect, #abyss-overlay, .effect-genesis-flash, .meta-bottle, #admin-console-display, .satan-in-ice, .comet-particle, .bokeh-light, .calendar-text, .idea-image").forEach(e => e.remove());
+        document.querySelectorAll(".magic-particle, #giant-bug-effect, #abyss-overlay, .effect-genesis-flash, .meta-bottle, #admin-console-display, .satan-in-ice, .comet-particle, .bokeh-light, .calendar-text, .idea-image, .aurora-curtain").forEach(e => e.remove());
         this.enableWonderlandEscape(false);
         this.bugScale = 1;
         this.karaokeIntensity = 1;
@@ -84,6 +84,7 @@ const MagicEngine = {
             if (input === "彗星") this.startCometEffect();
             if (input === "夜景") this.startNightViewEffect();
             if (input === "カレンダー") this.startCalendarEffect();
+            if (input === "オーロラ") this.startAuroraEffect();
             if (input === "イデア") this.startIdeaEffect();
             // 🔥 新規追加したプレミアム魔法の分岐！
             if (input === "メタフィクション") this.startMetaFiction();
@@ -324,7 +325,18 @@ const MagicEngine = {
             setTimeout(() => p.remove(), 4000);
         }, 200);
     },
-
+// MagicEngine 内に新関数を追加
+    startAuroraEffect: function() {
+        // 3本の光のカーテンを生成
+        for (let i = 0; i < 3; i++) {
+            const wave = document.createElement("div");
+            wave.className = "aurora-curtain";
+            wave.style.animationDelay = (i * 2) + "s";
+            wave.style.opacity = "0";
+            document.body.appendChild(wave);
+        }
+        ActionLogger.addLog("🌌 夢コード実行：『オーロラ』");
+    },
     // 📅 カレンダー（数字や日付がフワッと浮かぶ）
     startCalendarEffect: function() {
         clearInterval(this.particleInterval);
@@ -353,6 +365,7 @@ const MagicEngine = {
             setTimeout(() => p.remove(), 6000);
         }, 500);
     },
+
     startIdeaEffect: function() {
         clearInterval(this.particleInterval);
         
