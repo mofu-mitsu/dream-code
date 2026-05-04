@@ -437,10 +437,12 @@ const CardEventEngine = {
         }
     },
 
+// cards.js の forceExit 関数（シェアモーダルからリロードする時の処理）
     forceExit: function() {
         document.getElementById("share-modal").style.display = "none";
         MagicEngine.showToast("通信中……現実へ帰還しています……");
         
+        // 🔥 ここで、最後に1回だけ「これまでの行動ログ全部」をまとめて送信！！
         if (typeof ActionLogger !== 'undefined') ActionLogger.sendToGAS();
 
         setTimeout(() => {
