@@ -442,11 +442,15 @@ const CardEventEngine = {
         document.getElementById("share-modal").style.display = "none";
         MagicEngine.showToast("通信中……現実へ帰還しています……");
         
-        // 🔥 ここで、最後に1回だけ「これまでの行動ログ全部」をまとめて送信！！
-        if (typeof ActionLogger !== 'undefined') ActionLogger.sendToGAS();
+        // 🔥 ここでログ送信を命令！
+        if (typeof ActionLogger !== 'undefined') {
+            ActionLogger.sendToGAS();
+        }
 
+        // 🔥 通信が完了するまで「2.5秒」確実に待つ！
+        // （この待機時間がないと、通信が届く前にリロードされて殺される）
         setTimeout(() => {
             location.reload();
-        }, 1500);
+        }, 2500);
     }
 };
