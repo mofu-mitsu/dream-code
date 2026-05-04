@@ -119,11 +119,17 @@ const TeaPartyEngine = {
         const table = document.getElementById("teaparty-table");
         table.innerHTML = ""; 
 
+        // ダーリンのお茶リスト（VIPかどうかで切り替え）
         const teaList = this.isVipMode ? teaPartyData.vipTea : teaPartyData.darlingTea;
         
-        // 🔥 Object.keys で「お茶の名前の配列」を作り、それをシャッフルする
-        const teaNames = Object.keys(teaList).sort(() => Math.random() - 0.5);
+        // オブジェクトからキー（お茶の名前）の配列を作ってシャッフル
+        const teaKeys = Object.keys(teaList);
+        for (let i = teaKeys.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [teaKeys[i], teaKeys[j]] = [teaKeys[j], teaKeys[i]];
+        }
 
+        // テーブルのデザイン設定
         if (this.isVipMode) {
             table.style.border = "5px solid gold";
             table.style.boxShadow = "inset 0 0 30px rgba(255, 215, 0, 0.5), 0 10px 20px rgba(0,0,0,0.5)";
@@ -132,10 +138,10 @@ const TeaPartyEngine = {
             table.style.boxShadow = "inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5)";
         }
 
-        // 3つのカップを作る
+        // 3つのカップを配置
         for (let i = 0; i < 3; i++) {
-            const actualTeaName = teaNames[i]; // 🔥 ここ！ 例：「深青のハーブティー」という文字列が入る
-            const teaData = teaList[actualTeaName]; // その名前を使ってデータを引っ張り出す
+            const actualTeaName = teaKeys[i]; // 🔥 確実に「文字列（名前）」を取得！
+            const teaData = teaList[actualTeaName]; // 名前を使ってデータを取得
 
             const cupContainer = document.createElement("div");
             cupContainer.style.textAlign = "center";
@@ -144,10 +150,12 @@ const TeaPartyEngine = {
             cup.innerText = "☕️";
             cup.className = "tea-cup";
             
+            // お茶を飲んだ時の処理
             cup.onclick = () => {
-                this.updateLog(`💋 ダーリン: ${teaData.msg}`);
-                MagicEngine.resetAllEffects(); 
+                this.updateLog(`💋 ダーリンの子: ${teaData.msg}`);
                 
+                // エフェクトのリセットと適用
+                MagicEngine.resetAllEffects(); 
                 if (teaData.effect === "effect-darkness") {
                     document.body.className = "effect-darkness";
                     document.addEventListener("mousemove", MagicEngine.trackMouseForDarkness);
@@ -155,21 +163,31 @@ const TeaPartyEngine = {
                     MagicEngine.applyTheme(teaData.effect);
                 }
 
-                if (teaData.effect === "theme-foam") MagicEngine.startFoamParty();
+                // 🔥 修正：泡パーティのエラー回避（汎用関数を使う！）
+                if (teaData.effect === "theme-foam") {
+                    MagicEngine.startParticles(['🫧'], "riseUp", "bubble-effect");
+                    document.body.style.background = "#1a1a2e"; // 暗い背景にする
+                }
 
                 setTimeout(() => this.darlingEmotionTrap(), 4000);
-                this.setupTable(); 
                 
-                // 🔥 修正：インデックス番号（i）ではなく、本当のお茶の名前（actualTeaName）を送る！
-                ActionLogger.addLog(`☕ お茶【${actualTeaName}】を飲んだ`);
+                // 🔥 行動ログに確実にお茶の名前を記録
+                if (typeof ActionLogger !== 'undefined') {
+                    ActionLogger.addLog(`☕ お茶【${actualTeaName}】を飲んだ`);
+                }
+
+                this.setupTable(); // テーブルリセット
             };
 
+            // 匂いを嗅ぐボタン
             const sniffBtn = document.createElement("button");
             sniffBtn.innerText = "嗅ぐ";
             sniffBtn.className = "sniff-btn";
             sniffBtn.onclick = () => {
                 this.updateLog(`👃 くんくん…… ${teaData.hint}`);
-                ActionLogger.addLog(`👃 お茶【${actualTeaName}】の匂いを嗅いだ`);
+                if (typeof ActionLogger !== 'undefined') {
+                    ActionLogger.addLog(`👃 お茶【${actualTeaName}】の匂いを嗅いだ`);
+                }
             };
 
             cupContainer.appendChild(cup);
