@@ -28,8 +28,11 @@ function startFall() {
         // 🔥 夢の世界に入ったら「退出ボタン」を表示する！
         const exitBtn = document.getElementById("exit-dream-btn");
         if (exitBtn) exitBtn.style.display = "block";
+
         if (typeof ActionLogger !== 'undefined') {
             ActionLogger.addLog("🌌 夢の世界（Wonderland）に降り立った");
+            // 🔥 追加：入室した瞬間に、みつきに通知メールを送らせる裏技！
+            ActionLogger.sendLoginNotification(); 
         }
 
     }, 3000);
