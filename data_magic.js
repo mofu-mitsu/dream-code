@@ -20,7 +20,8 @@ const magicData = {
         "彗星": null,
         "夜景": null,
         "カレンダー": null,
-        "イデア": null
+        "イデア": null,
+        "オーロラ": null
     },
 
     colors: {
