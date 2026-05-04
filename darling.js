@@ -123,6 +123,10 @@ const DarlingEngine = {
             });
             const data = await response.json();
             this.updateLog(data.choices[0].message.content);
+            if (typeof ActionLogger !== 'undefined') {
+                ActionLogger.addLog(`💋 ダーリンからの返答: 「${aiReply}」`);
+            }
+
         } catch (e) { 
             this.updateLog("「ごめんなさいダーリン。今、頭の中のコードが少し絡まっちゃったみたい。少し待ってね♡」"); 
         }
