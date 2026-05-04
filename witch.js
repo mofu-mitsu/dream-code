@@ -6,6 +6,7 @@ const WitchEngine = {
         { id: "reset_scale", name: "次元安定剤", price: 5000, desc: "巨大化や縮小をリセットして、元のサイズに戻るわよ。" },
         { id: "comet", name: "星詠みの書", price: 40000, desc: "プレミアム魔法『彗星』。宇宙の彼方から星を降らせるわ。" },
         { id: "nightview", name: "幻都の書", price: 45000, desc: "プレミアム魔法『夜景』。美しい都市の光を浮かび上がらせるわ。" },
+        { id: "aurora", name: "極光の書", price: 55000, desc: "プレミアム魔法『オーロラ』。夜空に揺らめく光のカーテンを呼び出すわ。" },
         { id: "calendar", name: "時の砂時計", price: 60000, desc: "プレミアム魔法『カレンダー』。時間の概念を視覚化するわ。" },
         { id: "idea", name: "無意識のパレット", price: 70000, desc: "プレミアム魔法『イデア』。言葉にできない抽象的な心象風景を投影するわ。" },
         { id: "genesis", name: "秘文書：創世", price: 50000, desc: "プレミアム魔法『創世』が解禁されるわ。" },
@@ -122,6 +123,7 @@ const WitchEngine = {
                 if (id === "nightview") magicData.spells["夜景"] = { theme: "theme-nightview", msg: "「……見下ろす街の灯り。まるで電子回路みたいで綺麗ね。🌃」" };
                 if (id === "calendar") magicData.spells["カレンダー"] = { theme: "theme-calendar", msg: "「……過去、現在、未来。すべては等価値のデータに過ぎないわ。📅」" };
                 if (id === "idea") magicData.spells["イデア"] = { theme: "theme-idea", msg: "「……形のない無意識が、キャンバスに溢れ出していく……👁️‍🗨️🎨」" };
+                if (id === "aurora") magicData.spells["オーロラ"] = { theme: "theme-aurora", msg: "ジェミ：「見て、空が踊ってる……。幻想的なオーロラだよ！🌌✨」" };
                 
                 MagicEngine.showToast(`「新しい夢コードが魔導書に追加されたわ！」`);
             }
