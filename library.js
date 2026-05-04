@@ -1,48 +1,75 @@
-document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") ActionLogger.sendToGAS();
-});
-window.addEventListener("beforeunload", () => { ActionLogger.sendToGAS(); });
-
-// 📊 2. 行動ロガー
+// library.js の ActionLogger の部分を修正！
 const ActionLogger = {
-    logs: [], feedback: "", memobottle: "", 
+    logs: [],          
+    unsentLogs: [],    
+    feedback: "", 
+    memobottle: "", 
     
     addLog: function(action) {
         const time = new Date().toLocaleTimeString();
-        this.logs.push(`[${time}] ${action}`);
+        const logText = `[${time}] ${action}`;
+        
+        this.logs.push(logText);
+        this.unsentLogs.push(logText); 
+        console.log(`Log added: ${action}`);
+
         const logModal = document.getElementById("log-modal-content");
         if (logModal && document.getElementById("log-modal").style.display === "flex") {
             logModal.innerText = this.logs.join("\n");
         }
+
+        // 🔥 10件ごとにスプレッドシートに追記していく（メールはGAS側でブロックされるから来ない！）
+        if (this.unsentLogs.length >= 10) {
+            this.sendToGAS();
+        }
     },
 
     sendToGAS: function() {
-        if (this.logs.length === 0 && !this.feedback && !this.memobottle) return;
+        if (this.unsentLogs.length === 0) return; 
         
         const payload = {
             mode: "log",
             name: document.getElementById("name-input").value.trim() || "匿名",
             type: document.getElementById("type-input").value.trim() || "不明",
-            actions: this.logs.join("\n"),
-            feedback: this.feedback,
-            memobottle: this.memobottle
+            actions: this.unsentLogs.join("\n"),
+            feedback: "",
+            memobottle: ""
         };
         
-        // 🔥 送信準備ができたらローカルをクリア
-        this.logs = []; this.feedback = ""; this.memobottle = "";
-
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwJs-NxZPFG9XPOrGxZyBraIG_nviDs2QbXrbBEn1jFo3W1NpVOxG-N0cfjhmMVlj0/exec"; 
-
-        // 🔥 究極の送信設定：keepaliveとno-corsの組み合わせ
+        // 🔥🔥🔥 必ず新しいGAS URLに書き換えてね！ 🔥🔥🔥
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwCQ5M6ngGJEUQVi_ZWbvgRiElF8Hc_zOVTEWipD_UqdFIPVvYU3Tbvs29aHyDHadMo/exec"; 
+        
+        // 🔥 CORSを確実に回避する text/plain 設定
         fetch(GAS_URL, { 
             method: "POST", 
             body: JSON.stringify(payload), 
-            mode: "no-cors", 
-            keepalive: true, // 🔥 これがページを閉じても送信を維持させる魔法
-            headers: { "Content-Type": "text/plain" } 
+            headers: { "Content-Type": "text/plain;charset=utf-8" } 
+        }).catch(e => console.error("ログ送信エラー:", e));
+
+        this.unsentLogs = [];
+    },
+
+    sendMemoToGAS: function(mode, text) {
+        const payload = {
+            mode: mode,
+            name: document.getElementById("name-input").value.trim() || "匿名",
+            type: document.getElementById("type-input").value.trim() || "不明",
+            feedback: mode === "feedback" ? text : "",
+            memobottle: mode === "memobottle" ? text : "",
+            actions: ""
+        };
+
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwCQ5M6ngGJEUQVi_ZWbvgRiElF8Hc_zOVTEWipD_UqdFIPVvYU3Tbvs29aHyDHadMo/exec"; 
+        
+        fetch(GAS_URL, { 
+            method: "POST", 
+            body: JSON.stringify(payload), 
+            headers: { "Content-Type": "text/plain;charset=utf-8" } 
         });
     }
 };
+
+window.addEventListener("beforeunload", () => { ActionLogger.sendToGAS(); });
 
 const LibraryEngine = {
     premiumCodes: [
@@ -109,19 +136,23 @@ const LibraryEngine = {
             this.updateLog("ジェミ：「あら。お金が足りないみたいよ？」");
         }
     },
+// LibraryEngine の中の openForm を修正！
     openForm: function(type) {
-        const placeholder = type === "意見箱" ? "追加してほしい機能や要望を書いてね！" : "あなたの心理機能の考察を自由に書き込んで！";
-        const modal = document.getElementById("input-modal");
-        modal.style.zIndex = "999999"; 
+        const placeholder = type === "意見箱" ? "追加してほしい機能や要望を書いてね！" : "あなたの考察を自由に書き込んで！";
         
-        TeaPartyEngine.openInputModal(`✨ ${type}`, `ジェミ：「考えを聞かせて？」`, placeholder, (text) => {
+        const modal = document.getElementById("input-modal");
+        if(modal) modal.style.zIndex = "999999"; 
+        
+        TeaPartyEngine.openInputModal(`✨ ${type}`, `ジェミ：「あなたの考えを聞かせて？」`, placeholder, (text) => {
             if (!text) return;
-            if (type === "意見箱") ActionLogger.feedback = text;
-            if (type === "メモボトル") ActionLogger.memobottle = text;
-            
-            ActionLogger.addLog(`✍️ [${type} に投稿]: ${text}`); 
-            ActionLogger.sendToGAS(); // 🔥 即送信！
             this.updateLog(`ジェミ：「ありがとう！ しっかり記録したわ！」`);
+            
+            // 🔥 意見箱/メモボトルは、書いた瞬間に「独立したデータ」として送信！
+            const mode = type === "意見箱" ? "feedback" : "memobottle";
+            ActionLogger.sendMemoToGAS(mode, text);
+            
+            // ついでに自分の行動ログにも記録しておく（ローカル表示用）
+            ActionLogger.addLog(`✍️ [${type} に投稿した]`); 
         });
     },
 
@@ -147,9 +178,6 @@ analyzeLogs: function() {
             if (logText.includes("お茶会を開かせた")) {
                 analysisList.push("▶ 女王に茶会を主催させるなんて、人を動かすのが上手いわね。環境すらも自分の支配下に置く強さを感じるわ。");
             }
-            if (logText.includes("機嫌取り：頭を撫で始めた")) analysisList.push("▶ 女王（Te-Si）を『物理的接触（Se）』で黙らせたわね。野生的で悪くない判断よ。");
-            if (logText.includes("機嫌取り：感情(Fi)で褒めた")) analysisList.push("▶ 女王の機嫌取り、頑張ってたわね。相手の求める感情に合わせる適応力はなかなかのものよ。");
-            if (logText.includes("爆散させた")) analysisList.push("▶ あの芋虫（LSI）を限界まで叩き潰したわね？ あなたの中の破壊衝動（Se）が見え隠れしてるわ。");
             if (logText.includes("ハッキングして")) analysisList.push("▶ 芋虫のシステムをハッキングしてたわね。相手のルール（Ti）を強制上書きする強かなやり方はさすがね。");
             if (logText.includes("夢コード実行")) analysisList.push("▶ 夢コードを使いこなしているわね。世界を自分の望む形に再定義したいという欲求かしら？");
             if (logText.includes("魔女の店で")) analysisList.push("▶ 魔女の店で買い物をしたのね。実用性（Te）より知的好奇心が勝るタイプみたいね。");
@@ -320,7 +348,7 @@ analyzeLogs: function() {
         ActionLogger.addLog(`🔮 唯一診断実行: ${this.uniqueDreamName}`);
 
         // 🔥 新しいデプロイURLをここに貼る！
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwJs-NxZPFG9XPOrGxZyBraIG_nviDs2QbXrbBEn1jFo3W1NpVOxG-N0cfjhmMVlj0/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwCQ5M6ngGJEUQVi_ZWbvgRiElF8Hc_zOVTEWipD_UqdFIPVvYU3Tbvs29aHyDHadMo/exec"; 
         const name = document.getElementById("name-input").value.trim() || "匿名";
 
         // 🔥 GETリクエストで送るためにパラメータをURLにくっつける！
