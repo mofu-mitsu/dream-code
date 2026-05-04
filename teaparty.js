@@ -121,7 +121,7 @@ const TeaPartyEngine = {
 
         const teaList = this.isVipMode ? teaPartyData.vipTea : teaPartyData.darlingTea;
         
-        // 🔥 配列にする時に、「お茶の名前（キー）」も一緒に保持しておく！
+        // 🔥 オブジェクトのキー（名前）を配列にする
         const teaNames = Object.keys(teaList).sort(() => Math.random() - 0.5);
 
         if (this.isVipMode) {
@@ -133,8 +133,9 @@ const TeaPartyEngine = {
         }
 
         for (let i = 0; i < 3; i++) {
-            const teaName = teaNames[i]; // 🔥 ここ！ お茶の「名前」を取得！
-            const teaData = teaList[teaName]; // 名前を使ってデータを引く！
+            const teaName = teaNames[i]; // 🔥 ここ！ 例：「淀んだ紫の液体」
+            const teaData = teaList[teaName]; // その名前を使ってデータを取る
+
             const cupContainer = document.createElement("div");
             cupContainer.style.textAlign = "center";
 
@@ -158,7 +159,7 @@ const TeaPartyEngine = {
                 setTimeout(() => this.darlingEmotionTrap(), 4000);
                 this.setupTable(); 
                 
-                // 🔥 ここ！ teaName（淀んだ紫の液体 など）を確実に送る！
+                // 🔥 完全に「お茶の名前」を送る！
                 ActionLogger.addLog(`☕ お茶【${teaName}】を飲んだ`);
             };
 
@@ -167,7 +168,7 @@ const TeaPartyEngine = {
             sniffBtn.className = "sniff-btn";
             sniffBtn.onclick = () => {
                 this.updateLog(`👃 くんくん…… ${teaData.hint}`);
-                ActionLogger.addLog(`👃 お茶【${teaName}】の匂いを嗅いだ`); // 🔥 ここも！
+                ActionLogger.addLog(`👃 お茶【${teaName}】の匂いを嗅いだ`);
             };
 
             cupContainer.appendChild(cup);
