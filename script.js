@@ -7,7 +7,11 @@ function startFall() {
     const worldMapWrapper = document.getElementById("world-map-wrapper");
     const worldMap = document.getElementById("world-map"); 
     const magicBar = document.getElementById("dream-code-bar");
+    const input = document.getElementById("name-input").value.trim();
     
+    // 🔥 ここ！ 入力が空なら、内部での呼び名を「あなた」に固定する！
+    // library.js側はinput要素を直接見に行くから、この変数を変えてもログには影響しないよ。
+    userName = input !== "" ? input : "あなた";
     // 🔥 ホームボタンを隠す！
     const homeBtn = document.getElementById("home-btn");
     if (homeBtn) homeBtn.style.display = "none";
