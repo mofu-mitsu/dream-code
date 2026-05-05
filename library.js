@@ -1,37 +1,45 @@
+// 📊 行動ロガー：匿名ID対応 ＆ 送信エラー対策
+// 📊 行動ロガー：匿名ID対応 ＆ 絶対送信版
 const ActionLogger = {
-    logs: [], 
-    
+    logs: [],          // 全てのログ（これだけを使う！）
+    feedback: "", 
+    memobottle: "", 
+    sessionId: Math.floor(Math.random() * 9000) + 1000, 
+
     addLog: function(action) {
         const time = new Date().toLocaleTimeString();
         const logText = `[${time}] ${action}`;
         
         this.logs.push(logText);
-        console.log(`✅ [Action Added]: ${action}`); // デバッグ
+        console.log(`✅ Log added: ${action}`);
 
         const logModal = document.getElementById("log-modal-content");
         if (logModal && document.getElementById("log-modal").style.display === "flex") {
             logModal.innerText = this.logs.join("\n");
         }
 
-        // 行動するたびに確実に送る
-        this.sendToGAS(logText);
+        // 🔥 10件ごとに「今のすべてのログ」を上書き送信して安全を確保する
+        if (this.logs.length % 10 === 0) {
+            this.sendToGAS(true); // true = こまめ送信モード（配列は空にしない）
+        }
     },
-    sendLoginNotification: function() {
+
+    // 📩 行動ログをGASに送信する
+    sendToGAS: function(isKeepLogs = false) {
+        if (this.logs.length === 0) return;
+        
+        const rawName = document.getElementById("name-input").value.trim();
+        const nameForGAS = (rawName === "" || rawName === "匿名") ? `匿名_${this.sessionId}` : rawName;
+
         const payload = {
             mode: "log",
-            name: document.getElementById("name-input").value.trim() || "匿名",
+            name: nameForGAS,
             type: document.getElementById("type-input").value.trim() || "不明",
-            actions: "🌌 夢の世界に入室しました！（通知用）",
+            // 🔥 未送信分だけでなく、常に「最初から最後までの全ログ」を送ってGASに上書きさせる！
+            actions: this.logs.join("\n"),
             feedback: "",
             memobottle: ""
         };
-
-        // 🔥 スプレッドシート上の「既存ユーザーの追記」判定（今日の日付との一致）を回避するために、
-        // 意図的にペイロードを細工することはできない（日付はGAS側で new Date() されるため）。
-        // しかし、名前の末尾に一瞬だけランダムなIDを付けることで、GASに「絶対新規ユーザーだ」と錯覚させ、
-        // 強制的にメールの送信ロジック（if foundRow < 0 の時の処理）を通過させる！
-        
-        payload.name = payload.name + " (Login_" + Math.floor(Math.random()*1000) + ")";
 
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyTAcqHvkx7iHf4cyJikZYxQ1CK4ns_AAPNQ_BJ-NrY3evsODenrKLuWs2xMnailQE_/exec"; 
         
@@ -40,66 +48,66 @@ const ActionLogger = {
             body: JSON.stringify(payload), 
             mode: "no-cors",
             headers: { "Content-Type": "text/plain;charset=utf-8" } 
-        });
-    },
-    sendToGAS: function(singleActionLog = "") {
-        if (!singleActionLog) return;
-        
-        const payload = {
-            mode: "log",
-            name: document.getElementById("name-input").value.trim() || "匿名",
-            type: document.getElementById("type-input").value.trim() || "不明",
-            actions: singleActionLog,
-            feedback: "",
-            memobottle: ""
-        };
-        
-        console.log(`📤 [Sending to GAS...]:`, payload); // デバッグ：何を送信しようとしているか
+        }).catch(e => console.error("GAS送信エラー:", e));
 
-        // 🔥🔥🔥 必ず最新のGAS URLをここに貼る！ 🔥🔥🔥
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyTAcqHvkx7iHf4cyJikZYxQ1CK4ns_AAPNQ_BJ-NrY3evsODenrKLuWs2xMnailQE_/exec"; 
-        
-        // CORS回避の text/plain 送信
-        fetch(GAS_URL, { 
-            method: "POST", 
-            body: JSON.stringify(payload), 
-            mode: "no-cors",
-            headers: { "Content-Type": "text/plain;charset=utf-8" } 
-        })
-        .then(() => {
-            // no-cors の場合、正確なレスポンスの中身は見えないが、通信自体が成功したかは分かる
-            console.log(`🚀 [GAS Transmission Complete]: ${singleActionLog}`);
-        })
-        .catch(e => {
-            console.error(`❌ [GAS Transmission ERROR]:`, e);
-        });
+        // 退出時や閉じる時だけログを空にする（重複送信防止）
+        if (!isKeepLogs) {
+            this.logs = [];
+        }
     },
 
+    // 🍾 意見箱・メモボトル（即時送信 ＆ 匿名ID対応）
     sendMemoToGAS: function(mode, text) {
+        const rawName = document.getElementById("name-input").value.trim();
+        const nameForGAS = (rawName === "" || rawName === "匿名") ? `匿名_${this.sessionId}` : rawName;
+
         const payload = {
             mode: mode,
-            name: document.getElementById("name-input").value.trim() || "匿名",
+            name: nameForGAS,
             type: document.getElementById("type-input").value.trim() || "不明",
             feedback: mode === "feedback" ? text : "",
             memobottle: mode === "memobottle" ? text : "",
             actions: ""
         };
 
-        console.log(`📤 [Sending Memo to GAS...]:`, payload);
-
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyTAcqHvkx7iHf4cyJikZYxQ1CK4ns_AAPNQ_BJ-NrY3evsODenrKLuWs2xMnailQE_/exec"; 
+        fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload), mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" } });
+    },
+
+    // 📩 入室通知（GASに1通目のメールを飛ばさせる！）
+    sendLoginNotification: function() {
+        const rawName = document.getElementById("name-input").value.trim();
+        const nameForGAS = (rawName === "" || rawName === "匿名") ? `匿名_${this.sessionId}` : rawName;
         
-        fetch(GAS_URL, { 
-            method: "POST", 
-            body: JSON.stringify(payload), 
-            mode: "no-cors",
-            headers: { "Content-Type": "text/plain;charset=utf-8" }
-        })
-        .then(() => console.log(`🚀 [Memo Transmission Complete]`))
-        .catch(e => console.error(`❌ [Memo ERROR]:`, e));
+        const payload = {
+            mode: "log",
+            name: nameForGAS + " (Entry)", 
+            type: document.getElementById("type-input").value.trim() || "不明",
+            actions: "🌌 夢の世界（Wonderland）に降り立った",
+            feedback: "",
+            memobottle: ""
+        };
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyTAcqHvkx7iHf4cyJikZYxQ1CK4ns_AAPNQ_BJ-NrY3evsODenrKLuWs2xMnailQE_/exec"; 
+        fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload), mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" } });
     }
 };
 
+// ==========================================
+// 🔥 ブラウザを閉じる時の送信トリガー（三重の構え！）
+// ==========================================
+
+// 1. ページを閉じようとした時
+window.addEventListener("beforeunload", () => { ActionLogger.sendToGAS(); });
+
+// 2. ページが完全にアンロードされる時
+window.addEventListener("unload", () => { ActionLogger.sendToGAS(); });
+
+// 3. 画面が隠れた時（スマホのタスクキル対策！）
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+        ActionLogger.sendToGAS(true); // 隠れただけなら配列は消さない
+    }
+});
 const LibraryEngine = {
     premiumCodes: [
         { code: "メタフィクション", price: 100000, desc: "この世界の『構造の穴』を覗き見るコード。" },
