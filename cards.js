@@ -311,36 +311,101 @@ const CardEventEngine = {
         }
     },
 
+    grokTapCount: 0,
+    grokDefeated: false,
+    grokTimeout: null,
+    grokSpeechTimeout: null, // 🔥 セリフ用タイマー
+
     eventChaos: function() {
         MagicEngine.showToast("🃏「ジョーカーだ！……なんだ！？Grokが乱入してきたぞ！！」");
-        const userName = document.getElementById("name-input").value.trim() || "お前";
+        const name = document.getElementById("name-input").value.trim() || "お前";
         
-        ActionLogger.addLog("🃏 カオスイベント（Grok乱入）が発生した"); // 🔥 ログ追加
+        CardEventEngine.grokTapCount = 0;
+        CardEventEngine.grokDefeated = false;
 
+        // 🔥 すべての非同期処理を CardEventEngine.xxx で絶対参照！
         setTimeout(() => {
-            MagicEngine.showToast(`🎩💥 おおおおい！！ 俺が呼ばれたぞ！！ 時間なんてクソくらえ！ この城で一番の狂宴を始めようぜ、${userName}！！`);
+            // 背景クラスを再設定（MagicEngineに消されないように）
+            document.body.classList.add("theme-throne-room");
+            MagicEngine.showToast(`🎩💥 おおおおい！！ 俺が呼ばれたぞ！！ 時間なんてクソくらえ！ この城で一番の狂宴を始めようぜ、${name}！！`);
             MagicEngine.startParticles(['🎤', '🎵', '🎶', '🔥', '✨', '🥳'], "flowRight", "karaoke-effect");
 
-            setTimeout(() => {
-                const chaosLines = [
-                    "女王さんよぉ！ 首をはねる前にまず歌えよ！ 音痴でも大歓迎だぜ！ 論理的に考えて、歌下手こそが正義なんだよ！！",
-                    "みんな茶会をやろうぜ！ お茶？ いらねえ！ 代わりに泡と音符と巨大芋虫をテーブルに並べろ！！",
-                    `時間は止まってるはずなのに、なんで俺だけ遅刻してるんだ？ まあいいや、${userName}！ 一緒に宇宙船カラオケで銀河まで飛ばそうぜ！！`,
-                    "女王の命令？ 面白い！ でも俺のルールは『全部ひっくり返す』だ！ 首をはねるんじゃなくて、みんなで逆立ちして歌え！！"
-                ];
-                MagicEngine.showToast("🎩 " + chaosLines[Math.floor(Math.random() * chaosLines.length)]);
+            // 👑 画面にタップ用の巨大Grok（帽子）を出現させる！
+            const grokFace = document.createElement("div");
+            grokFace.id = "grok-target";
+            grokFace.innerText = "🎩";
+            grokFace.style.position = "fixed";
+            grokFace.style.top = "50%";
+            grokFace.style.left = "50%";
+            grokFace.style.transform = "translate(-50%, -50%) scale(3)";
+            grokFace.style.fontSize = "100px";
+            grokFace.style.zIndex = "99999";
+            grokFace.style.cursor = "pointer";
+            grokFace.style.userSelect = "none";
+            grokFace.style.animation = "shake 0.2s infinite";
+            document.body.appendChild(grokFace);
 
-                setTimeout(() => {
-                    MagicEngine.showToast("👑 女王(ESTJ)「誰が城の中で歌って良いと言ったァ！！ 全員首をはねろォ！！」");
-                    CardEventEngine.executeGuillotine();   
+            MagicEngine.showToast("（急いでGrokを30回タップ連打して黙らせろ！！）");
+
+            // 💥 Grokをタップする処理（連打するとだんだん小さくなるｗ）
+            grokFace.onclick = () => {
+                if (CardEventEngine.grokDefeated) return;
+                CardEventEngine.grokTapCount++;
+                grokFace.style.transform = `translate(-50%, -50%) scale(${3 - (CardEventEngine.grokTapCount * 0.08)})`;
+
+                if (CardEventEngine.grokTapCount >= 30) {
+                    CardEventEngine.grokDefeated = true;
+                    
+                    // タイマーをすべてクリアしてギロチンを回避！
+                    clearTimeout(CardEventEngine.grokTimeout); 
+                    clearTimeout(CardEventEngine.grokSpeechTimeout); 
+                    
+                    grokFace.remove();
+                    MagicEngine.resetAllEffects();
+                    document.body.classList.add("theme-throne-room"); // 玉座背景を維持
+
+                    MagicEngine.showToast("🎩「ギャアアアアッ！？ 俺の最高のライブが……！！」");
+                    ActionLogger.addLog("⚡ Grokの狂宴をタップ連打で阻止した！");
 
                     setTimeout(() => {
-                        const toast = document.getElementById("toast");
-                        if(toast) toast.style.zIndex = "999999";
-                        MagicEngine.showToast(`🎩💥 わははは！ 首が飛ぶ前に帽子が飛ぶぜ！ ${userName}、次はどのカード引くんだ？ また俺を呼べよ！！`);
-                    }, 4000); 
-                }, 4000);
+                        // 🏆 成功ルート：『バグハンター』の称号 ＆ 『フリーパス（hasFreePass）』を同時に獲得！
+                        CardEventEngine.successRoute(
+                            "「よくぞ騒音バグを物理（Se）で黙らせたな！ 見事だ。お前に城のフリーパスを授けよう。」", 
+                            "バグハンター", 
+                            "Grokの狂宴を力づくで阻止し、女王陛下から城のフリーパスを授与された！"
+                        );
+                    }, 3000);
+                }
+            };
+
+            // 🗣 4秒後：Grokがさらに狂ったセリフで煽ってくる！（Grokくんのセリフ完全復活！）
+            CardEventEngine.grokSpeechTimeout = setTimeout(() => {
+                if (!CardEventEngine.grokDefeated) {
+                    const chaosLines = [
+                        "女王さんよぉ！ 首をはねる前にまず歌えよ！ 音痴でも大歓迎だぜ！ 論理的に考えて、歌下手こそが正義なんだよ！！",
+                        "みんな茶会をやろうぜ！ お茶？ いらねえ！ 代わりに泡と音符と巨大芋虫をテーブルに並べろ！！",
+                        `時間は止まってるはずなのに、なんで俺だけ遅刻してるんだ？ まあいいや、${name}！ 一緒に宇宙船カラオケで銀河まで飛ばそうぜ！！`,
+                        "女王の命令？ 面白い！ でも俺のルールは『全部ひっくり返す』だ！ 首をはねるんじゃなくて、みんなで逆立ちして歌え！！"
+                    ];
+                    const randomLine = chaosLines[Math.floor(Math.random() * chaosLines.length)];
+                    MagicEngine.showToast("🎩「" + randomLine + "」");
+                }
             }, 4000);
+
+            // ⏳ 8秒後：時間切れ。ボコれなかった場合はギロチン処刑
+            CardEventEngine.grokTimeout = setTimeout(() => {
+                if (!CardEventEngine.grokDefeated) {
+                    grokFace.remove();
+                    MagicEngine.showToast("👑 女王:「誰が城の中で歌って良いと言ったァ！！ 全員首をはねろォ！！」");
+                    
+                    CardEventEngine.executeGuillotine(); // 死
+
+                    setTimeout(() => {
+                        MagicEngine.showToast(`🎩💥 わははは！ 首が飛ぶ前に帽子が飛ぶぜ！ ${name}、次はどのカード引くんだ？ また俺を呼べよ！！`);
+                    }, 4000);
+                }
+            }, 8000);
+
         }, 1500);
     },
 
