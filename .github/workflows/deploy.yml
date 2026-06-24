@@ -23,21 +23,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # 🔥 v3 から v4 にアップグレード！
 
-      # 🔥 ここが最強の解決策！ config.js というファイルを「その場で作る」
+      # 🔥 config.js を自動生成する
       - name: Inject API Key into config.js
         run: |
           echo "const CONFIG_GROQ_API_KEY = '${{ secrets.GROQ_API_KEY }}';" > config.js
 
       - name: Setup Pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v5 # 🔥 v3 から v5 にアップグレード！
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3 # 🔥 v1 から v3 にアップグレード（これでエラーが消える！）
         with:
           path: '.'
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4 # 🔥 v1 から v4 にアップグレード！
