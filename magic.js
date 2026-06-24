@@ -89,6 +89,15 @@ const MagicEngine = {
             // 🔥 新規追加したプレミアム魔法の分岐！
             if (input === "メタフィクション") this.startMetaFiction();
             if (input === "管理者権限") this.startAdminConsole();
+            if (spell.theme === "theme-my-dream") {
+                // 自分が選んだ「色」で世界が脈打つ神エフェクト
+                const myColor = spell.color || "#ffffff";
+                document.body.style.background = `radial-gradient(circle, ${myColor} 0%, #000 100%)`;
+                
+                // 選んだ色をCSS変数に渡してパーティクルを降らせる
+                document.body.style.setProperty('--my-dream-color', myColor);
+                this.startParticles(['✨', '🌌', '💫', '🪄'], "scatter", "my-dream-particle");
+            }
             return;
         }
 
@@ -123,7 +132,7 @@ const MagicEngine = {
         ];
 
         // ユーザーが入力したメモがあれば追加！
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyTAcqHvkx7iHf4cyJikZYxQ1CK4ns_AAPNQ_BJ-NrY3evsODenrKLuWs2xMnailQE_/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxOb7iQ_9IXq322qWbPG_esTOLFNqU094i6B5zf9Ei1pILLe6MXDHjXWjzRZrbXSz6Q/exec"; 
 
         // 🔥 GASから他人のメモボトルを取得！
         fetch(GAS_URL + "?req=memos")
@@ -176,7 +185,7 @@ const MagicEngine = {
             "【サーバー（GAS）から他プレイヤーのログを抽出中...】"
         ];
         
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyTAcqHvkx7iHf4cyJikZYxQ1CK4ns_AAPNQ_BJ-NrY3evsODenrKLuWs2xMnailQE_/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxOb7iQ_9IXq322qWbPG_esTOLFNqU094i6B5zf9Ei1pILLe6MXDHjXWjzRZrbXSz6Q/exec"; 
 
         fetch(GAS_URL + "?req=logs")
         .then(res => res.json())
