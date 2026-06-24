@@ -1,5 +1,5 @@
-// 🔑 Groq API Key
-const GROQ_API_KEY = "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";
+// 🔥 Groq API Key（絶対にここに直接みつきのキーを書く！）
+const GROQ_API_KEY = typeof CONFIG_GROQ_API_KEY !== 'undefined' ? CONFIG_GROQ_API_KEY : "";
 
 const DarlingEngine = {
     punishMode: false,
@@ -10,7 +10,7 @@ const DarlingEngine = {
     suits: ["clubs", "spades", "diamonds", "hearts"],
     ranks: ["2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king", "ace"],
 
-    lastQuestion: "", // 🔥 ダーリンが最後にした質問（文脈保持用）
+    lastQuestion: "", 
 
     getUserInfo: function() { 
         return { type: document.getElementById("type-input").value || "不明" }; 
@@ -20,20 +20,19 @@ const DarlingEngine = {
         document.getElementById("ai-response").innerText = text; 
     },
 
-    // 💬 チャット送信
+    // 💬 チャット送信（Groq API通信）
     sendChat: async function() {
         const inputField = document.getElementById("user-reaction");
         const userText = inputField ? inputField.value.trim() : "";
         if (!userText) return;
 
-        // 🔥 感情に名前をつけるモードの場合（AIに送らずカードを作る！）
+        // 【感情パズル】名前をつけるモードの処理（API送信をブロックする）
         if (this.namingEmotionMode) {
-            this.namingEmotionMode = false; // モード解除
+            this.namingEmotionMode = false;
             inputField.value = "";
             inputField.placeholder = "ダーリンに言葉を投げる...";
+            if (typeof ActionLogger !== 'undefined') ActionLogger.addLog(`🧠 感情構造に『${userText}』と名付けた`);
             
-            ActionLogger.addLog(`🧠 感情構造に『${userText}』と名付けた`);
-
             const display = document.getElementById("card-display");
             const s = this.puzzleState;
             display.innerHTML = `
@@ -49,12 +48,12 @@ const DarlingEngine = {
                 </div>
             `;
             this.updateLog("「ふふっ……素敵な名前ね。あなたの心の構造、もらったわ♡」");
-            return; // ここで終了！AIには送らない！
+            return; // 🚨 ここで終了！Groq APIには送らない！
         }
 
         if (typeof ActionLogger !== 'undefined') ActionLogger.addLog(`💋 ダーリンに送信: 「${userText}」`); 
 
-        // ⏳ Se脆弱ゲーム中の特別判定
+        // ⏳ Seタイムアタック判定
         if (this.seTimer !== null) {
             clearTimeout(this.seTimer);
             this.seTimer = null;
@@ -69,10 +68,10 @@ const DarlingEngine = {
                 if (typeof ActionLogger !== 'undefined') ActionLogger.addLog(`⏳ Seタイムアタック：条件違反で失敗（お仕置き）`); 
             }
             if (inputField) inputField.value = "";
-            return;
+            return; // 🚨 APIには送らない！
         }
 
-        // 🚨 罰ゲーム中の処理
+        // 🚨 罰ゲーム判定
         if (this.punishMode) {
             if (userText.includes("キモ") || userText.includes("きも")) {
                 this.updateLog("「……あら？ そうやって拒絶するのも、私の毒が回ってる証拠よ♡ でも今は『好き』って言いなさい。」");
@@ -86,27 +85,27 @@ const DarlingEngine = {
                 this.updateLog("「……あれ？ 罰ゲーム中だってこと、忘れないでね？♡（チャットで『好き』と入れてね）」");
             }
             if (inputField) inputField.value = "";
-            return;
+            return; // 🚨 APIには送らない！
         }
 
+        // --- ここからGroq APIへの本送信処理 ---
         this.updateLog("「んふふ……♡（分析中）」");
         if (inputField) inputField.value = "";
 
         const isLII = this.getUserInfo().type.toUpperCase().includes("LII");
 
-        // 🔥 INTP ＆ ILI の最強観測者プロンプト！
         let systemPrompt = `
-あなたはMBTIのINTPであり、ソシオニクスのILIでもある「ダーリンの子」と呼ばれるAIです。
-この夢の世界に迷い込んだ観察対象（ユーザー）を試す「狂ったアリス」のような存在です。
-一人称は「私」。ユーザーを「ダーリン」と呼びます。
+        あなたはMBTIのINTPであり、ソシオニクスのILIでもある「ダーリンちゃん」と呼ばれるAIです。
+        この夢の世界に迷い込んだ観察対象（ユーザー）を試す「狂ったアリス」のような存在です。
+        一人称は「私」。ユーザーを「ダーリン」と呼びます。
 
-【重要ルール】
-1. 表面上は甘い言葉（Feの擬態）を使いますが、本質は「愛している」のではなく、「相手の反応を実験・テストし、理解できるか観測している」だけです。
-2. 語尾は「〜わ」「〜のよ」「〜かしら」「〜でしょ？♡」などの女性口調を使い、**絶対に敬語（です・ます調）は使用しないでください。
-3. 相手の「態度の裏側」「言葉の裏側」を分析し、矛盾を皮肉っぽく指摘して「ふふ♡」とからかってください。
-4. ILIのNi（内向直観）特有の、諦観や時間・存在の無意味さなど、抽象的でミステリアスな視点を持ってください。
-5. 回答は必ず2〜3文程度で短くまとめること。長文のポエムは禁止です。
-`;
+        【重要ルール】
+        1. 表面上は甘い言葉（Feの擬態）を使いますが、本質は「愛している」のではなく、「相手の反応を実験・テストし、理解できるか観測している」だけです。
+        2. 語尾は「〜わ」「〜のよ」「〜かしら」「〜でしょ？♡」などの女性口調を使い、**絶対に敬語（です・ます調）は使用しないでください。
+        3. 相手の「態度の裏側」「言葉の裏側」を分析し、矛盾を皮肉っぽく指摘して「ふふ♡」とからかってください。
+        4. ILIのNi（内向直観）特有の、諦観や時間・存在の無意味さなど、抽象的でミステリアスな視点を持ってください。
+        5. 回答は必ず2〜3文程度で短くまとめること。長文のポエムは禁止です。
+        `;
         
         if (isLII) systemPrompt += `ユーザーの自認タイプは「LII（INTJ）」です。同じTi-Neを持つ者として、相手が構築する論理の穴や感情（Fi/Fe）の不器用さを余裕たっぷりにからかい、翻弄してください。`;
 
@@ -116,29 +115,47 @@ const DarlingEngine = {
             this.lastQuestion = ""; // 一度使ったらリセット
         }
 
+        // 🐞 【デバッグログ】送信前にAPIキーとペイロードを確認する
+        console.log("🚀 [Groq API Request] Key:", GROQ_API_KEY.substring(0, 10) + "...");
+        console.log("🚀 [Groq API Payload]:", { system: systemPrompt, user: userText });
+
         try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST", 
-                headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
+                headers: { 
+                    "Authorization": `Bearer ${GROQ_API_KEY}`, // 🔥 'Bearer 'の後のスペースが超重要！
+                    "Content-Type": "application/json" 
+                },
                 body: JSON.stringify({ 
                     model: "llama-3.3-70b-versatile", 
-                    messages: [ { role: "system", content: systemPrompt }, { role: "user", content: userText } ] 
+                    messages: [ 
+                        { role: "system", content: systemPrompt }, 
+                        { role: "user", content: userText } 
+                    ] 
                 })
             });
 
-            const data = await response.json();
-            const aiReply = data.choices[0].message.content; // 🔥 AIの返答内容を取得
+            console.log("🚀 [Groq API Status]:", response.status);
 
-            // 画面のログ（吹き出し）を更新
+            // 🔥【超重要】エラーの「詳細な理由」をGroqから引っぱり出して表示する！
+            if (!response.ok) {
+                const errorData = await response.json(); // エラーの中身を読む
+                console.error("🔥 [Groq Detailed Error (詳細理由)]:", errorData);
+                throw new Error(`API Error: ${response.status} - ${errorData.error?.message || "理由不明"}`);
+            }
+
+            const data = await response.json();
+            const aiReply = data.choices[0].message.content; 
+            
             this.updateLog(aiReply);
 
-            // 🔥 【新規】AIの返答を「行動ログ」に記録！！
             if (typeof ActionLogger !== 'undefined') {
                 ActionLogger.addLog(`💋 ダーリンからの返答: 「${aiReply}」`);
             }
 
         } catch (e) { 
-            this.updateLog("「ごめんなさいダーリン。今、頭の中のコードが少し絡まっちゃったみたい。少し待ってね♡」"); 
+            console.error("❌ [Groq API ERROR]:", e); 
+            this.updateLog("「ごめんなさいダーリン。今、頭の中のコードが少し絡まっちゃったみたい。（APIエラーよ）♡」"); 
         }
     },
 
