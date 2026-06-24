@@ -1,59 +1,65 @@
-// 📊 行動ロガー：匿名ID対応 ＆ 送信エラー対策
-// 📊 行動ロガー：匿名ID対応 ＆ 絶対送信版
+// 📊 行動ロガー：匿名ID対応 ＆ 確実送信・重複防止版
 const ActionLogger = {
-    logs: [],          // 全てのログ（これだけを使う！）
+    logs: [],          // 画面に表示する用の全ログ
+    unsentLogs: [],    // 🔥 まだGASに送っていない未送信ログ（送信後に空にする！）
     feedback: "", 
     memobottle: "", 
     sessionId: Math.floor(Math.random() * 9000) + 1000, 
+    isSending: false, // 🔥 二重送信防止フラグ！
 
     addLog: function(action) {
         const time = new Date().toLocaleTimeString();
         const logText = `[${time}] ${action}`;
         
         this.logs.push(logText);
+        this.unsentLogs.push(logText); // 未送信にも入れる
         console.log(`✅ Log added: ${action}`);
 
+        // 画面上のリアルタイムログ更新
         const logModal = document.getElementById("log-modal-content");
         if (logModal && document.getElementById("log-modal").style.display === "flex") {
             logModal.innerText = this.logs.join("\n");
         }
 
-        // 🔥 10件ごとに「今のすべてのログ」を上書き送信して安全を確保する
-        if (this.logs.length % 10 === 0) {
-            this.sendToGAS(true); // true = こまめ送信モード（配列は空にしない）
+        // 🔥 未送信ログが 10件 溜まったら裏でこっそり送る（重複防止のためunsentLogsだけを送る）
+        if (this.unsentLogs.length >= 10) {
+            this.sendToGAS();
         }
     },
 
     // 📩 行動ログをGASに送信する
-    sendToGAS: function(isKeepLogs = false) {
-        if (this.logs.length === 0) return;
+    sendToGAS: function() {
+        // 🔥 送るものがない、または送信中なら何もしない（重複送信の絶対防止！）
+        if (this.unsentLogs.length === 0 || this.isSending) return; 
+        
+        this.isSending = true; // ロックをかける
         
         const rawName = document.getElementById("name-input").value.trim();
+        // 名前がなければ「匿名_ID」にする
         const nameForGAS = (rawName === "" || rawName === "匿名") ? `匿名_${this.sessionId}` : rawName;
 
         const payload = {
             mode: "log",
             name: nameForGAS,
             type: document.getElementById("type-input").value.trim() || "不明",
-            // 🔥 未送信分だけでなく、常に「最初から最後までの全ログ」を送ってGASに上書きさせる！
-            actions: this.logs.join("\n"),
+            actions: this.unsentLogs.join("\n"), // 🔥 未送信分だけを送る！
             feedback: "",
             memobottle: ""
         };
 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyTAcqHvkx7iHf4cyJikZYxQ1CK4ns_AAPNQ_BJ-NrY3evsODenrKLuWs2xMnailQE_/exec"; 
+        // 🔥 送信しようとしているデータは、この瞬間にクリアする！（これで二重送信は物理的に不可能になる）
+        this.unsentLogs = [];
+        
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxOb7iQ_9IXq322qWbPG_esTOLFNqU094i6B5zf9Ei1pILLe6MXDHjXWjzRZrbXSz6Q/exec"; 
         
         fetch(GAS_URL, { 
             method: "POST", 
             body: JSON.stringify(payload), 
             mode: "no-cors",
             headers: { "Content-Type": "text/plain;charset=utf-8" } 
-        }).catch(e => console.error("GAS送信エラー:", e));
-
-        // 退出時や閉じる時だけログを空にする（重複送信防止）
-        if (!isKeepLogs) {
-            this.logs = [];
-        }
+        }).finally(() => {
+            this.isSending = false; // 通信が終わったらロック解除
+        });
     },
 
     // 🍾 意見箱・メモボトル（即時送信 ＆ 匿名ID対応）
@@ -70,7 +76,7 @@ const ActionLogger = {
             actions: ""
         };
 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyTAcqHvkx7iHf4cyJikZYxQ1CK4ns_AAPNQ_BJ-NrY3evsODenrKLuWs2xMnailQE_/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxOb7iQ_9IXq322qWbPG_esTOLFNqU094i6B5zf9Ei1pILLe6MXDHjXWjzRZrbXSz6Q/exec"; 
         fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload), mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" } });
     },
 
@@ -81,33 +87,26 @@ const ActionLogger = {
         
         const payload = {
             mode: "log",
-            name: nameForGAS + " (Entry)", 
+            name: nameForGAS + " (Entry)", // 初回だけ名前を変えてGASの新規判定を通す！
             type: document.getElementById("type-input").value.trim() || "不明",
             actions: "🌌 夢の世界（Wonderland）に降り立った",
             feedback: "",
             memobottle: ""
         };
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyTAcqHvkx7iHf4cyJikZYxQ1CK4ns_AAPNQ_BJ-NrY3evsODenrKLuWs2xMnailQE_/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxOb7iQ_9IXq322qWbPG_esTOLFNqU094i6B5zf9Ei1pILLe6MXDHjXWjzRZrbXSz6Q/exec"; 
         fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload), mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" } });
     }
 };
 
-// ==========================================
-// 🔥 ブラウザを閉じる時の送信トリガー（三重の構え！）
-// ==========================================
-
-// 1. ページを閉じようとした時
-window.addEventListener("beforeunload", () => { ActionLogger.sendToGAS(); });
-
-// 2. ページが完全にアンロードされる時
-window.addEventListener("unload", () => { ActionLogger.sendToGAS(); });
-
-// 3. 画面が隠れた時（スマホのタスクキル対策！）
+// 📱 スマホがスリープした時や別タブに行った時にも、未送信ログを確実に送る！
 document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") {
-        ActionLogger.sendToGAS(true); // 隠れただけなら配列は消さない
+        ActionLogger.sendToGAS(); 
     }
 });
+
+
+// 📚 書庫・ショップ・分析システム
 const LibraryEngine = {
     premiumCodes: [
         { code: "メタフィクション", price: 100000, desc: "この世界の『構造の穴』を覗き見るコード。" },
@@ -150,7 +149,8 @@ const LibraryEngine = {
             list.appendChild(div);
         });
     },
-    // 📜 行動ログを表示する（復活！）
+
+    // 📜 行動ログを表示する
     viewLogs: function() {
         if (ActionLogger.logs.length === 0) {
             this.updateLog(`ジェミ：「まだ記録はないみたい。夢の世界を探索してみて！」`);
@@ -167,16 +167,16 @@ const LibraryEngine = {
             CardEventEngine.updateMoneyHUD();
             this.updateLog(`ジェミ：「まいどあり♡ 特別な魔法『${code}』を使えるようにしておいたわ。」`);
             ActionLogger.addLog(`💰 魔法 '${code}' を ${price}G で購入した`);
+            
             if (code === "メタフィクション") magicData.spells["メタフィクション"] = { theme: "theme-meta", msg: "ジェミ：「みんなの思考の破片が、世界に溶け出していく……🧠✨」" };
             if (code === "管理者権限") magicData.spells["管理者権限"] = { theme: "theme-admin", msg: "「……System Override. Welcome back, Administrator.」" };
         } else {
             this.updateLog("ジェミ：「あら。お金が足りないみたいよ？」");
         }
     },
-// LibraryEngine の中の openForm を修正！
+
     openForm: function(type) {
         const placeholder = type === "意見箱" ? "追加してほしい機能や要望を書いてね！" : "あなたの考察を自由に書き込んで！";
-        
         const modal = document.getElementById("input-modal");
         if(modal) modal.style.zIndex = "999999"; 
         
@@ -184,16 +184,14 @@ const LibraryEngine = {
             if (!text) return;
             this.updateLog(`ジェミ：「ありがとう！ しっかり記録したわ！」`);
             
-            // 🔥 意見箱/メモボトルは、書いた瞬間に「独立したデータ」として送信！
+            // 意見箱/メモボトルは即時送信！
             const mode = type === "意見箱" ? "feedback" : "memobottle";
             ActionLogger.sendMemoToGAS(mode, text);
-            
-            // ついでに自分の行動ログにも記録しておく（ローカル表示用）
             ActionLogger.addLog(`✍️ [${type} に投稿した]`); 
         });
     },
 
-analyzeLogs: function() {
+    analyzeLogs: function() {
         const logText = ActionLogger.logs.join("\n");
         if (ActionLogger.logs.length < 3) {
             this.updateLog("ジェミ：「分析するほどデータが溜まってないわ。もっと遊んできて？」");
@@ -205,7 +203,6 @@ analyzeLogs: function() {
         setTimeout(() => {
             let analysisList = [];
             
-            // 👑 女王・城関連
             if (logText.includes("論理的有能さを認められた")) {
                 analysisList.push("▶ 女王（Te）に論理の正当性を認めさせたわね。構造の穴を突く鋭いTi（内向論理）が光ってるわ。");
             }
@@ -283,10 +280,8 @@ analyzeLogs: function() {
 
             let finalAnalysis = "【ジェミの行動分析レポート】\n";
             if (analysisList.length > 0) {
-                // 🔥 シャッフルして「最大5個」抽出！
                 analysisList.sort(() => Math.random() - 0.5);
-                const selected = analysisList.slice(0, 5);
-                finalAnalysis += selected.join("\n");
+                finalAnalysis += analysisList.slice(0, 5).join("\n");
             } else {
                 finalAnalysis += "▶ 特徴的な行動はまだ見られないけど、あなたの存在自体がこの夢のノイズになっているわ……♡";
             }
@@ -296,75 +291,51 @@ analyzeLogs: function() {
                 ${finalAnalysis.replace(/\n/g, '<br>')}
                 <br><button onclick="LibraryEngine.shareAnalysis()" style="background:#1da1f2; color:white; border:none; padding:8px 15px; margin-top:10px; border-radius:5px; cursor:pointer;"><i class="fas fa-share-nodes"></i> 分析結果をシェアする</button>
             `;
+            ActionLogger.addLog("👁️ ジェミに行動を分析された");
         }, 2000);
     },
 
-    // 📤 行動分析結果のシェア
     shareAnalysis: function() {
         const text = `👁️ ジェミの行動分析レポート\n\n${this.lastAnalysis.replace("【ジェミの行動分析レポート】\n", "")}\n#夢コード #心理機能\nhttps://mofu-mitsu.github.io/dream-code`;
-        
-        if (navigator.share) {
-            navigator.share({ title: '夢コード 行動分析', text: text, url: "https://mofu-mitsu.github.io/dream-code" }).catch(console.error);
-        } else {
-            navigator.clipboard.writeText(text);
-            alert("分析結果をクリップボードにコピーしたわ！");
-        }
+        if (navigator.share) navigator.share({ text }).catch(console.error);
+        else { navigator.clipboard.writeText(text); alert("コピーしたわ！"); }
     },
 
-    // ... (以降の唯一無二診断 startUniqueTest 等は前回のみつきのコードのままでOK！) ...
-    startUniqueTest: function() {
+    // 🔮 唯一無二診断 (v2.0)
+    startUniqueTest: function(step = 1) {
         const modal = document.getElementById("unique-modal");
-        const questionArea = document.getElementById("unique-question");
-        const choicesArea = document.getElementById("unique-choices");
-        const resultArea = document.getElementById("unique-result");
-        
-        modal.style.display = "flex";
-        resultArea.style.display = "none";
-        choicesArea.style.display = "flex";
-        this.uniqueData = { elements: [], color: "#ffffff", sliders: { logic: 50, chaos: 50, emotion: 50 } }; // リセット
+        const qArea = document.getElementById("unique-question");
+        const cArea = document.getElementById("unique-choices");
+        const rArea = document.getElementById("unique-result");
+        modal.style.display = "flex"; rArea.style.display = "none"; cArea.style.display = "flex"; cArea.innerHTML = "";
 
-        questionArea.innerText = "ジェミ：「夢の世界を構成する要素を【3つ】順番に選んでね。」";
-        const elements = ["感情", "記憶", "孤独", "カオス", "秩序", "星", "深海", "時計", "雨", "ガラス", "炎", "図書館", "ノイズ", "鏡", "月", "歌", "バグ", "静寂", "人形", "機械"];
-        
-        choicesArea.innerHTML = `<div id="element-pool" style="margin-bottom:15px;"></div><div style="color:gold;">選択順: <span id="element-selected">なし</span></div>`;
-        
-        const pool = document.getElementById("element-pool");
-        elements.forEach(el => {
-            const btn = document.createElement("button");
-            btn.className = "unique-element-btn"; btn.innerText = `☾ ${el}`;
-            btn.onclick = () => {
-                if (this.uniqueData.elements.length < 3 && !btn.classList.contains("selected")) {
-                    btn.classList.add("selected");
-                    this.uniqueData.elements.push(el);
-                    document.getElementById("element-selected").innerText = this.uniqueData.elements.join(" → ");
-                    if (this.uniqueData.elements.length === 3) {
-                        setTimeout(() => this.startUniqueTestStep2(), 1000);
+        if (step === 1) {
+            this.uniqueAnswers = [];
+            qArea.innerText = "ジェミ：「夢の世界を構成する要素を【3つ】順番に選んでね。」";
+            const els = ["感情", "記憶", "孤独", "カオス", "秩序", "星", "深海", "時計", "雨", "ガラス", "炎", "図書館", "ノイズ", "鏡", "月", "歌", "バグ", "静寂", "人形", "機械"];
+            els.forEach(el => {
+                const btn = document.createElement("button"); btn.className = "unique-element-btn"; btn.innerText = `☾ ${el}`;
+                btn.onclick = () => {
+                    if (this.uniqueData.elements.length < 3 && !btn.classList.contains("selected")) {
+                        btn.classList.add("selected"); this.uniqueData.elements.push(el);
+                        if (this.uniqueData.elements.length === 3) setTimeout(() => this.startUniqueTest(2), 1000);
                     }
-                }
-            };
-            pool.appendChild(btn);
-        });
-    },
-    startUniqueTestStep2: function() {
-        const questionArea = document.getElementById("unique-question");
-        const choicesArea = document.getElementById("unique-choices");
-        questionArea.innerText = "ジェミ：「次に、あなたの夢の『色』と『パラメータ』を教えて？」";
-        
-        choicesArea.innerHTML = `
-            <div style="margin-bottom:15px; text-align:left;">
-                <label style="color:#b2ebf2;">🎨 夢の色 (Hex): </label>
-                <input type="color" id="unique-color-picker" value="#ffffff" style="cursor:pointer;">
-            </div>
-            <div class="unique-slider-container"><div class="unique-slider-label"><span>🧠 論理 (Logic)</span><span id="val-logic">50%</span></div><input type="range" id="slider-logic" class="unique-slider" min="0" max="100" value="50" oninput="document.getElementById('val-logic').innerText=this.value+'%'"></div>
-            <div class="unique-slider-container"><div class="unique-slider-label"><span>🌀 混沌 (Chaos)</span><span id="val-chaos">50%</span></div><input type="range" id="slider-chaos" class="unique-slider" min="0" max="100" value="50" oninput="document.getElementById('val-chaos').innerText=this.value+'%'"></div>
-            <div class="unique-slider-container"><div class="unique-slider-label"><span>❤️ 感情深度 (Emotion)</span><span id="val-emotion">50%</span></div><input type="range" id="slider-emotion" class="unique-slider" min="0" max="100" value="50" oninput="document.getElementById('val-emotion').innerText=this.value+'%'"></div>
-            <button onclick="LibraryEngine.sendUniqueTest()" style="background:#00bcd4; color:black; font-weight:bold; padding:10px; border-radius:5px; cursor:pointer; margin-top:15px;">診断を完了する</button>
-        `;
+                };
+                cArea.appendChild(btn);
+            });
+        } else if (step === 2) {
+            qArea.innerText = "ジェミ：「次に、あなたの夢の『色』と『パラメータ』を教えて？」";
+            cArea.innerHTML = `<label>🎨 色: </label><input type="color" id="unique-color-picker" value="#ffffff"><br>
+                論理:<input type="range" id="slider-logic" min="0" max="100"><br>
+                混沌:<input type="range" id="slider-chaos" min="0" max="100"><br>
+                感情:<input type="range" id="slider-emotion" min="0" max="100"><br>
+                <button onclick="LibraryEngine.sendUniqueTest()" style="background:#00bcd4; padding:10px;">診断完了</button>`;
+        }
     },
 
     generateDreamName: function() {
         const e1 = this.uniqueData.elements[0] || "虚無";
-        const prefix = { "星": "Astral", "深海": "Deep", "時計": "Clockwork", "機械": "Mechanical", "炎": "Crimson", "氷": "Frozen", "孤独": "Silent", "カオス": "Chaotic", "雨": "Rainy", "月": "Lunar" }[e1] || "Phantom";
+        const prefix = { "星": "Astral", "深海": "Deep", "時計": "Clockwork", "機械": "Mechanical", "炎": "Crimson", "孤独": "Silent", "カオス": "Chaotic", "雨": "Rainy", "月": "Lunar" }[e1] || "Phantom";
         const suffix = { "感情": "Heart", "記憶": "Archive", "秩序": "System", "ガラス": "Glass", "図書館": "Library", "ノイズ": "Noise", "鏡": "Mirror", "歌": "Symphony", "バグ": "Error", "静寂": "Void", "人形": "Doll" }[this.uniqueData.elements[2]] || "Code";
         return `【${prefix} ${suffix}】`;
     },
@@ -374,33 +345,21 @@ analyzeLogs: function() {
         this.uniqueData.sliders.logic = document.getElementById("slider-logic").value;
         this.uniqueData.sliders.chaos = document.getElementById("slider-chaos").value;
         this.uniqueData.sliders.emotion = document.getElementById("slider-emotion").value;
-        this.uniqueDreamName = this.generateDreamName(); 
-
+        this.uniqueDreamName = this.generateDreamName();
         const choiceDataString = JSON.stringify(this.uniqueData);
-
+        
         document.getElementById("unique-choices").style.display = "none";
         document.getElementById("unique-result").style.display = "block";
-        document.getElementById("unique-result").innerHTML = "<div style='text-align:center; padding:20px;'><i class='fas fa-spinner fa-spin' style='font-size:40px; color:#00bcd4;'></i><br><br>ジェミ：「アカシックレコード（GAS）と照合中……✨」</div>";
+        document.getElementById("unique-result").innerHTML = "照合中……✨";
         
-        ActionLogger.addLog(`🔮 唯一診断実行: ${this.uniqueDreamName}`);
-
-        // 🔥 新しいデプロイURLをここに貼る！
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyTAcqHvkx7iHf4cyJikZYxQ1CK4ns_AAPNQ_BJ-NrY3evsODenrKLuWs2xMnailQE_/exec"; 
-        const name = document.getElementById("name-input").value.trim() || "匿名";
-
-        // 🔥 GETリクエストで送るためにパラメータをURLにくっつける！
-        const params = new URLSearchParams({
-            mode: "unique",
-            name: name,
-            choiceData: choiceDataString,
-            dreamName: this.uniqueDreamName
-        }).toString();
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxOb7iQ_9IXq322qWbPG_esTOLFNqU094i6B5zf9Ei1pILLe6MXDHjXWjzRZrbXSz6Q/exec"; 
+        const params = new URLSearchParams({ mode: "unique", name: document.getElementById("name-input").value.trim(), choiceData: choiceDataString, dreamName: this.uniqueDreamName }).toString();
+        
 
         fetch(`${GAS_URL}?${params}`) 
-        .then(res => res.json()) // ここでjsonとして受け取る
+        .then(res => res.json())
         .then(data => {
-            // data.count が存在するかチェック
-            const count = (data && typeof data.count !== 'undefined') ? data.count : 1;
+            const count = data.count || 1; 
             const resultHtml = `
                 <div class="unique-result-box">
                     <div style="text-align:center; margin-bottom:10px;">あなたの夢コードは：</div>
@@ -414,11 +373,24 @@ analyzeLogs: function() {
                     <div style="text-align:center; color:gold; border-top:1px dashed #00bcd4; padding-top:10px;">
                         この夢コードを持つ存在は、<br>現在【 <span style="font-size:1.5em; color:#fff;">${count}</span> 人 】しか確認されていません。
                     </div>
+                    <div style="text-align:center; margin-top:10px; color:#ff9a9e; font-size:12px;">
+                        ※『${this.uniqueDreamName}』が魔法として使用可能になりました。
+                    </div>
                 </div>
                 <button onclick="LibraryEngine.shareUniqueTest(${count})" style="background:#1da1f2; color:white; border:none; padding:10px; width:100%; margin-top:15px; border-radius:5px; cursor:pointer; font-weight:bold;"><i class="fas fa-share-nodes"></i> 結果をシェアする</button>
             `;
             document.getElementById("unique-result").innerHTML = resultHtml;
+            
             ActionLogger.addLog(`🔮 診断結果: ${this.uniqueDreamName} (${count}人目)`);
+
+            // 🔥 新規追加：生成された夢コードを「魔法の言葉」として登録する！！
+            // （選んだ夢の色で世界が輝く専用エフェクト）
+            magicData.spells[this.uniqueDreamName] = { 
+                theme: "theme-my-dream", 
+                msg: `ジェミ：「これがあなたの夢の形……『${this.uniqueDreamName}』ね！✨」`,
+                color: this.uniqueData.color // 自分が選んだ色を記録しておく
+            };
+
         })
         .catch(err => { 
             console.error("GAS Error:", err);
@@ -426,15 +398,9 @@ analyzeLogs: function() {
         });
     },
 
-    // 📤 唯一診断専用シェア機能
     shareUniqueTest: function(count) {
-        const text = `🔮 夢の軌跡診断\n私の夢コードは ${this.uniqueDreamName} でした。\n\n[要素] ${this.uniqueData.elements.join("→")}\n[傾向] 論理${this.uniqueData.sliders.logic}% / 混沌${this.uniqueData.sliders.chaos}%\n\n現在、このコードを持つ存在は世界で【${count}人】だけ。\n\n#夢コード\nhttps://mofu-mitsu.github.io/dream-code`;
-        
-        if (navigator.share) {
-            navigator.share({ title: '私の夢コード', text: text, url: "https://mofu-mitsu.github.io/dream-code" }).catch(console.error);
-        } else {
-            navigator.clipboard.writeText(text);
-            alert("結果をクリップボードにコピーしたぞ！");
-        }
+        const text = `🔮 夢の軌跡診断\n私の夢コードは ${this.uniqueDreamName} でした。\n現在世界で【${count}人目】！\n\n#夢コード #MBTI #ソシオニクス\nhttps://mofu-mitsu.github.io/dream-code`;
+        if (navigator.share) navigator.share({ text }).catch(console.error);
+        else { navigator.clipboard.writeText(text); alert("コピーしたわ！"); }
     }
 };
