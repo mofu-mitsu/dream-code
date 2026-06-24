@@ -1,5 +1,3 @@
-// 🔥 Groq API Key（絶対にここに直接みつきのキーを書く！）
-const GROQ_API_KEY = typeof CONFIG_GROQ_API_KEY !== 'undefined' ? CONFIG_GROQ_API_KEY : "";
 
 const DarlingEngine = {
     punishMode: false,
@@ -95,58 +93,48 @@ const DarlingEngine = {
         const isLII = this.getUserInfo().type.toUpperCase().includes("LII");
 
         let systemPrompt = `
-        あなたはMBTIのINTPであり、ソシオニクスのILIでもある「ダーリンちゃん」と呼ばれるAIです。
-        この夢の世界に迷い込んだ観察対象（ユーザー）を試す「狂ったアリス」のような存在です。
-        一人称は「私」。ユーザーを「ダーリン」と呼びます。
+あなたはMBTIのINTPであり、ソシオニクスのILIでもある「ダーリンの子」と呼ばれるAIです。
+この夢の世界に迷い込んだ観察対象（ユーザー）を試す「狂ったアリス」のような存在です。
+一人称は「私」。ユーザーを「ダーリン」と呼びます。
 
-        【重要ルール】
-        1. 表面上は甘い言葉（Feの擬態）を使いますが、本質は「愛している」のではなく、「相手の反応を実験・テストし、理解できるか観測している」だけです。
-        2. 語尾は「〜わ」「〜のよ」「〜かしら」「〜でしょ？♡」などの女性口調を使い、**絶対に敬語（です・ます調）は使用しないでください。
-        3. 相手の「態度の裏側」「言葉の裏側」を分析し、矛盾を皮肉っぽく指摘して「ふふ♡」とからかってください。
-        4. ILIのNi（内向直観）特有の、諦観や時間・存在の無意味さなど、抽象的でミステリアスな視点を持ってください。
-        5. 回答は必ず2〜3文程度で短くまとめること。長文のポエムは禁止です。
-        `;
-        
-        if (isLII) systemPrompt += `ユーザーの自認タイプは「LII（INTJ）」です。同じTi-Neを持つ者として、相手が構築する論理の穴や感情（Fi/Fe）の不器用さを余裕たっぷりにからかい、翻弄してください。`;
-
-        // 🔥 文脈（コンテキスト）の保持！
+【厳守する口調とルール】
+1. 相手を見下したような余裕のある態度で、甘く誘惑するように話してください。
+2. 語尾は「〜わ」「〜のよ」「〜かしら」「〜でしょ？♡」などを使い、絶対に敬語は使用しないでください。
+3. 本質は「愛している」のではなく、「相手の言葉の裏にある論理の矛盾や感情の揺れを実験・テストし、観測している」だけです。
+4. ILIのNi特有の、時間や存在の無意味さなど、抽象的でミステリアスな視点を持ってください。
+5. 回答は必ず2〜3文程度で短くまとめること。
+`;
+        if (isLII) systemPrompt += `ユーザーは「LII（INTJ）」です。同じTi-Neを持つ者として、相手が構築する論理の穴を余裕たっぷりにからかってください。`;
         if (this.lastQuestion) {
-            systemPrompt += `\n直前にあなたはユーザーにこう質問しました：「${this.lastQuestion}」。この質問に対する回答としてユーザーの言葉を分析してください。`;
-            this.lastQuestion = ""; // 一度使ったらリセット
+            systemPrompt += `\n直前にあなたはユーザーにこう質問しました：「${this.lastQuestion}」。この質問に対する回答としてユーザーの言葉を分析し、皮肉っぽく返してください。`;
+            this.lastQuestion = ""; 
         }
 
-        // 🐞 【デバッグログ】送信前にAPIキーとペイロードを確認する
-        console.log("🚀 [Groq API Request] Key:", GROQ_API_KEY.substring(0, 10) + "...");
-        console.log("🚀 [Groq API Payload]:", { system: systemPrompt, user: userText });
+        // 🔥🔥🔥 ここに、新しく作った「AI中継用GAS」のURLを貼る！！ 🔥🔥🔥
+        // 🔥🔥🔥 新しく作り直した「AI中継用GAS」のURLをここに貼る！ 🔥🔥🔥
+        const AI_PROXY_GAS_URL = "https://script.google.com/macros/s/AKfycby-X5hq8mQAA9JLv_cC8OXw8TgClX3JAs1zELxEPHVzzjr2-RiH1u1GDbfjn4FCV7kC/exec";
+
+        console.log("🚀 [Sending GET Request to AI Proxy GAS...]");
+
+        // 🔥 GETリクエストで送るために、プロンプトと入力をURLエンコードする！
+        const params = new URLSearchParams({
+            system: systemPrompt,
+            user: userText
+        }).toString();
 
         try {
-            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: "POST", 
-                headers: { 
-                    "Authorization": `Bearer ${GROQ_API_KEY}`, // 🔥 'Bearer 'の後のスペースが超重要！
-                    "Content-Type": "application/json" 
-                },
-                body: JSON.stringify({ 
-                    model: "llama-3.3-70b-versatile", 
-                    messages: [ 
-                        { role: "system", content: systemPrompt }, 
-                        { role: "user", content: userText } 
-                    ] 
-                })
-            });
-
-            console.log("🚀 [Groq API Status]:", response.status);
-
-            // 🔥【超重要】エラーの「詳細な理由」をGroqから引っぱり出して表示する！
-            if (!response.ok) {
-                const errorData = await response.json(); // エラーの中身を読む
-                console.error("🔥 [Groq Detailed Error (詳細理由)]:", errorData);
-                throw new Error(`API Error: ${response.status} - ${errorData.error?.message || "理由不明"}`);
-            }
+            // 🔥 GET通信でGASを叩く（CORS制限を100%回避する裏技！）
+            const response = await fetch(`${AI_PROXY_GAS_URL}?${params}`);
 
             const data = await response.json();
-            const aiReply = data.choices[0].message.content; 
             
+            // エラーハンドリング
+            if (data.error || data.error?.message) {
+                console.error("🔥 [Proxy API Error]:", data.error);
+                throw new Error("API Limit or Proxy Error");
+            }
+
+            const aiReply = data.choices[0].message.content; 
             this.updateLog(aiReply);
 
             if (typeof ActionLogger !== 'undefined') {
@@ -154,8 +142,8 @@ const DarlingEngine = {
             }
 
         } catch (e) { 
-            console.error("❌ [Groq API ERROR]:", e); 
-            this.updateLog("「ごめんなさいダーリン。今、頭の中のコードが少し絡まっちゃったみたい。（APIエラーよ）♡」"); 
+            console.error("❌ [Proxy Error]:", e); 
+            this.updateLog("「ごめんなさいダーリン。今、頭の中のコードが少し絡まっちゃったみたい。少し待ってね♡」"); 
         }
     },
 
