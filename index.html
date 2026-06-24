@@ -38,12 +38,16 @@
 </a>
 
 <!-- ☪* 夢のパスポート -->
+<!-- ☪* 夢のパスポート（初期入力） -->
 <div id="name-modal" class="modal-overlay">
     <div class="modal-content">
         <h2 style="color: #ff85a1;">☪* 夢のパスポート ☪*</h2>
         <input type="text" id="name-input" placeholder="お名前（任意）">
-        <input type="text" id="type-input" placeholder="自認タイプ（例：INTJ、LII、5w6）">
-        <button onclick="startFall()">ウサギの穴へ落ちる🐇</button>
+        <input type="text" id="type-input" placeholder="自認タイプ（例：LII, ESI）">
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+            <button onclick="document.getElementById('help-modal').style.display='flex'" style="background: #555; padding: 10px; font-size: 14px;"><i class="fas fa-question-circle"></i> 遊び方</button>
+            <button onclick="startFall()" style="padding: 10px 20px;">ウサギの穴へ落ちる🐇</button>
+        </div>
     </div>
 </div>
 
@@ -77,7 +81,7 @@
 <div id="darling-window" class="modal-overlay" style="display:none;">
     <div class="chat-container">
         <button class="close-btn" onclick="if(DarlingEngine.checkEscape()) closeDarlingHouse()">×</button>
-        <div id="char-avatar">💋</div>
+        <div id="char-avatar">🥺</div>
         <div id="char-name">ダーリンの子 (ILI)</div>
         <div id="ai-response"></div>
         <div id="card-display"></div>
@@ -125,7 +129,7 @@
 <div id="teaparty-window" class="modal-overlay" style="display:none;">
     <div class="chat-container" style="border-color: #ff9a9e;">
         <button class="close-btn" onclick="TeaPartyEngine.closeHouse()">×</button>
-        <div id="teaparty-emojis" style="font-size: 50px;">🎩🐰☕🐭💋</div>
+        <div id="teaparty-emojis" style="font-size: 50px;">🎩🐰☕🐭🥺</div>
         <div id="teaparty-response" style="min-height: 80px;"></div>
         <div id="teaparty-table" class="teaparty-table"></div>
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
@@ -271,13 +275,16 @@
 </div>
 
 <!-- 🔮 唯一無二診断モーダル（書庫用） -->
-<div id="unique-modal" class="modal-overlay" style="display:none;">
-    <div class="chat-container" style="border-color: #00bcd4;">
+<div id="unique-modal" class="modal-overlay" style="display:none; z-index: 200000;">
+    <div class="modal-content" style="border: 2px solid #00bcd4;">
         <div style="color: #00bcd4; font-size: 1.5rem; font-weight: bold; margin-bottom: 10px;">🔮 夢の軌跡診断</div>
-        <div id="unique-question" style="color: white; margin-bottom: 20px;"></div>
-        <div id="unique-choices" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;"></div>
+        <div id="unique-question" style="color: white; margin-bottom: 20px; line-height: 1.5;"></div>
+        
+        <!-- 🔥 修正ポイント：flex-direction を row にして、wrap（折り返し）を追加！ -->
+        <div id="unique-choices" style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 20px; max-height: 50vh; overflow-y: auto;"></div>
+        
         <div id="unique-result" style="color: gold; font-weight: bold; font-size: 1.2rem; display: none;"></div>
-        <button onclick="document.getElementById('unique-modal').style.display='none'" style="background: #00bcd4; color: black; border: none; padding: 10px; cursor: pointer;">閉じる</button>
+        <button onclick="document.getElementById('unique-modal').style.display='none'" style="background: #00bcd4; color: black; padding: 10px;">閉じる</button>
     </div>
 </div>
 <script src="data.js"></script>
@@ -296,5 +303,26 @@
 <script src="library.js"></script>
 <script src="witch.js"></script>
 <script src="pigeon.js"></script>
+<!-- ❓ 遊び方（チュートリアル）モーダル -->
+<div id="help-modal">
+    <div class="help-title">📖 夢コードの歩き方</div>
+    <div class="help-section">
+        <b>探索する</b><br>
+        ウサギの穴に落ちると、不思議の国が広がっています。画面上のアイコンをクリックして、奇妙な住人たち（MBTIのAIキャラ）と会話したり、ゲームで遊んだりしましょう。
+    </div>
+    <div class="help-section">
+        <b>魔法をかける（夢コード）</b><br>
+        画面下の「夢コードバー」に言葉を入力して実行すると、環境が変化します。左側の「📖本アイコン」を押すと、使える魔法の一覧が見られます。
+    </div>
+    <div class="help-section">
+        <b>生き残る</b><br>
+        ハートの女王の城では、選択を間違えると<b>首をはねられ、夢から強制的に追放</b>されます。女王の性格（ESTJ）を分析し、ご機嫌を取るか、アイテムを使って切り抜けましょう。
+    </div>
+    <div class="help-section">
+        <b>隠された要素</b><br>
+        画面を横切るウサギやハト、落ちている怪しい食べ物など、触れるものはすべて試してみましょう。ジェミの書庫では「あなたの唯一無二の夢コード」を作ることもできます。
+    </div>
+    <button onclick="document.getElementById('help-modal').style.display='none'" style="background: #9d81ff; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px;">理解した</button>
+</div>
 </body>
 </html>
