@@ -2082,3 +2082,55 @@ body.theme-admin .wonder-object {
     0% { transform: skewX(-10deg) translateX(-20%); opacity: 0.3; }
     100% { transform: skewX(10deg) translateX(20%); opacity: 0.7; }
 }
+
+/* 🔮 唯一無二診断（v2.0）専用スタイル */
+.unique-element-btn {
+    background: #004d40 !important; color: #b2ebf2 !important; 
+    border: 1px solid #00bcd4 !important; padding: 8px 15px !important;
+    border-radius: 20px !important; cursor: pointer !important; 
+    display: inline-block !important; /* 🔥 横並びにする！ */
+    margin: 5px !important; font-size: 14px !important;
+    transition: 0.2s !important;
+    width: auto !important; /* 横幅100%になるのを防ぐ */
+}
+.unique-element-btn.selected { 
+    background: #00bcd4 !important; color: #000 !important; 
+    font-weight: bold !important; box-shadow: 0 0 10px #00bcd4 !important; 
+}
+
+/* 🪄 オリジナル夢コード専用の光るパーティクル */
+.my-dream-particle {
+    /* JSから受け取った「自分が選んだ夢の色」で発光する！ */
+    filter: drop-shadow(0 0 15px var(--my-dream-color, #fff)) brightness(1.5);
+    animation: myDreamFloat 5s ease-in-out forwards !important;
+}
+
+@keyframes myDreamFloat {
+    0% { transform: scale(0) rotate(0deg); opacity: 0; }
+    50% { transform: scale(1.5) rotate(180deg); opacity: 1; }
+    100% { transform: scale(0.5) rotate(360deg); opacity: 0; }
+}
+
+/* 🔮 唯一無二診断の結果ボックス（スクロール対応！） */
+.unique-result-box {
+    background: rgba(0, 0, 0, 0.8); border: 1px solid #00bcd4; border-radius: 10px;
+    padding: 15px; text-align: left; box-shadow: inset 0 0 20px rgba(0, 188, 212, 0.5);
+    font-family: monospace; color: #e0f7fa; line-height: 1.6;
+    max-height: 50vh; /* 🔥 画面の半分くらいで高さを制限 */
+    overflow-y: auto; /* 🔥 はみ出したらスクロール！ */
+}
+/* スクロールバーのデザイン */
+.unique-result-box::-webkit-scrollbar { width: 6px; }
+.unique-result-box::-webkit-scrollbar-thumb { background: #00bcd4; border-radius: 3px; }
+
+/* ❓ ヘルプ（チュートリアル）モーダル */
+#help-modal {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 85%; max-width: 500px; max-height: 80vh;
+    background: rgba(20, 10, 40, 0.98); border: 2px solid #9d81ff; border-radius: 10px;
+    box-shadow: 0 0 30px #9d81ff; display: none; flex-direction: column;
+    padding: 20px; z-index: 999999; color: #e2e2e2; overflow-y: auto; text-align: left;
+}
+.help-title { color: #ff85a1; font-size: 1.3rem; font-weight: bold; border-bottom: 1px dashed #ff85a1; padding-bottom: 10px; margin-bottom: 15px; text-align: center; }
+.help-section { margin-bottom: 15px; line-height: 1.6; font-size: 0.95rem; }
+.help-section b { color: gold; }
