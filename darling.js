@@ -112,7 +112,7 @@ const DarlingEngine = {
 
         // 🔥🔥🔥 ここに、新しく作った「AI中継用GAS」のURLを貼る！！ 🔥🔥🔥
         // 🔥🔥🔥 新しく作り直した「AI中継用GAS」のURLをここに貼る！ 🔥🔥🔥
-        const AI_PROXY_GAS_URL = "https://script.google.com/macros/s/AKfycby-X5hq8mQAA9JLv_cC8OXw8TgClX3JAs1zELxEPHVzzjr2-RiH1u1GDbfjn4FCV7kC/exec";
+        const AI_PROXY_GAS_URL = "https://script.google.com/macros/s/AKfycby18Z4Bb0WzgsxHSRTYkjNiG2c-lB7S4ualfoagML25tN_YfXJqOwKQsXxgy6IdrD1r/exec";
 
         console.log("🚀 [Sending GET Request to AI Proxy GAS...]");
 
