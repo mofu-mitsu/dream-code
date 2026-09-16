@@ -1,9 +1,6 @@
 name: Update Darling GAS URL
 
-on:
-  push:
-    paths:
-      - '.github/workflows/update-darling-gas-url.yml'
+on: push
 
 permissions:
   contents: write
@@ -13,8 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Update GAS URL and diagnostic error handling
+      - name: Update Darling
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -23,9 +19,9 @@ jobs:
           old = 'https://script.google.com/macros/s/AKfycby18Z4Bb0WzgsxHSRTYkjNiG2c-lB7S4ualfoagML25tN_YfXJqOwKQsXxgy6IdrD1r/exec'
           new = 'https://script.google.com/macros/s/AKfycbx-Xdmkqkwofwr7l4jbzWaNYLzasEbIIicu4hHay2zXXaz2J3cDPQpzm_ptdlRfTd-i/exec'
           if old not in s:
-              raise SystemExit('Old GAS URL not found; aborting to avoid unintended changes.')
+              raise SystemExit('Old GAS URL not found; aborting.')
           s = s.replace(old, new)
-          s = s.replace('''            const data = await response.json();
+          old_block = '''            const data = await response.json();
             
             // エラーハンドリング
             if (data.error || data.error?.message) {
@@ -33,7 +29,8 @@ jobs:
                 throw new Error("API Limit or Proxy Error");
             }
 
-            const aiReply = data.choices[0].message.content;''', '''            const raw = await response.text();
+            const aiReply = data.choices[0].message.content;'''
+          new_block = '''            const raw = await response.text();
             console.log("📡 [Proxy HTTP]", response.status, response.statusText);
             console.log("📡 [Proxy Raw]", raw);
 
@@ -65,18 +62,20 @@ jobs:
                 throw new Error(`Unexpected proxy response: ${JSON.stringify(data).slice(0, 1000)}`);
             }
 
-            const aiReply = data.choices[0].message.content;''')
-          s = s.replace('''        } catch (e) { 
+            const aiReply = data.choices[0].message.content;'''
+          s = s.replace(old_block, new_block)
+          old_catch = '''        } catch (e) { 
             console.error("❌ [Proxy Error]:", e); 
             this.updateLog("「ごめんなさいダーリン。今、頭の中のコードが少し絡まっちゃったみたい。少し待ってね♡」"); 
-        }''', '''        } catch (e) { 
+        }'''
+          new_catch = '''        } catch (e) { 
             console.error("❌ [Proxy Error]", e); 
             this.updateLog(`「ごめんなさいダーリン。今、頭の中のコードが少し絡まっちゃったみたい。\\n${e.message}」`); 
-        }''')
+        }'''
+          s = s.replace(old_catch, new_catch)
           p.write_text(s, encoding='utf-8')
           PY
-
-      - name: Commit changes and remove temporary workflow
+      - name: Commit and remove temporary workflow
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
