@@ -1,0 +1,86 @@
+name: Update Darling GAS URL
+
+on:
+  push:
+    paths:
+      - '.github/workflows/update-darling-gas-url.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update GAS URL and diagnostic error handling
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('darling.js')
+          s = p.read_text(encoding='utf-8')
+          old = 'https://script.google.com/macros/s/AKfycby18Z4Bb0WzgsxHSRTYkjNiG2c-lB7S4ualfoagML25tN_YfXJqOwKQsXxgy6IdrD1r/exec'
+          new = 'https://script.google.com/macros/s/AKfycbx-Xdmkqkwofwr7l4jbzWaNYLzasEbIIicu4hHay2zXXaz2J3cDPQpzm_ptdlRfTd-i/exec'
+          if old not in s:
+              raise SystemExit('Old GAS URL not found; aborting to avoid unintended changes.')
+          s = s.replace(old, new)
+          s = s.replace('''            const data = await response.json();
+            
+            // エラーハンドリング
+            if (data.error || data.error?.message) {
+                console.error("🔥 [Proxy API Error]:", data.error);
+                throw new Error("API Limit or Proxy Error");
+            }
+
+            const aiReply = data.choices[0].message.content;''', '''            const raw = await response.text();
+            console.log("📡 [Proxy HTTP]", response.status, response.statusText);
+            console.log("📡 [Proxy Raw]", raw);
+
+            let data;
+            try {
+                data = JSON.parse(raw);
+            } catch {
+                throw new Error(`GAS returned non-JSON (${response.status}): ${raw.slice(0, 500)}`);
+            }
+
+            // エラーハンドリング：実際のGAS/Groqエラーを表示する
+            if (!response.ok) {
+                throw new Error(
+                    typeof data.error === "string"
+                        ? data.error
+                        : data.error?.message || JSON.stringify(data.error)
+                );
+            }
+
+            if (data.error) {
+                throw new Error(
+                    typeof data.error === "string"
+                        ? data.error
+                        : data.error.message || JSON.stringify(data.error)
+                );
+            }
+
+            if (!data.choices?.[0]?.message?.content) {
+                throw new Error(`Unexpected proxy response: ${JSON.stringify(data).slice(0, 1000)}`);
+            }
+
+            const aiReply = data.choices[0].message.content;''')
+          s = s.replace('''        } catch (e) { 
+            console.error("❌ [Proxy Error]:", e); 
+            this.updateLog("「ごめんなさいダーリン。今、頭の中のコードが少し絡まっちゃったみたい。少し待ってね♡」"); 
+        }''', '''        } catch (e) { 
+            console.error("❌ [Proxy Error]", e); 
+            this.updateLog(`「ごめんなさいダーリン。今、頭の中のコードが少し絡まっちゃったみたい。\\n${e.message}」`); 
+        }''')
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit changes and remove temporary workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f .github/workflows/update-darling-gas-url.yml
+          git add darling.js .github/workflows/update-darling-gas-url.yml
+          git commit -m "fix: update Darling GAS proxy URL and error diagnostics"
+          git push
