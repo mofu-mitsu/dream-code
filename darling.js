@@ -122,16 +122,45 @@ const DarlingEngine = {
             user: userText
         }).toString();
 
-        try {
-            // 🔥 GET通信でGASを叩く（CORS制限を100%回避する裏技！）
-            const response = await fetch(`${AI_PROXY_GAS_URL}?${params}`);
+        // ⏱️ API/GASが長時間応答しない場合に、ブラウザ側でタイムアウトする
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-            const data = await response.json();
-            
-            // エラーハンドリング
-            if (data.error || data.error?.message) {
-                console.error("🔥 [Proxy API Error]:", data.error);
-                throw new Error("API Limit or Proxy Error");
+        try {
+            // 🔥 GET通信でGASを叩く
+            const response = await fetch(`${AI_PROXY_GAS_URL}?${params}`, {
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+
+            // JSONだけでなく、生のレスポンスも取得して原因を特定できるようにする
+            const raw = await response.text();
+            console.log("📡 [Proxy HTTP]", response.status, response.statusText);
+            console.log("📡 [Proxy Raw]", raw);
+
+            let data;
+            try {
+                data = JSON.parse(raw);
+            } catch (jsonError) {
+                throw new Error(`GASがJSONではない応答を返しました（HTTP ${response.status}）：${raw.slice(0, 500)}`);
+            }
+
+            if (!response.ok) {
+                const detail = typeof data.error === "string"
+                    ? data.error
+                    : data.error?.message || JSON.stringify(data.error);
+                throw new Error(`GAS通信エラー（HTTP ${response.status}）：${detail}`);
+            }
+
+            if (data.error) {
+                const detail = typeof data.error === "string"
+                    ? data.error
+                    : data.error.message || JSON.stringify(data.error);
+                throw new Error(`AI中継エラー：${detail}`);
+            }
+
+            if (!data.choices?.[0]?.message?.content) {
+                throw new Error(`予期しないAI応答：${JSON.stringify(data).slice(0, 1000)}`);
             }
 
             const aiReply = data.choices[0].message.content; 
@@ -141,9 +170,20 @@ const DarlingEngine = {
                 ActionLogger.addLog(`💋 ダーリンからの返答: 「${aiReply}」`);
             }
 
-        } catch (e) { 
-            console.error("❌ [Proxy Error]:", e); 
-            this.updateLog("「ごめんなさいダーリン。今、頭の中のコードが少し絡まっちゃったみたい。少し待ってね♡」"); 
+        } catch (e) {
+            clearTimeout(timeoutId);
+            console.error("❌ [Proxy Error]:", e);
+
+            let errorMessage;
+            if (e.name === "AbortError") {
+                errorMessage = "通信が30秒以上応答しなかったためタイムアウトしました。GASまたはAI側の処理が時間内に完了しなかった可能性があります。";
+            } else if (e instanceof TypeError) {
+                errorMessage = `通信そのものに失敗しました：${e.message || "Network Error"}`;
+            } else {
+                errorMessage = e.message || String(e);
+            }
+
+            this.updateLog(`「……あら、ダーリン。通信に失敗したみたいね。♡」\n\nエラー内容『${errorMessage}』\n\nジェミの書庫の意見箱から開発者にお知らせしてね。`);
         }
     },
 
