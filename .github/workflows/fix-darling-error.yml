@@ -1,0 +1,40 @@
+name: Fix Darling error diagnostics
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Patch darling.js
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('darling.js')
+          s = p.read_text(encoding='utf-8')
+          old = '''        try {\n            // 🔥 GET通信でGASを叩く（CORS制限を100%回避する裏技！）\n            const response = await fetch(`${AI_PROXY_GAS_URL}?${params}`);\n\n            const data = await response.json();\n            \n            // エラーハンドリング\n            if (data.error || data.error?.message) {\n                console.error("🔥 [Proxy API Error]:", data.error);\n                throw new Error("API Limit or Proxy Error");\n            }\n\n            const aiReply = data.choices[0].message.content; \n            this.updateLog(aiReply);\n\n            if (typeof ActionLogger !== 'undefined') {\n                ActionLogger.addLog(`💋 ダーリンからの返答: 「${aiReply}」`);\n            }\n\n        } catch (e) { \n            console.error("❌ [Proxy Error]:", e); \n            this.updateLog("「ごめんなさいダーリン。今、頭の中のコードが少し絡まっちゃったみたい。少し待ってね♡」"); \n        }'''
+          new = '''        // ⏱️ API/GASが長時間応答しない場合に、ブラウザ側でタイムアウトする\n        const controller = new AbortController();\n        const timeoutId = setTimeout(() => controller.abort(), 30000);\n\n        try {\n            // 🔥 GET通信でGASを叩く\n            const response = await fetch(`${AI_PROXY_GAS_URL}?${params}`, {\n                signal: controller.signal\n            });\n            clearTimeout(timeoutId);\n\n            // JSONだけでなく、生のレスポンスも取得して原因を特定できるようにする\n            const raw = await response.text();\n            console.log("📡 [Proxy HTTP]", response.status, response.statusText);\n            console.log("📡 [Proxy Raw]", raw);\n\n            let data;\n            try {\n                data = JSON.parse(raw);\n            } catch (jsonError) {\n                throw new Error(`GASがJSONではない応答を返しました（HTTP ${response.status}）：${raw.slice(0, 500)}`);\n            }\n\n            if (!response.ok) {\n                const detail = typeof data.error === "string"\n                    ? data.error\n                    : data.error?.message || JSON.stringify(data.error);\n                throw new Error(`GAS通信エラー（HTTP ${response.status}）：${detail}`);\n            }\n\n            if (data.error) {\n                const detail = typeof data.error === "string"\n                    ? data.error\n                    : data.error.message || JSON.stringify(data.error);\n                throw new Error(`AI中継エラー：${detail}`);\n            }\n\n            if (!data.choices?.[0]?.message?.content) {\n                throw new Error(`予期しないAI応答：${JSON.stringify(data).slice(0, 1000)}`);\n            }\n\n            const aiReply = data.choices[0].message.content; \n            this.updateLog(aiReply);\n\n            if (typeof ActionLogger !== 'undefined') {\n                ActionLogger.addLog(`💋 ダーリンからの返答: 「${aiReply}」`);\n            }\n\n        } catch (e) {\n            clearTimeout(timeoutId);\n            console.error("❌ [Proxy Error]:", e);\n\n            let errorMessage;\n            if (e.name === "AbortError") {\n                errorMessage = "通信が30秒以上応答しなかったためタイムアウトしました。GASまたはAI側の処理が時間内に完了しなかった可能性があります。";\n            } else if (e instanceof TypeError) {\n                errorMessage = `通信そのものに失敗しました：${e.message || "Network Error"}`;\n            } else {\n                errorMessage = e.message || String(e);\n            }\n\n            this.updateLog(`「……あら、ダーリン。通信に失敗したみたいね。♡」\\n\\nエラー内容『${errorMessage}』\\n\\nジェミの書庫の意見箱から開発者にお知らせしてね。`);\n        }'''
+          if old not in s:
+              raise SystemExit('Target block not found; refusing to modify darling.js')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+
+      - name: Commit patch and remove workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add darling.js .github/workflows/fix-darling-error.yml
+          git commit -m "fix: show detailed Darling chat errors and timeout"
+          git rm .github/workflows/fix-darling-error.yml
+          git commit -m "chore: remove temporary Darling error workflow"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
